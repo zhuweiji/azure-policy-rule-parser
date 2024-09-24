@@ -1,0 +1,60 @@
+{
+    "description": "This policy is not required since Azure App Service automatically updates and maintains the .NET Framework versions installed on the platform.",
+    "displayName": "[Deprecated]: Ensure that '.NET Framework' version is the latest, if used as a part of the API app",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c2e7ca55-f62c-49b2-89a4-d41eb661d2f0",
+    "metadata": {
+        "category": "App Service",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "c2e7ca55-f62c-49b2-89a4-d41eb661d2f0",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "*api"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Web/sites/config/web.netFrameworkVersion",
+                    "in": [
+                        "v3.0",
+                        "v4.0"
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

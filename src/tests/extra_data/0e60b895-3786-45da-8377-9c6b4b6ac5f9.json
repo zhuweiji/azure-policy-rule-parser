@@ -1,0 +1,59 @@
+{
+    "description": "Remote debugging requires inbound ports to be opened on Function apps. Remote debugging should be turned off.",
+    "displayName": "Function apps should have remote debugging turned off",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0e60b895-3786-45da-8377-9c6b4b6ac5f9",
+    "metadata": {
+        "category": "App Service",
+        "version": "2.0.0"
+    },
+    "mode": "Indexed",
+    "name": "0e60b895-3786-45da-8377-9c6b4b6ac5f9",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "contains": "functionapp",
+                    "field": "kind"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "workflowapp"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "false",
+                    "field": "Microsoft.Web/sites/config/web.remoteDebuggingEnabled"
+                },
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

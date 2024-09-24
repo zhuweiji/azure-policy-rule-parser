@@ -1,0 +1,44 @@
+{
+    "description": "CMA_0203 - Document security strength requirements in acquisition contracts",
+    "displayName": "Document security strength requirements in acquisition contracts",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ebb0ba89-6d8c-84a7-252b-7393881e43de",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_0203",
+        "category": "Regulatory Compliance",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "ebb0ba89-6d8c-84a7-252b-7393881e43de",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

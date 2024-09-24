@@ -1,0 +1,63 @@
+{
+    "description": "Appends the specified tag and value when any resource group which is missing this tag is created or updated. Does not modify the tags of resource groups created before this policy was applied until those resource groups are changed. New 'modify' effect policies are available that support remediation of tags on existing resources (see https://aka.ms/modifydoc).",
+    "displayName": "Append a tag and its value to resource groups",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "metadata": {
+        "category": "Tags",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "parameters": {
+        "tagName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name of the tag, such as 'environment'",
+                "displayName": "Tag Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagValue": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Value of the tag, such as 'production'",
+                "displayName": "Tag Value",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Resources/subscriptions/resourceGroups",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "[concat('tags[', parameters('tagName'), ']')]"
+                }
+            ]
+        },
+        "then": {
+            "details": [
+                {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "value": "[parameters('tagValue')]"
+                }
+            ],
+            "effect": "append"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

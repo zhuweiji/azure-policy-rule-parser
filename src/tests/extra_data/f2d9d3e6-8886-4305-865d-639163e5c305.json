@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Physical and Environmental Protection control",
+    "displayName": "Microsoft Managed Control 1457 - Physical Access Control",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f2d9d3e6-8886-4305-865d-639163e5c305",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1457",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "f2d9d3e6-8886-4305-865d-639163e5c305",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

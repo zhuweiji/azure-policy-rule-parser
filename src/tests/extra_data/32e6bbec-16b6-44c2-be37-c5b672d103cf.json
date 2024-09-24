@@ -1,0 +1,57 @@
+{
+    "description": "Setting TLS version to 1.2 or newer improves security by ensuring your Azure SQL Database can only be accessed from clients using TLS 1.2 or newer. Using versions of TLS less than 1.2 is not recommended since they have well documented security vulnerabilities.",
+    "displayName": "Azure SQL Database should be running TLS version 1.2 or newer",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/32e6bbec-16b6-44c2-be37-c5b672d103cf",
+    "metadata": {
+        "category": "SQL",
+        "version": "2.0.0"
+    },
+    "mode": "Indexed",
+    "name": "32e6bbec-16b6-44c2-be37-c5b672d103cf",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Sql/servers",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Sql/servers/minimalTlsVersion"
+                        },
+                        {
+                            "field": "Microsoft.Sql/servers/minimalTlsVersion",
+                            "less": "1.2"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

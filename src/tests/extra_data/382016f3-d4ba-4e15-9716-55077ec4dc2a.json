@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Identification and Authentication control",
+    "displayName": "Microsoft Managed Control 1335 - Authenticator Management | Pki-Based Authentication",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/382016f3-d4ba-4e15-9716-55077ec4dc2a",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1335",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "382016f3-d4ba-4e15-9716-55077ec4dc2a",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Contingency Planning control",
+    "displayName": "Microsoft Managed Control 1288 - Information System Backup",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8d854c3b-a3e6-4ec9-9f0c-c7274dbaeb2f",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1288",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "8d854c3b-a3e6-4ec9-9f0c-c7274dbaeb2f",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

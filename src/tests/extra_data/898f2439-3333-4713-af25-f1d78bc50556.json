@@ -1,0 +1,49 @@
+{
+    "description": "Disabling public network access improves security by ensuring that Azure Arc resources cannot connect via the public internet. Creating private endpoints can limit exposure of Azure Arc resources. Learn more at: https://aka.ms/arc/privatelink.",
+    "displayName": "Azure Arc Private Link Scopes should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/898f2439-3333-4713-af25-f1d78bc50556",
+    "metadata": {
+        "category": "Azure Arc",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "898f2439-3333-4713-af25-f1d78bc50556",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/privateLinkScopes",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HybridCompute/privateLinkScopes/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

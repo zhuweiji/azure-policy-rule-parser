@@ -1,0 +1,44 @@
+{
+    "description": "CMA_0322 - Implement personnel screening",
+    "displayName": "Implement personnel screening",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e0c480bf-0d68-a42d-4cbb-b60f851f8716",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_0322",
+        "category": "Regulatory Compliance",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "e0c480bf-0d68-a42d-4cbb-b60f851f8716",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

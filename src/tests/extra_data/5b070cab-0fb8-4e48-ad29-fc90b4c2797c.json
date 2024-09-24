@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Configuration Management control",
+    "displayName": "Microsoft Managed Control 1205 - Access Restrictions For Change | Signed Components",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5b070cab-0fb8-4e48-ad29-fc90b4c2797c",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1205",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "5b070cab-0fb8-4e48-ad29-fc90b4c2797c",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

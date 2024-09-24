@@ -1,0 +1,61 @@
+{
+    "description": "Restrict which resource types can be deployed in your environment. Limiting resource types can reduce the complexity and attack surface of your environment while also helping to manage costs. Compliance results are only shown for non-compliant resources.",
+    "displayName": "Not allowed resource types",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6c112d4e-5bc7-47ae-a041-ea2d9dccd749",
+    "metadata": {
+        "category": "General",
+        "version": "2.0.0"
+    },
+    "mode": "All",
+    "name": "6c112d4e-5bc7-47ae-a041-ea2d9dccd749",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "listOfResourceTypesNotAllowed": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of resource types that cannot be deployed.",
+                "displayName": "Not allowed resource types",
+                "strongType": "resourceTypes"
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": "[parameters('listOfResourceTypesNotAllowed')]"
+                },
+                {
+                    "exists": true,
+                    "value": "[field('type')]"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

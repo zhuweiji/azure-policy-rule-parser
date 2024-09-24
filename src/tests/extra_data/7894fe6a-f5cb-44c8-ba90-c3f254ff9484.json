@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Configuration Management control",
+    "displayName": "Microsoft Managed Control 1216 - Least Functionality | Periodic Review",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7894fe6a-f5cb-44c8-ba90-c3f254ff9484",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1216",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "7894fe6a-f5cb-44c8-ba90-c3f254ff9484",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

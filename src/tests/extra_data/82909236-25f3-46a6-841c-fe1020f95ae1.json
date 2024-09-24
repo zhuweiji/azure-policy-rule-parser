@@ -1,0 +1,49 @@
+{
+    "description": "With supported SKU, Azure Private Link lets you connect your virtual network to Azure services without a public IP address at the source or destination. The Private Link platform handles the connectivity between the consumer and services over the Azure backbone network. By mapping private endpoints to Azure Web PubSub service, you can reduce data leakage risks. Learn more about private links at: https://aka.ms/awps/privatelink.",
+    "displayName": "Azure Web PubSub Service should use a SKU that supports private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/82909236-25f3-46a6-841c-fe1020f95ae1",
+    "metadata": {
+        "category": "Web PubSub",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "82909236-25f3-46a6-841c-fe1020f95ae1",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.SignalRService/webPubSub",
+                    "field": "type"
+                },
+                {
+                    "equals": "Free",
+                    "field": "Microsoft.SignalRService/webPubSub/sku.tier"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

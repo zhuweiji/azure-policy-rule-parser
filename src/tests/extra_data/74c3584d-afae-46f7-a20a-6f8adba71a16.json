@@ -1,0 +1,93 @@
+{
+    "description": "Periodically, newer versions are released for Python software either due to security flaws or to include additional functionality. Using the latest Python version for API apps is recommended in order to take advantage of security fixes, if any, and/or new functionalities of the latest version. We recommend all customers who are still using API apps to implement the built-in policy called 'App Service apps that use Python should use the latest 'Python version''.",
+    "displayName": "[Deprecated]: API apps that use Python should use the latest 'Python version'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/74c3584d-afae-46f7-a20a-6f8adba71a16",
+    "metadata": {
+        "category": "App Service",
+        "deprecated": true,
+        "version": "3.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "74c3584d-afae-46f7-a20a-6f8adba71a16",
+    "parameters": {
+        "LinuxPythonLatestVersion": {
+            "allowedValues": null,
+            "defaultValue": "3.9",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Latest supported Python version for App Services",
+                "displayName": "Linux Latest Python version",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "WindowsPythonLatestVersion": {
+            "allowedValues": null,
+            "defaultValue": "3.6",
+            "metadata": {
+                "assignPermissions": null,
+                "deprecated": true,
+                "description": "Latest supported Python version for App Services",
+                "displayName": "[Deprecated]: Latest Windows Python version",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "*api"
+                },
+                {
+                    "contains": "linux",
+                    "field": "kind"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Web/sites/config/web.linuxFxVersion",
+                            "notContains": "PYTHON"
+                        },
+                        {
+                            "equals": "[concat('PYTHON|', parameters('LinuxPythonLatestVersion'))]",
+                            "field": "Microsoft.Web/sites/config/web.linuxFxVersion"
+                        }
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

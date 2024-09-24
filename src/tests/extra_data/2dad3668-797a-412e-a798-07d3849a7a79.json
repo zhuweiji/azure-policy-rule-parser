@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Access Control control",
+    "displayName": "Microsoft Managed Control 1077 - Use Of External Information Systems",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2dad3668-797a-412e-a798-07d3849a7a79",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1077",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "2dad3668-797a-412e-a798-07d3849a7a79",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

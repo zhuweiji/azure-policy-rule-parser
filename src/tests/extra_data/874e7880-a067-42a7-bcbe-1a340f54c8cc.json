@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Configuration Management control",
+    "displayName": "Microsoft Managed Control 1180 - Baseline Configuration | Automation Support For Accuracy / Currency",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/874e7880-a067-42a7-bcbe-1a340f54c8cc",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1180",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "874e7880-a067-42a7-bcbe-1a340f54c8cc",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,204 @@
+{
+    "description": "This policy should only be used along with its corresponding deploy policy in an initiative. This definition allows Azure Policy to process the results of auditing Windows virtual machines with non-compliant settings in Group Policy category: 'Security Options - System settings'. For more information on Guest Configuration policies, please visit https://aka.ms/gcpol",
+    "displayName": "[Deprecated]: Show audit results from Windows VMs configurations in 'Security Options - System settings'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8a39d1f1-5513-4628-b261-f469a5a3341b",
+    "metadata": {
+        "category": "Guest Configuration",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "All",
+    "name": "8a39d1f1-5513-4628-b261-f469a5a3341b",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/virtualMachines",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Compute/imagePublisher",
+                                    "in": [
+                                        "esri",
+                                        "incredibuild",
+                                        "MicrosoftDynamicsAX",
+                                        "MicrosoftSharepoint",
+                                        "MicrosoftVisualStudio",
+                                        "MicrosoftWindowsDesktop",
+                                        "MicrosoftWindowsServerHPCPack"
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftWindowsServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftSQLServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "notLike": "SQL2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-dsvm",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "equals": "dsvm-windows",
+                                            "field": "Microsoft.Compute/imageOffer"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-ads",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "in": [
+                                                "standard-data-science-vm",
+                                                "windows-data-science-vm"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "batch",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "equals": "rendering-windows2016",
+                                            "field": "Microsoft.Compute/imageOffer"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "center-for-internet-security-inc",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "cis-windows-server-201*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "pivotal",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "bosh-windows-server*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "cloud-infrastructure-services",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "ad*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "like": "Windows*"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/imageSKU"
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "notLike": "2008*"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "notLike": "SQL2008*"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.HybridCompute/machines",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.HybridCompute/imageOffer",
+                            "like": "windows*"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "Compliant",
+                    "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/complianceStatus"
+                },
+                "name": "AzureBaseline_SecurityOptionsSystemsettings",
+                "type": "Microsoft.GuestConfiguration/guestConfigurationAssignments"
+            },
+            "effect": "auditIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

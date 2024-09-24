@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Maintenance control",
+    "displayName": "Microsoft Managed Control 1405 - Maintenance Tools | Inspect Tools",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fe1a0bf3-409a-4b00-b60d-0b1f917f7e7b",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1405",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "fe1a0bf3-409a-4b00-b60d-0b1f917f7e7b",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

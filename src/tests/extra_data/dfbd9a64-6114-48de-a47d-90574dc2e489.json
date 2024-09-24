@@ -1,0 +1,47 @@
+{
+    "description": "Virtual network based firewall rules are used to enable traffic from a specific subnet to Azure Database for MariaDB while ensuring the traffic stays within the Azure boundary. This policy provides a way to audit if the Azure Database for MariaDB has virtual network service endpoint being used.",
+    "displayName": "MariaDB server should use a virtual network service endpoint",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/dfbd9a64-6114-48de-a47d-90574dc2e489",
+    "metadata": {
+        "category": "SQL",
+        "version": "1.0.2"
+    },
+    "mode": "Indexed",
+    "name": "dfbd9a64-6114-48de-a47d-90574dc2e489",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.DBforMariaDB/servers",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "exists": "true",
+                    "field": "Microsoft.DBforMariaDB/servers/virtualNetworkRules/virtualNetworkSubnetId"
+                },
+                "type": "Microsoft.DBforMariaDB/servers/virtualNetworkRules"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,56 @@
+{
+    "description": "The Guest Configuration extension requires a system assigned managed identity. Azure virtual machines in the scope of this policy will be non-compliant when they have the Guest Configuration extension installed but do not have a system assigned managed identity. Learn more at https://aka.ms/gcpol",
+    "displayName": "Virtual machines' Guest Configuration extension should be deployed with system-assigned managed identity",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d26f7642-7545-4e18-9b75-8c9bbdee3a9a",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "d26f7642-7545-4e18-9b75-8c9bbdee3a9a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines/extensions",
+                    "field": "type"
+                },
+                {
+                    "equals": "Microsoft.GuestConfiguration",
+                    "field": "Microsoft.Compute/virtualMachines/extensions/publisher"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "contains": "SystemAssigned",
+                    "field": "identity.type"
+                },
+                "name": "[first(split(field('fullName'), '/'))]",
+                "type": "Microsoft.Compute/virtualMachines"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

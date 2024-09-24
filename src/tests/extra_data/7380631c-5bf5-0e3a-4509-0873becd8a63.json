@@ -1,0 +1,44 @@
+{
+    "description": "CMA_0254 - Establish a configuration control board",
+    "displayName": "Establish a configuration control board",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7380631c-5bf5-0e3a-4509-0873becd8a63",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_0254",
+        "category": "Regulatory Compliance",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "7380631c-5bf5-0e3a-4509-0873becd8a63",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

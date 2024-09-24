@@ -1,0 +1,72 @@
+{
+    "description": "The Web Sockets protocol is vulnerable to different types of security threats. Use of Web Sockets within an Function app must be carefully reviewed.",
+    "displayName": "[Deprecated]: Audit Web Sockets state for a Function App",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/001802d1-4969-4c82-a700-c29c6c6f9bbd",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "All",
+    "name": "001802d1-4969-4c82-a700-c29c6c6f9bbd",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allof": [
+                {
+                    "equals": "microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "anyof": [
+                        {
+                            "equals": "functionapp",
+                            "field": "kind"
+                        },
+                        {
+                            "equals": "functionapp,linux",
+                            "field": "kind"
+                        },
+                        {
+                            "equals": "functionapp,linux,container",
+                            "field": "kind"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/complianceResults/resourceStatus",
+                    "in": [
+                        "OffByPolicy",
+                        "Healthy"
+                    ]
+                },
+                "name": "DisableWebSockets",
+                "type": "Microsoft.Security/complianceResults"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

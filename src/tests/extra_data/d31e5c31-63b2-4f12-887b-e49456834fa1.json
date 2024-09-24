@@ -1,0 +1,48 @@
+{
+    "description": "Enable Defender for SQL to protect your Synapse workspaces. Defender for SQL monitors your Synapse SQL to detect anomalous activities indicating unusual and potentially harmful attempts to access or exploit databases.",
+    "displayName": "Microsoft Defender for SQL should be enabled for unprotected Synapse workspaces",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d31e5c31-63b2-4f12-887b-e49456834fa1",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d31e5c31-63b2-4f12-887b-e49456834fa1",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Synapse/workspaces",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "Enabled",
+                    "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/state"
+                },
+                "name": "Default",
+                "type": "Microsoft.Synapse/workspaces/securityAlertPolicies"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,293 @@
+{
+    "description": "Configure supported Windows machines to automatically install the Azure Security agent. Security Center collects events from the agent and uses them to provide security alerts and tailored hardening tasks (recommendations). Target virtual machines must be in a supported location.",
+    "displayName": "[Preview]: Configure supported Windows machines to automatically install the Azure Security agent",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1537496a-b1e8-482b-a06a-1cc2415cdc7b",
+    "metadata": {
+        "category": "Security Center",
+        "preview": true,
+        "version": "5.1.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "1537496a-b1e8-482b-a06a-1cc2415cdc7b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServer",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2008-R2-SP1*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2012-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2016-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2019-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2022-*"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServerSemiAnnual",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "in": [
+                                        "Datacenter-Core-1709-smalldisk",
+                                        "Datacenter-Core-1709-with-Containers-smalldisk",
+                                        "Datacenter-Core-1803-with-Containers-smalldisk"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServerHPCPack",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServerHPCPack",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftSQLServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2019"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2019-BYOL"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2016"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2016-BYOL"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2012R2"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2012R2-BYOL"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftRServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "MLServer-WS2016",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftVisualStudio",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "in": [
+                                        "VisualStudio",
+                                        "Windows"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftDynamicsAX",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "Dynamics",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "Pre-Req-AX7-Onebox-U8",
+                                    "field": "Microsoft.Compute/imageSKU"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoft-ads",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "windows-data-science-vm",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsDesktop",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "Windows-10",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2019-03-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'), '/', 'AzureSecurityWindowsAgent')]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "enableAutomaticUpgrade": true,
+                                        "protectedsettings": {},
+                                        "publisher": "Microsoft.Azure.Security.Monitoring",
+                                        "settings": {},
+                                        "type": "AzureSecurityWindowsAgent",
+                                        "typeHandlerVersion": "1.0"
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachines/extensions"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "evaluationDelay": "AfterProvisioning",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "AzureSecurityWindowsAgent",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Security.Monitoring",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/Publisher"
+                        },
+                        {
+                            "equals": "true",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/enableAutomaticUpgrade"
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/extensions/provisioningState",
+                            "in": [
+                                "Succeeded",
+                                "Provisioning succeeded"
+                            ]
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                ],
+                "type": "Microsoft.Compute/virtualMachines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

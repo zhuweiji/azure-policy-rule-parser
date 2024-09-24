@@ -1,0 +1,44 @@
+{
+    "description": "CMA_C1576 - Obtain design and implementation information for the security controls",
+    "displayName": "Obtain design and implementation information for the security controls",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/22a02c9a-49e4-5dc9-0d14-eb35ad717154",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_C1576",
+        "category": "Regulatory Compliance",
+        "version": "1.1.1"
+    },
+    "mode": "All",
+    "name": "22a02c9a-49e4-5dc9-0d14-eb35ad717154",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,44 @@
+{
+    "description": "CMA_0255 - Establish a data leakage management procedure",
+    "displayName": "Establish a data leakage management procedure",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3c9aa856-6b86-35dc-83f4-bc72cec74dea",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_0255",
+        "category": "Regulatory Compliance",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "3c9aa856-6b86-35dc-83f4-bc72cec74dea",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

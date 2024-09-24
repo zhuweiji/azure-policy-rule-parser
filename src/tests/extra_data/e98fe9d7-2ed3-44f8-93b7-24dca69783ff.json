@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Configuration Management control",
+    "displayName": "Microsoft Managed Control 1200 - Security Impact Analysis",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e98fe9d7-2ed3-44f8-93b7-24dca69783ff",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1200",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "e98fe9d7-2ed3-44f8-93b7-24dca69783ff",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

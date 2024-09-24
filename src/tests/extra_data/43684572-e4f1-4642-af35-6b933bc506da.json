@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Risk Assessment control",
+    "displayName": "Microsoft Managed Control 1552 - Vulnerability Scanning | Update By Frequency / Prior To New Scan / When Identified",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/43684572-e4f1-4642-af35-6b933bc506da",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1552",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "43684572-e4f1-4642-af35-6b933bc506da",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

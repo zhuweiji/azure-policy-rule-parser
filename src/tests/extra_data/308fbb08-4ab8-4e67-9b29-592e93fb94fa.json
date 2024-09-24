@@ -1,0 +1,50 @@
+{
+    "description": "Microsoft Defender for Storage (Classic) provides detections of unusual and potentially harmful attempts to access or exploit storage accounts.",
+    "displayName": "[Deprecated]: Microsoft Defender for Storage (Classic) should be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/308fbb08-4ab8-4e67-9b29-592e93fb94fa",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "1.1.0-deprecated"
+    },
+    "mode": "All",
+    "name": "308fbb08-4ab8-4e67-9b29-592e93fb94fa",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "Standard",
+                    "field": "Microsoft.Security/pricings/pricingTier"
+                },
+                "existenceScope": "subscription",
+                "name": "StorageAccounts",
+                "type": "Microsoft.Security/pricings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

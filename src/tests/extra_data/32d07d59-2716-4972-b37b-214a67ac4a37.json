@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Physical and Environmental Protection control",
+    "displayName": "Microsoft Managed Control 1445 - Physical And Environmental Protection Policy And Procedures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/32d07d59-2716-4972-b37b-214a67ac4a37",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1445",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "32d07d59-2716-4972-b37b-214a67ac4a37",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

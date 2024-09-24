@@ -1,0 +1,71 @@
+{
+    "description": "Disable public network access for your key vault so that it's not accessible over the public internet. This can reduce data leakage risks. Learn more at: https://aka.ms/akvprivatelink.",
+    "displayName": "Azure Key Vault should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/405c5871-3e91-4644-8a63-58e19d68ff5b",
+    "metadata": {
+        "category": "Key Vault",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "405c5871-3e91-4644-8a63-58e19d68ff5b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.KeyVault/vaults",
+                    "field": "type"
+                },
+                {
+                    "not": {
+                        "equals": "recover",
+                        "field": "Microsoft.KeyVault/vaults/createMode"
+                    }
+                },
+                {
+                    "anyOf": [
+                        {
+                            "less": "2021-06-01-preview",
+                            "value": "[requestContext().apiVersion]"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "greaterOrEquals": "2021-06-01-preview",
+                                    "value": "[requestContext().apiVersion]"
+                                },
+                                {
+                                    "field": "Microsoft.KeyVault/vaults/publicNetworkAccess",
+                                    "notEquals": "Disabled"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

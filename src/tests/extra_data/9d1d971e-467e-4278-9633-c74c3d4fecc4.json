@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Identification and Authentication control",
+    "displayName": "Microsoft Managed Control 1322 - Authenticator Management",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9d1d971e-467e-4278-9633-c74c3d4fecc4",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1322",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "9d1d971e-467e-4278-9633-c74c3d4fecc4",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

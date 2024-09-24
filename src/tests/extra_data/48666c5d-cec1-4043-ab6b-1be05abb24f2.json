@@ -1,0 +1,82 @@
+{
+    "description": "Configures the Microsoft Defender for Endpoint integration settings, within Microsoft Defender for Cloud (also known as WDATP_UNIFIED_SOLUTION), for enabling auto provisioning of MDE Unified Agent for Windows Server 2012R2 and 2016. WDATP setting must be turned on for this setting to be applied. See: https://learn.microsoft.com/azure/defender-for-cloud/integration-defender-for-endpoint for more information.",
+    "displayName": "Configure Microsoft Defender for Endpoint integration settings with Microsoft Defender for Cloud (WDATP_UNIFIED_SOLUTION)",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/48666c5d-cec1-4043-ab6b-1be05abb24f2",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "48666c5d-cec1-4043-ab6b-1be05abb24f2",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Resources/subscriptions",
+                    "field": "type"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "northeurope",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {},
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {},
+                            "parameters": {},
+                            "resources": [
+                                {
+                                    "apiVersion": "2022-05-01",
+                                    "kind": "DataExportSettings",
+                                    "name": "WDATP_UNIFIED_SOLUTION",
+                                    "properties": {
+                                        "enabled": "true"
+                                    },
+                                    "type": "Microsoft.Security/settings"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "equals": "true",
+                    "field": "Microsoft.Security/settings/DataExportSetting.enabled"
+                },
+                "existenceScope": "subscription",
+                "name": "WDATP_UNIFIED_SOLUTION",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+                ],
+                "type": "Microsoft.Security/settings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

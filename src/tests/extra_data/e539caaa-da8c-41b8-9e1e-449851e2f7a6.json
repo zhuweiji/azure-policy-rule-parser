@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Maintenance control",
+    "displayName": "Microsoft Managed Control 1421 - Maintenance Personnel",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e539caaa-da8c-41b8-9e1e-449851e2f7a6",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1421",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "e539caaa-da8c-41b8-9e1e-449851e2f7a6",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

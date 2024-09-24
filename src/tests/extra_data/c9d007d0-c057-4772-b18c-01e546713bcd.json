@@ -1,0 +1,53 @@
+{
+    "description": "Some Microsoft services that interact with storage accounts operate from networks that can't be granted access through network rules. To help this type of service work as intended, allow the set of trusted Microsoft services to bypass the network rules. These services will then use strong authentication to access the storage account.",
+    "displayName": "Storage accounts should allow access from trusted Microsoft services",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c9d007d0-c057-4772-b18c-01e546713bcd",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c9d007d0-c057-4772-b18c-01e546713bcd",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Storage/storageAccounts",
+                    "field": "type"
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.Storage/storageAccounts/networkAcls.bypass"
+                },
+                {
+                    "field": "Microsoft.Storage/storageAccounts/networkAcls.bypass",
+                    "notContains": "AzureServices"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

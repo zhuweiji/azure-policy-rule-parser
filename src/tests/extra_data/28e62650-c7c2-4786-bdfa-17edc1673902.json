@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Security Assessment and Authorization control",
+    "displayName": "Microsoft Managed Control 1148 - Security Assessments | Independent Assessors",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/28e62650-c7c2-4786-bdfa-17edc1673902",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1148",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "28e62650-c7c2-4786-bdfa-17edc1673902",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

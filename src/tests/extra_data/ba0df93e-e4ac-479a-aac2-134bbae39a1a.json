@@ -1,0 +1,1348 @@
+{
+    "description": "You can use Azure Update Manager in Azure to save recurring deployment schedules to install operating system updates for your Windows Server and Linux machines in Azure, in on-premises environments, and in other cloud environments connected using Azure Arc-enabled servers. This policy will also change the patch mode for the Azure Virtual Machine to 'AutomaticByPlatform'. See more: https://aka.ms/umc-scheduled-patching",
+    "displayName": "Schedule recurring updates using Azure Update Manager",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ba0df93e-e4ac-479a-aac2-134bbae39a1a",
+    "metadata": {
+        "category": "Azure Update Manager",
+        "version": "3.12.0"
+    },
+    "mode": "Indexed",
+    "name": "ba0df93e-e4ac-479a-aac2-134bbae39a1a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "locations": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of locations from which machines need to be targeted.",
+                "displayName": "Machines locations",
+                "strongType": "location"
+            },
+            "type": "Array"
+        },
+        "maintenanceConfigurationResourceId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "ARM ID of Maintenance Configuration which will be used for scheduling.",
+                "displayName": "Maintenance Configuration ARM ID",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "operatingSystemTypes": {
+            "allowedValues": [
+                "Windows",
+                "Linux"
+            ],
+            "defaultValue": [
+                "Windows",
+                "Linux"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of Operating System types from which machines need to be targeted.",
+                "displayName": "Operating System types",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "resourceGroups": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of resource groups from which machines need to be targeted. Example: [\"rg1\", \"rg2\"].",
+                "displayName": "Resource groups",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "tagOperator": {
+            "allowedValues": [
+                "All",
+                "Any"
+            ],
+            "defaultValue": "Any",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Matching condition for resource tags",
+                "displayName": "Tags operator",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagValues": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of tags that need to matched for getting target machines (case sensitive). Example: [ {\"key\": \"tagKey1\", \"value\": \"value1\"}, {\"key\": \"tagKey2\", \"value\": \"value2\"}].",
+                "displayName": "Tags on machines",
+                "strongType": null
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.HybridCompute/machines",
+                        "Microsoft.Compute/virtualMachines"
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": true,
+                            "value": "[empty(parameters('operatingSystemTypes'))]"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "field": "type",
+                                    "in": [
+                                        "Microsoft.HybridCompute/machines"
+                                    ]
+                                },
+                                {
+                                    "field": "Microsoft.HybridCompute/machines/osName",
+                                    "in": "[parameters('operatingSystemTypes')]"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "field": "type",
+                                    "in": [
+                                        "Microsoft.Compute/virtualMachines"
+                                    ]
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "in": "[parameters('operatingSystemTypes')]"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "contains": "Microsoft.Compute/galleries",
+                                                            "value": "[field('Microsoft.Compute/imageId')]"
+                                                        },
+                                                        {
+                                                            "contains": "Microsoft.Compute/images",
+                                                            "value": "[field('Microsoft.Compute/imageId')]"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.computerName"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "in": "[parameters('operatingSystemTypes')]"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "contains": "Microsoft.Compute/galleries",
+                                                            "value": "[field('Microsoft.Compute/imageId')]"
+                                                        },
+                                                        {
+                                                            "contains": "Microsoft.Compute/images",
+                                                            "value": "[field('Microsoft.Compute/imageId')]"
+                                                        },
+                                                        {
+                                                            "equals": "Attach",
+                                                            "value": "[field('Microsoft.Compute/virtualMachines/storageProfile.osDisk.createOption')]"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.computerName"
+                                                },
+                                                {
+                                                    "greaterOrEquals": "2023-07-01",
+                                                    "value": "[requestContext().apiVersion]"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "in": "[parameters('operatingSystemTypes')]"
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "in": "[parameters('operatingSystemTypes')]",
+                                                            "value": "Linux"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "in": [
+                                                                "sles-standard",
+                                                                "sles-sapcal",
+                                                                "sles-sap-byos",
+                                                                "sles-sap",
+                                                                "sles-byos",
+                                                                "sles-15-sp4-sapcal",
+                                                                "sles-15-sp4-basic",
+                                                                "sles-15-sp4",
+                                                                "sles-15-sp3-sapcal",
+                                                                "sles-15-sp2-hpc",
+                                                                "sles-15-sp2-basic",
+                                                                "sles-15-sp1-sapcal",
+                                                                "sles",
+                                                                "sle-hpc-15-sp4",
+                                                                "sles-12-sp5",
+                                                                "sles-15-sp2",
+                                                                "centos-hpc",
+                                                                "centos-ci",
+                                                                "centos-lvm",
+                                                                "Centos",
+                                                                "rhel-sap-ha",
+                                                                "rhel-sap-apps",
+                                                                "RHEL-RAW",
+                                                                "RHEL",
+                                                                "aml-workstation",
+                                                                "aks",
+                                                                "oracle-database-19-3",
+                                                                "oracle-database",
+                                                                "oracle-linux",
+                                                                "cbl-mariner",
+                                                                "0001-com-ubuntu-server-jammy",
+                                                                "0001-com-ubuntu-pro-jammy",
+                                                                "0001-com-ubuntu-pro-focal",
+                                                                "0001-com-ubuntu-server-focal",
+                                                                "0001-com-ubuntu-pro-bionic",
+                                                                "UbuntuServer"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "in": "[parameters('operatingSystemTypes')]",
+                                                            "value": "Windows"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "in": [
+                                                                "WindowsServer",
+                                                                "microsoftserveroperatingsystems-previews",
+                                                                "windowsserverhotpatch-previews",
+                                                                "sql2016sp1-ws2016",
+                                                                "sql2016sp2-ws201",
+                                                                "sql2017-ws2016",
+                                                                "sql2019-ws2019",
+                                                                "dynamics",
+                                                                "process-server"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": true,
+                            "value": "[empty(parameters('locations'))]"
+                        },
+                        {
+                            "field": "location",
+                            "in": "[parameters('locations')]"
+                        }
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": true,
+                            "value": "[empty(parameters('resourceGroups'))]"
+                        },
+                        {
+                            "in": "[parameters('resourceGroups')]",
+                            "value": "[resourceGroup().name]"
+                        }
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": true,
+                            "value": "[empty(parameters('tagValues'))]"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": false,
+                                    "value": "[empty(field('tags'))]"
+                                },
+                                {
+                                    "equals": "Any",
+                                    "value": "[parameters('tagOperator')]"
+                                },
+                                {
+                                    "count": {
+                                        "name": "tagKvp",
+                                        "value": "[parameters('tagValues')]",
+                                        "where": {
+                                            "greater": 0,
+                                            "value": "[length(intersection(createObject(current('tagKvp').key, current('tagKvp').value), field('tags')))]"
+                                        }
+                                    },
+                                    "greater": 0
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": false,
+                                    "value": "[empty(field('tags'))]"
+                                },
+                                {
+                                    "equals": "All",
+                                    "value": "[parameters('tagOperator')]"
+                                },
+                                {
+                                    "count": {
+                                        "name": "tagKvp",
+                                        "value": "[parameters('tagValues')]",
+                                        "where": {
+                                            "greater": 0,
+                                            "value": "[length(intersection(createObject(current('tagKvp').key, current('tagKvp').value), field('tags')))]"
+                                        }
+                                    },
+                                    "equals": "[length(parameters('tagValues'))]"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "type",
+                            "in": [
+                                "Microsoft.HybridCompute/machines"
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "field": "type",
+                                    "in": [
+                                        "Microsoft.Compute/virtualMachines"
+                                    ]
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "contains": "Microsoft.Compute/galleries",
+                                                            "value": "[field('Microsoft.Compute/imageId')]"
+                                                        },
+                                                        {
+                                                            "contains": "Microsoft.Compute/images",
+                                                            "value": "[field('Microsoft.Compute/imageId')]"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.computerName"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "contains": "Microsoft.Compute/galleries",
+                                                            "value": "[field('Microsoft.Compute/imageId')]"
+                                                        },
+                                                        {
+                                                            "contains": "Microsoft.Compute/images",
+                                                            "value": "[field('Microsoft.Compute/imageId')]"
+                                                        },
+                                                        {
+                                                            "equals": "Attach",
+                                                            "value": "[field('Microsoft.Compute/virtualMachines/storageProfile.osDisk.createOption')]"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.computerName"
+                                                },
+                                                {
+                                                    "greaterOrEquals": "2023-07-01",
+                                                    "value": "[requestContext().apiVersion]"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "Canonical",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoftcblmariner",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "equals": "cbl-mariner",
+                                                    "field": "Microsoft.Compute/imageOffer"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/imageSKU",
+                                                    "in": [
+                                                        "cbl-mariner-1",
+                                                        "1-gen2",
+                                                        "cbl-mariner-2",
+                                                        "cbl-mariner-2-gen2"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "oracle",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "oracle-linux",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "in": [
+                                                                                "8",
+                                                                                "8-ci",
+                                                                                "81",
+                                                                                "81-ci",
+                                                                                "81-gen2"
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "7*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "ol7*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "ol8*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "ol9*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "ol9-lvm*"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "oracle-database",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "equals": "oracle_db_21",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                    "like": "oracle-database-*"
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "like": "18.*"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "oracle-database-19-3",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "equals": "oracle-database-19-0904",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoft-aks",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "equals": "aks",
+                                                    "field": "Microsoft.Compute/imageOffer"
+                                                },
+                                                {
+                                                    "equals": "aks-engine-ubuntu-1804-202112",
+                                                    "field": "Microsoft.Compute/imageSKU"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoft-dsvm",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "equals": "aml-workstation",
+                                                    "field": "Microsoft.Compute/imageOffer"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/imageSKU",
+                                                    "in": [
+                                                        "ubuntu-20",
+                                                        "ubuntu-20-gen2"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "Redhat",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "RHEL",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "7*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "8*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "9*"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "notEquals": "74-gen2"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "RHEL-RAW",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "7*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "8*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "9*"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                    "in": [
+                                                                        "rhel-sap-ha"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "equals": "90sapha-gen2",
+                                                                            "field": "Microsoft.Compute/imageSKU"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "7*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "8*"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "notEquals": "7.5"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                    "in": [
+                                                                        "rhel-sap-apps"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "equals": "90sapha-gen2",
+                                                                            "field": "Microsoft.Compute/imageSKU"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "7*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "8*"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                    "like": "rhel-sap-*"
+                                                                },
+                                                                {
+                                                                    "equals": "9_0",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "rhel-ha",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "like": "8*"
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "notIn": [
+                                                                        "7.4",
+                                                                        "7.5",
+                                                                        "7.6",
+                                                                        "8.1",
+                                                                        "81_gen2"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "rhel-sap",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "notIn": [
+                                                                        "7.4",
+                                                                        "7.5",
+                                                                        "7.7"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "like": "7*"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "OpenLogic",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "anyOf": [
+                                                                {
+                                                                    "allOf": [
+                                                                        {
+                                                                            "equals": "Centos",
+                                                                            "field": "Microsoft.Compute/imageOffer"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "like": "7*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "notLike": "8*"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "allOf": [
+                                                                        {
+                                                                            "equals": "centos-lvm",
+                                                                            "field": "Microsoft.Compute/imageOffer"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageSKU",
+                                                                            "in": [
+                                                                                "7-lvm",
+                                                                                "8-lvm",
+                                                                                "7-lvm-gen2"
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "allOf": [
+                                                                        {
+                                                                            "equals": "centos-ci",
+                                                                            "field": "Microsoft.Compute/imageOffer"
+                                                                        },
+                                                                        {
+                                                                            "equals": "7-ci",
+                                                                            "field": "Microsoft.Compute/imageSKU"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "notEquals": "centos-hpc"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "SUSE",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                    "in": [
+                                                                        "sles-12-sp5",
+                                                                        "sles-15-sp2",
+                                                                        "sle-hpc-15-sp4",
+                                                                        "sles-15-sp1-sapcal",
+                                                                        "sles-15-sp3-sapcal",
+                                                                        "sles-15-sp4-basic",
+                                                                        "sles-15-sp4"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "in": [
+                                                                        "gen1",
+                                                                        "gen2"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                    "in": [
+                                                                        "sles",
+                                                                        "sles-standard"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "equals": "12-sp4-gen2",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                    "in": [
+                                                                        "sles-15-sp2-basic",
+                                                                        "sles-15-sp2-hpc"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "equals": "gen2",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "sles-15-sp4-sapcal",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "equals": "gen1",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                    "in": [
+                                                                        "sles-byos",
+                                                                        "sles-sap"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "in": [
+                                                                        "12-sp4",
+                                                                        "12-sp4-gen2"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "sles-sap-byos",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "in": [
+                                                                        "12-sp4",
+                                                                        "12-sp4-gen2",
+                                                                        "gen2-12-sp4"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "sles-sapcal",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "equals": "12-sp3",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "field": "Microsoft.Compute/imageSKU",
+                                                                    "like": "gen*"
+                                                                },
+                                                                {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageOffer",
+                                                                            "like": "opensuse-leap-15-*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageOffer",
+                                                                            "like": "sles-12-sp5-*"
+                                                                        },
+                                                                        {
+                                                                            "field": "Microsoft.Compute/imageOffer",
+                                                                            "like": "sles-sap-12-sp5*"
+                                                                        },
+                                                                        {
+                                                                            "allOf": [
+                                                                                {
+                                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                                    "like": "sles-sap-15-*"
+                                                                                },
+                                                                                {
+                                                                                    "field": "Microsoft.Compute/imageOffer",
+                                                                                    "notLike": "sles-sap-15-*-byos"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "MicrosoftWindowsServer",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "in": [
+                                                                "windowsserver",
+                                                                "windows-cvm",
+                                                                "windowsserverdotnet",
+                                                                "windowsserver-gen2preview",
+                                                                "windowsserversemiannual",
+                                                                "windowsserverupgrade"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "microsoftserveroperatingsystems-previews",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "equals": "windows-server-vnext-azure-edition-core",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "allOf": [
+                                                                {
+                                                                    "equals": "windowsserverhotpatch-previews",
+                                                                    "field": "Microsoft.Compute/imageOffer"
+                                                                },
+                                                                {
+                                                                    "equals": "windows-server-2022-azure-edition-hotpatch",
+                                                                    "field": "Microsoft.Compute/imageSKU"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "MicrosoftSQLServer",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/imageOffer",
+                                                    "notLike": "sql2019-sles*"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/imageOffer",
+                                                    "notIn": [
+                                                        "sql2019-rhel7",
+                                                        "sql2017-rhel7"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoftdynamicsax",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "equals": "dynamics",
+                                                    "field": "Microsoft.Compute/imageOffer"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoftazuresiterecovery",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "equals": "process-server",
+                                                    "field": "Microsoft.Compute/imageOffer"
+                                                },
+                                                {
+                                                    "equals": "windows-2012-r2-datacenter",
+                                                    "field": "Microsoft.Compute/imageSKU"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoftbiztalkserver",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "equals": "biztalk-server",
+                                                    "field": "Microsoft.Compute/imageOffer"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "equals": "microsoftpowerbi",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoftsharepoint",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "equals": "microsoftsharepointserver",
+                                                    "field": "Microsoft.Compute/imageOffer"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoftwindowsserverhpcpack",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "equals": "windowsserverhpcpack",
+                                                    "field": "Microsoft.Compute/imageOffer"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "microsoftvisualstudio",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/imageOffer",
+                                                    "like": "visualstudio*"
+                                                },
+                                                {
+                                                    "anyOf": [
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "like": "*-ws2012r2"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "like": "*-ws2016"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "like": "*-ws2019"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "like": "*-ws2022"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imagePublisher",
+                                    "notEquals": "microsoft-ads"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "bypassCheckValue": {
+                                "value": "[if(equals(toLower(field('type')), 'microsoft.compute/virtualmachines'), if(or(equals(toLower(field('Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType')), 'windows'), contains(createArray('microsoftwindowsserver', 'microsoftsqlserver', 'microsoftdynamicsax', 'microsoftazuresiterecovery', 'microsoftbiztalkserver', 'microsoftpowerbi', 'microsoftsharepoint', 'microsoftwindowsserverhpcpack', 'microsoftvisualstudio'), toLower(field('Microsoft.Compute/imagePublisher')))), if(contains(field('Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration.patchSettings.automaticByPlatformSettings'), 'bypassPlatformSafetyChecksOnUserSchedule'), field('Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration.patchSettings.automaticByPlatformSettings.bypassPlatformSafetyChecksOnUserSchedule'), bool('false')), if(contains(field('Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.patchSettings.automaticByPlatformSettings'), 'bypassPlatformSafetyChecksOnUserSchedule'), field('Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.patchSettings.automaticByPlatformSettings.bypassPlatformSafetyChecksOnUserSchedule'), bool('false'))), bool('false'))]"
+                            },
+                            "imageOffer": {
+                                "value": "[tolower(field('Microsoft.Compute/imageOffer'))]"
+                            },
+                            "imagePublisher": {
+                                "value": "[tolower(field('Microsoft.Compute/imagePublisher'))]"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "machineResourceId": {
+                                "value": "[field('id')]"
+                            },
+                            "maintenanceConfigurationResourceId": {
+                                "value": "[parameters('maintenanceConfigurationResourceId')]"
+                            },
+                            "osType": {
+                                "value": "[if(equals(toLower(field('type')), 'microsoft.compute/virtualmachines'), field('Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType'), field('Microsoft.HybridCompute/machines/osName'))]"
+                            },
+                            "patchMode": {
+                                "value": "[if(equals(toLower(field('type')), 'microsoft.compute/virtualmachines'), if(or(equals(toLower(field('Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType')), 'windows'), contains(createArray('microsoftwindowsserver', 'microsoftsqlserver', 'microsoftdynamicsax', 'microsoftazuresiterecovery', 'microsoftbiztalkserver', 'microsoftpowerbi', 'microsoftsharepoint', 'microsoftwindowsserverhpcpack', 'microsoftvisualstudio'),tolower(field('Microsoft.Compute/imagePublisher')))), field('Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration.patchSettings.patchMode'), field('Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.patchSettings.patchMode')), 'NA')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {
+                                "OSProfile": {
+                                    "type": "object",
+                                    "value": "[variables('updatedOSProfile')]"
+                                },
+                                "configurationAssignmentName": {
+                                    "type": "string",
+                                    "value": "[variables('configAssignmentName')]"
+                                }
+                            },
+                            "parameters": {
+                                "bypassCheckValue": {
+                                    "type": "bool"
+                                },
+                                "imageOffer": {
+                                    "type": "string"
+                                },
+                                "imagePublisher": {
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "machineResourceId": {
+                                    "type": "string"
+                                },
+                                "maintenanceConfigurationResourceId": {
+                                    "type": "String"
+                                },
+                                "osType": {
+                                    "type": "String"
+                                },
+                                "patchMode": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2023-09-01",
+                                    "condition": "[variables('patchModeShouldBeChanged')]",
+                                    "location": "[parameters('location')]",
+                                    "name": "[variables('machineName')]",
+                                    "properties": {
+                                        "osProfile": "[variables('updatedOSProfile')]"
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachines"
+                                },
+                                {
+                                    "apiVersion": "2021-09-01-preview",
+                                    "condition": "[variables('isAzureMachine')]",
+                                    "dependsOn": [
+                                        "[concat('Microsoft.Compute/virtualMachines/', variables('machineName'))]"
+                                    ],
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(variables('machineName'), '/Microsoft.Maintenance/', variables('configAssignmentName'))]",
+                                    "properties": {
+                                        "maintenanceConfigurationId": "[parameters('maintenanceConfigurationResourceId')]"
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachines/providers/configurationAssignments"
+                                },
+                                {
+                                    "apiVersion": "2021-09-01-preview",
+                                    "condition": "[variables('isArcMachine')]",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(variables('machineName'), '/Microsoft.Maintenance/', variables('configAssignmentName'))]",
+                                    "properties": {
+                                        "maintenanceConfigurationId": "[parameters('maintenanceConfigurationResourceId')]"
+                                    },
+                                    "type": "Microsoft.HybridCompute/machines/providers/configurationAssignments"
+                                }
+                            ],
+                            "variables": {
+                                "allowedWindowsPublishers": [
+                                    "microsoftwindowsserver",
+                                    "microsoftsqlserver",
+                                    "microsoftdynamicsax",
+                                    "microsoftazuresiterecovery",
+                                    "microsoftbiztalkserver",
+                                    "microsoftpowerbi",
+                                    "microsoftsharepoint",
+                                    "microsoftwindowsserverhpcpack",
+                                    "microsoftvisualstudio"
+                                ],
+                                "automaticByPlatformPatchMode": "AutomaticByPlatform",
+                                "configAssignmentName": "[concat(uniqueString(tolower(parameters('maintenanceConfigurationResourceId'))), '-AzPolicy')]",
+                                "imageOffer": "[parameters('imageOffer')]",
+                                "imagePublisher": "[parameters('imagePublisher')]",
+                                "isArcMachine": "[contains(tolower(parameters('machineResourceId')), tolower('/providers/Microsoft.HybridCompute/machines/'))]",
+                                "isAzureMachine": "[contains(tolower(parameters('machineResourceId')), tolower('/providers/microsoft.compute/virtualmachines/'))]",
+                                "linuxOSProfile": {
+                                    "linuxConfiguration": {
+                                        "patchSettings": {
+                                            "automaticByPlatformSettings": {
+                                                "bypassPlatformSafetyChecksOnUserSchedule": true
+                                            },
+                                            "patchMode": "[variables('automaticByPlatformPatchMode')]"
+                                        }
+                                    }
+                                },
+                                "machineName": "[last(split(parameters('machineResourceId'), '/'))]",
+                                "osType": "[toLower(if(empty(parameters('osType')), variables('osTypeFromPublisher'), parameters('osType')))]",
+                                "osTypeFromAllowedListOfPublishers": "[if(contains(variables('allowedWindowsPublishers'), variables('imagePublisher')), 'windows', 'linux')]",
+                                "osTypeFromPublisher": "[if(equals(variables('imagePublisher'), 'microsoftsqlserver'), if(contains(variables('imageOffer'), 'ws'), 'windows', 'linux'), variables('osTypeFromAllowedListOfPublishers'))]",
+                                "patchModeShouldBeChanged": "[and(variables('isAzureMachine'), or(not(equals(parameters('patchMode'), variables('automaticByPlatformPatchMode'))), not(equals(parameters('bypassCheckValue'), bool('true')))))]",
+                                "updatedOSProfile": "[if(equals(variables('osType'), 'windows'), variables('windowsOSProfile'), variables('linuxOSProfile'))]",
+                                "windowsOSProfile": {
+                                    "windowsConfiguration": {
+                                        "patchSettings": {
+                                            "automaticByPlatformSettings": {
+                                                "bypassPlatformSafetyChecksOnUserSchedule": true
+                                            },
+                                            "patchMode": "[variables('automaticByPlatformPatchMode')]"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "evaluationDelay": "AfterProvisioningSuccess",
+                "existenceCondition": {
+                    "equals": "[parameters('maintenanceConfigurationResourceId')]",
+                    "field": "Microsoft.Maintenance/configurationAssignments/maintenanceConfigurationId"
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.Maintenance/configurationAssignments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

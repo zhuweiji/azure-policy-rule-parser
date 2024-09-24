@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Contingency Planning control",
+    "displayName": "Microsoft Managed Control 1277 - Alternate Processing Site | Priority Of Service",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/dc43e829-3d50-4a0a-aa0f-428d551862aa",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1277",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "dc43e829-3d50-4a0a-aa0f-428d551862aa",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

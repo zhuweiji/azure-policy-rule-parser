@@ -1,0 +1,116 @@
+{
+    "description": "This policy audits specific Policy operations with no activity log alerts configured.",
+    "displayName": "An activity log alert should exist for specific Policy operations",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c5447c04-a4d7-4ba8-a263-c9ee321a6858",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "3.0.0"
+    },
+    "mode": "All",
+    "name": "c5447c04-a4d7-4ba8-a263-c9ee321a6858",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "operationName": {
+            "allowedValues": [
+                "Microsoft.Authorization/policyAssignments/write",
+                "Microsoft.Authorization/policyAssignments/delete"
+            ],
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Policy Operation name for which activity log alert should exist",
+                "displayName": "Operation Name",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Resources/subscriptions",
+                    "field": "type"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "true",
+                            "field": "Microsoft.Insights/ActivityLogAlerts/enabled"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*]",
+                                "where": {
+                                    "anyOf": [
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "category",
+                                                    "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].field"
+                                                },
+                                                {
+                                                    "equals": "Administrative",
+                                                    "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].equals"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "equals": "operationName",
+                                                    "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].field"
+                                                },
+                                                {
+                                                    "equals": "[parameters('operationName')]",
+                                                    "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].equals"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "equals": 2
+                        },
+                        {
+                            "not": {
+                                "equals": "category",
+                                "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].field"
+                            }
+                        },
+                        {
+                            "not": {
+                                "equals": "operationName",
+                                "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].field"
+                            }
+                        }
+                    ]
+                },
+                "type": "Microsoft.Insights/ActivityLogAlerts"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

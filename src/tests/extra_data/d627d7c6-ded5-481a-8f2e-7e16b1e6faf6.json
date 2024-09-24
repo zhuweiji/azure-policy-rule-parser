@@ -1,0 +1,122 @@
+{
+    "description": "Azure Private DNS provides a reliable, secure DNS service to manage and resolve domain names in a virtual network without the need to add a custom DNS solution. You can use private DNS zones to override the DNS resolution by using your own custom domain names for a private endpoint. This policy deploys a private DNS Zone for IoT Central private endpoints.",
+    "displayName": "Deploy - Configure IoT Central to use private DNS zones",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d627d7c6-ded5-481a-8f2e-7e16b1e6faf6",
+    "metadata": {
+        "category": "Internet of Things",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d627d7c6-ded5-481a-8f2e-7e16b1e6faf6",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies the private DNS zone to use to configure private endpoint",
+                "displayName": "Private DNS Zone ID",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/privateEndpoints",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]",
+                        "where": {
+                            "equals": "iotApp",
+                            "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]"
+                        }
+                    },
+                    "greaterOrEquals": 1
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[parameters('privateDnsZoneId')]"
+                            },
+                            "privateEndpointName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId": {
+                                    "type": "string"
+                                },
+                                "privateEndpointName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-03-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('privateEndpointName'), '/deployedByPolicy')]",
+                                    "properties": {
+                                        "privateDnsZoneConfigs": [
+                                            {
+                                                "name": "[parameters('privateDnsZoneId')]",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7",
+                    "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

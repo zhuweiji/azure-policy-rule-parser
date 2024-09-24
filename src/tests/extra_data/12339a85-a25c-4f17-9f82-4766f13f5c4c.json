@@ -1,0 +1,63 @@
+{
+    "description": "Disallow the IP Firewall rule, '0.0.0.0', which allows for all traffic from any Azure data centers. Learn more at https://aka.ms/cosmosdb-firewall",
+    "displayName": "Azure Cosmos DB accounts should not allow traffic from all Azure data centers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/12339a85-a25c-4f17-9f82-4766f13f5c4c",
+    "metadata": {
+        "category": "Cosmos DB",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "12339a85-a25c-4f17-9f82-4766f13f5c4c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Policy Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DocumentDB/databaseAccounts",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "count": {
+                                "field": "Microsoft.DocumentDB/databaseAccounts/ipRules[*]",
+                                "where": {
+                                    "equals": "0.0.0.0",
+                                    "field": "Microsoft.DocumentDB/databaseAccounts/ipRules[*].ipAddressOrRange"
+                                }
+                            },
+                            "greaterOrEquals": 1
+                        },
+                        {
+                            "contains": "0.0.0.0",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/ipRangeFilter"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

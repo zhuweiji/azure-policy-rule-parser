@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Physical and Environmental Protection control",
+    "displayName": "Microsoft Managed Control 1488 - Alternate Work Site",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d8ef30eb-a44f-47af-8524-ac19a36d41d2",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1488",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d8ef30eb-a44f-47af-8524-ac19a36d41d2",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

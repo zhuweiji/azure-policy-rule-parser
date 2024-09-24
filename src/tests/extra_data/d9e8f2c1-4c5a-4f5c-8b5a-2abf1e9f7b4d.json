@@ -1,0 +1,182 @@
+{
+    "description": "Prevents faulty Pod Disruption Budgets, ensuring a minimum number of operational pods. Refer to the official Kubernetes documentation for details. Relies on Gatekeeper data replication and syncs all ingress resources scoped to it into OPA. Before applying this policy, ensure that the synced ingress resources won't strain your memory capacity. Though parameters evaluate specific namespaces, all resources of that kind across namespaces will sync. Note: currently in preview for Kubernetes Service (AKS).",
+    "displayName": "[Preview]: Kubernetes cluster should implement accurate Pod Disruption Budgets",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d9e8f2c1-4c5a-4f5c-8b5a-2abf1e9f7b4d",
+    "metadata": {
+        "category": "Kubernetes",
+        "preview": true,
+        "version": "1.2.0-preview"
+    },
+    "mode": "Microsoft.Kubernetes.Data",
+    "name": "d9e8f2c1-4c5a-4f5c-8b5a-2abf1e9f7b4d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created or updated, but flags it as non-compliant. 'deny' blocks the non-compliant resource creation or update. 'disabled' turns off the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "excludedNamespaces": {
+            "allowedValues": null,
+            "defaultValue": [
+                "kube-system",
+                "gatekeeper-system",
+                "azure-arc"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to exclude from policy evaluation.",
+                "displayName": "Namespace exclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "labelSelector": {
+            "allowedValues": null,
+            "defaultValue": {},
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Label query to select Kubernetes resources for policy evaluation. An empty label selector matches all Kubernetes resources.",
+                "displayName": "Kubernetes label selector",
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "description": "A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all resources.",
+                "properties": {
+                    "matchExpressions": {
+                        "description": "matchExpressions is a list of values, a key, and an operator.",
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "key": {
+                                    "description": "key is the label key that the selector applies to.",
+                                    "type": "string"
+                                },
+                                "operator": {
+                                    "description": "operator represents a key's relationship to a set of values.",
+                                    "enum": [
+                                        "In",
+                                        "NotIn",
+                                        "Exists",
+                                        "DoesNotExist"
+                                    ],
+                                    "type": "string"
+                                },
+                                "values": {
+                                    "description": "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty.",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "required": [
+                                "key",
+                                "operator"
+                            ],
+                            "type": "object"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "matchLabels": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "matchLabels is a map of {key,value} pairs.",
+                        "minProperties": 1,
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "namespaces": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to only include in policy evaluation. An empty list means the policy is applied to all resources in all namespaces.",
+                "displayName": "Namespace inclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "source": {
+            "allowedValues": [
+                "All",
+                "Generated",
+                "Original"
+            ],
+            "defaultValue": "Original",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The source k8s object for constraint evaluation. 'Original' means only evaluate against the specific GroupVersionKind specified in the policy definition. 'Generated' means only evaluate against k8s objects generated by Gatekeeper ExpansionTemplates. 'All' means evaluate against both the original object and any generated ones.",
+                "displayName": "Source",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "warn": {
+            "allowedValues": null,
+            "defaultValue": false,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Whether or not to return warnings back to the user in the kubectl cli",
+                "displayName": "Warn",
+                "strongType": null
+            },
+            "type": "Boolean"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ContainerService/managedClusters",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "apiGroups": [
+                    "apps",
+                    "policy"
+                ],
+                "excludedNamespaces": "[parameters('excludedNamespaces')]",
+                "kinds": [
+                    "Deployment",
+                    "ReplicaSet",
+                    "StatefulSet",
+                    "PodDisruptionBudget"
+                ],
+                "labelSelector": "[parameters('labelSelector')]",
+                "namespaces": "[parameters('namespaces')]",
+                "source": "[parameters('source')]",
+                "templateInfo": {
+                    "sourceType": "PublicURL",
+                    "url": "https://store.policy.core.windows.net/kubernetes/disallowed-bad-pod-disruption-budgets/v1/template.yaml"
+                },
+                "warn": "[parameters('warn')]"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

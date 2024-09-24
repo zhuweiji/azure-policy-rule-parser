@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Access Control control",
+    "displayName": "Microsoft Managed Control 1016 - Account Management | Automated Audit Actions",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d8b43277-512e-40c3-ab00-14b3b6e72238",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1016",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d8b43277-512e-40c3-ab00-14b3b6e72238",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

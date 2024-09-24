@@ -1,0 +1,49 @@
+{
+    "description": "Disabling public network access improves security by ensuring that the resource isn't exposed on the public internet. You can limit exposure of your resources by creating private endpoints instead. Learn more at: https://aka.ms/aeg-ns-privateendpoints.",
+    "displayName": "Azure Event Grid namespaces should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/67dcad1a-ec60-45df-8fd0-14c9d29eeaa2",
+    "metadata": {
+        "category": "Event Grid",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "67dcad1a-ec60-45df-8fd0-14c9d29eeaa2",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.EventGrid/namespaces",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.EventGrid/namespaces/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Program Management control",
+    "displayName": "Microsoft Managed Control 1750 - Mission/Business Process Definition",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fb3c7f40-4c97-4fdd-94c9-e7d99b4f6e42",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1750",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "fb3c7f40-4c97-4fdd-94c9-e7d99b4f6e42",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

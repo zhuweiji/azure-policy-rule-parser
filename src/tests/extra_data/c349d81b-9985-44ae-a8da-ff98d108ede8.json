@@ -1,0 +1,71 @@
+{
+    "description": "Enable a second layer of software-based encryption for data at rest on the device. The device is already protected via Advanced Encryption Standard 256-bit encryption for data at rest. This option adds a second layer of data encryption.",
+    "displayName": "Azure Data Box jobs should enable double encryption for data at rest on the device",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c349d81b-9985-44ae-a8da-ff98d108ede8",
+    "metadata": {
+        "category": "Data Box",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c349d81b-9985-44ae-a8da-ff98d108ede8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "supportedSKUs": {
+            "allowedValues": [
+                "DataBox",
+                "DataBoxHeavy"
+            ],
+            "defaultValue": [
+                "DataBox",
+                "DataBoxHeavy"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of SKUs that support software-based double encryption",
+                "displayName": "Supported SKUs",
+                "strongType": null
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DataBox/jobs",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Databox/jobs/sku.name",
+                    "in": "[parameters('supportedSKUs')]"
+                },
+                {
+                    "field": "Microsoft.DataBox/jobs/details.preferences.encryptionPreferences.doubleEncryption",
+                    "notEquals": "Enabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

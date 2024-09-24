@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Security Assessment and Authorization control",
+    "displayName": "Microsoft Managed Control 1152 - System Interconnections",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/beff0acf-7e67-40b2-b1ca-1a0e8205cf1b",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1152",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "beff0acf-7e67-40b2-b1ca-1a0e8205cf1b",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

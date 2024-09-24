@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Security Assessment and Authorization control",
+    "displayName": "Microsoft Managed Control 1169 - Continuous Monitoring | Trend Analyses",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e7ba2cb3-5675-4468-8b50-8486bdd998a5",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1169",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "e7ba2cb3-5675-4468-8b50-8486bdd998a5",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

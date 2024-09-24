@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Configuration Management control",
+    "displayName": "Microsoft Managed Control 1174 - Configuration Management Policy And Procedures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/42a9a714-8fbb-43ac-b115-ea12d2bd652f",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1174",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "42a9a714-8fbb-43ac-b115-ea12d2bd652f",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

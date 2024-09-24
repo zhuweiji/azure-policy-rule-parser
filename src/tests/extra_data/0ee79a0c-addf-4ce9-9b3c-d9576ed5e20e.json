@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Services Acquisition control",
+    "displayName": "Microsoft Managed Control 1601 - Developer Security Testing And Evaluation",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0ee79a0c-addf-4ce9-9b3c-d9576ed5e20e",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1601",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "0ee79a0c-addf-4ce9-9b3c-d9576ed5e20e",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

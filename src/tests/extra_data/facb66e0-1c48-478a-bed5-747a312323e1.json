@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Information Integrity control",
+    "displayName": "Microsoft Managed Control 1675 - Flaw Remediation | Time To Remediate Flaws / Benchmarks For Corrective Actions",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/facb66e0-1c48-478a-bed5-747a312323e1",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1675",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "facb66e0-1c48-478a-bed5-747a312323e1",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

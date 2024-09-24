@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Access Control control",
+    "displayName": "Microsoft Managed Control 1067 - Wireless Access Restrictions",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5c5e54f6-0127-44d0-8b61-f31dc8dd6190",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1067",
+        "category": "Regulatory Compliance",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "5c5e54f6-0127-44d0-8b61-f31dc8dd6190",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

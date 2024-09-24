@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Audit and Accountability control",
+    "displayName": "Microsoft Managed Control 1120 - Audit Review, Analysis, And Reporting | Integration / Scanning And Monitoring Capabilities",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c69b870e-857b-458b-af02-bb234f7a00d3",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1120",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c69b870e-857b-458b-af02-bb234f7a00d3",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

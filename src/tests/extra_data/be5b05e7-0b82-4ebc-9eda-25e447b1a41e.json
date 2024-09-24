@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Incident Response control",
+    "displayName": "Microsoft Managed Control 1360 - Incident Handling",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/be5b05e7-0b82-4ebc-9eda-25e447b1a41e",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1360",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "be5b05e7-0b82-4ebc-9eda-25e447b1a41e",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

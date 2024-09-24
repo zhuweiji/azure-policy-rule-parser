@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Access Control control",
+    "displayName": "Microsoft Managed Control 1079 - Use Of External Information Systems | Limits On Authorized Use",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/85c32733-7d23-4948-88da-058e2c56b60f",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1079",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "85c32733-7d23-4948-88da-058e2c56b60f",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

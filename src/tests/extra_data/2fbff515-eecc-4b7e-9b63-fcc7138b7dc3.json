@@ -1,0 +1,45 @@
+{
+    "description": "This policy enforces HTTPS ingress in an Azure Kubernetes Service cluster. This policy is deprecated, please visit https://aka.ms/kubepolicydoc for instructions on using new Kubernetes policies.",
+    "displayName": "[Deprecated]: Enforce HTTPS ingress in AKS",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2fbff515-eecc-4b7e-9b63-fcc7138b7dc3",
+    "metadata": {
+        "category": "Kubernetes service",
+        "deprecated": true,
+        "version": "1.0.1-deprecated"
+    },
+    "mode": "Microsoft.ContainerService.Data",
+    "name": "2fbff515-eecc-4b7e-9b63-fcc7138b7dc3",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "EnforceRegoPolicy",
+                "Disabled"
+            ],
+            "defaultValue": "EnforceRegoPolicy",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ContainerService/managedClusters",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "policy": "https://raw.githubusercontent.com/Azure/azure-policy/master/built-in-references/KubernetesService/ingress-https-only/limited-preview/gatekeeperpolicy.rego",
+                "policyId": "HttpsIngressOnly"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

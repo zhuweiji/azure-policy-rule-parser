@@ -1,0 +1,61 @@
+{
+    "description": "This policy is deprecated. Please use /providers/Microsoft.Authorization/policyDefinitions/ac01ad65-10e5-46df-bdd9-6b0cad13e1d2 instead",
+    "displayName": "[Deprecated]: SQL managed instances should use customer-managed keys to encrypt data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/048248b0-55cd-46da-b1ff-39efd52db260",
+    "metadata": {
+        "category": "SQL",
+        "deprecated": true,
+        "version": "1.0.2-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "048248b0-55cd-46da-b1ff-39efd52db260",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Sql/managedInstances",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "AzureKeyVault",
+                            "field": "Microsoft.Sql/managedInstances/encryptionProtector/serverKeyType"
+                        },
+                        {
+                            "field": "Microsoft.Sql/managedInstances/encryptionProtector/uri",
+                            "notEquals": ""
+                        },
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Sql/managedInstances/encryptionProtector/uri"
+                        }
+                    ]
+                },
+                "name": "current",
+                "type": "Microsoft.Sql/managedInstances/encryptionProtector"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

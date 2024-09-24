@@ -1,0 +1,56 @@
+{
+    "description": "Cross-Origin Resource Sharing (CORS) should not allow all domains to access your FHIR Service. To protect your FHIR Service, remove access for all domains and explicitly define the domains allowed to connect.",
+    "displayName": "CORS should not allow every domain to access your FHIR Service",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fe1c9040-c46a-4e81-9aea-c7850fbb3aa6",
+    "metadata": {
+        "category": "Healthcare APIs",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "fe1c9040-c46a-4e81-9aea-c7850fbb3aa6",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HealthcareApis/workspaces/fhirservices",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.HealthcareApis/workspaces/fhirservices/corsConfiguration.origins[*]",
+                        "where": {
+                            "equals": "*",
+                            "field": "Microsoft.HealthcareApis/workspaces/fhirservices/corsConfiguration.origins[*]"
+                        }
+                    },
+                    "greater": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

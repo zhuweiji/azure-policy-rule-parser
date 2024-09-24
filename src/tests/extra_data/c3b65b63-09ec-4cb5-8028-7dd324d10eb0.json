@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Incident Response control",
+    "displayName": "Microsoft Managed Control 1390 - Information Spillage Response | Responsible Personnel",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c3b65b63-09ec-4cb5-8028-7dd324d10eb0",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1390",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c3b65b63-09ec-4cb5-8028-7dd324d10eb0",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

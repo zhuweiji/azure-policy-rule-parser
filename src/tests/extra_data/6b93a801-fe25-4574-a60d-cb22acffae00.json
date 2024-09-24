@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Access Control control",
+    "displayName": "Microsoft Managed Control 1031 - Separation Of Duties",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6b93a801-fe25-4574-a60d-cb22acffae00",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1031",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "6b93a801-fe25-4574-a60d-cb22acffae00",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,59 @@
+{
+    "description": "Private endpoint connections enforce secure communication by enabling private connectivity to Guest Configuration for virtual machines. Virtual machines will be non-compliant unless they have the tag, 'EnablePrivateNetworkGC'. This tag enforces secure communication through private connectivity to Guest Configuration for Virtual Machines. Private connectivity limits access to traffic coming only from known networks and prevents access from all other IP addresses, including within Azure.",
+    "displayName": "Private endpoints for Guest Configuration assignments should be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/480d0f91-30af-4a76-9afb-f5710ac52b09",
+    "metadata": {
+        "category": "Guest Configuration",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "480d0f91-30af-4a76-9afb-f5710ac52b09",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "not": {
+                        "anyof": [
+                            {
+                                "equals": "TRUE",
+                                "field": "[concat('tags[', 'EnablePrivateNeworkGC', ']')]"
+                            },
+                            {
+                                "equals": "TRUE",
+                                "field": "[concat('tags[', 'EnablePrivateNetworkGC', ']')]"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

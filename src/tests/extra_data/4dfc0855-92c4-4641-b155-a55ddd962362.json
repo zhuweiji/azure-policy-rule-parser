@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Information Integrity control",
+    "displayName": "Microsoft Managed Control 1702 - Information System Monitoring | Indicators Of Compromise",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/4dfc0855-92c4-4641-b155-a55ddd962362",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1702",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "4dfc0855-92c4-4641-b155-a55ddd962362",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

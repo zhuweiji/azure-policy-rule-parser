@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Information Integrity control",
+    "displayName": "Microsoft Managed Control 1711 - Security Functionality Verification",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b083a535-a66a-41ec-ba7f-f9498bf67cde",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1711",
+        "category": "Regulatory Compliance",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "b083a535-a66a-41ec-ba7f-f9498bf67cde",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Awareness and Training control",
+    "displayName": "Microsoft Managed Control 1088 - Security Awareness And Training Policy And Procedures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1d50f99d-1356-49c0-934a-45f742ba7783",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1088",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "1d50f99d-1356-49c0-934a-45f742ba7783",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

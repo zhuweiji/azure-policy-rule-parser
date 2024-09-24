@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Identification and Authentication control",
+    "displayName": "Microsoft Managed Control 1299 - Identification And Authentication Policy And Procedures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fd4e54f7-9ab0-4bae-b6cc-457809948a89",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1299",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "fd4e54f7-9ab0-4bae-b6cc-457809948a89",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

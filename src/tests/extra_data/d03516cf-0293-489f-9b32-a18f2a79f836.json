@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Contingency Planning control",
+    "displayName": "Microsoft Managed Control 1292 - Information System Backup | Test Restoration Using Sampling",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d03516cf-0293-489f-9b32-a18f2a79f836",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1292",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d03516cf-0293-489f-9b32-a18f2a79f836",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

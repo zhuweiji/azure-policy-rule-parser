@@ -1,0 +1,76 @@
+{
+    "description": "Azure Private Link lets you connect your virtual network to Azure services without a public IP address at the source or destination. The Private Link platform reduces data leakage risks by handling the connectivity between the consumer and services over the Azure backbone network. Learn more about private links at: https://aka.ms/AzurePrivateLink/Overview",
+    "displayName": "Azure AI Services resources should use Azure Private Link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d6759c02-b87f-42b7-892e-71b3f471d782",
+    "metadata": {
+        "category": "Azure Ai Services",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d6759c02-b87f-42b7-892e-71b3f471d782",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.CognitiveServices/accounts",
+                            "field": "type"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.CognitiveServices/accounts/privateEndpointConnections[*]",
+                                "where": {
+                                    "equals": "Approved",
+                                    "field": "Microsoft.CognitiveServices/accounts/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                                }
+                            },
+                            "less": 1
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Search/searchServices",
+                            "field": "type"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Search/searchServices/privateEndpointConnections[*]",
+                                "where": {
+                                    "equals": "Approved",
+                                    "field": "Microsoft.Search/searchServices/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                                }
+                            },
+                            "less": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

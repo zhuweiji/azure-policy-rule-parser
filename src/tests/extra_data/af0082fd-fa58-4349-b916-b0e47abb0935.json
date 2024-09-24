@@ -1,0 +1,360 @@
+{
+    "description": "Deploy Dependency agent for Windows virtual machine scale sets with Azure Monitoring Agent settings if the virtual machine image is in the list defined and the agent is not installed. If your scale set upgradePolicy is set to Manual, you need to apply the extension to all the virtual machines in the set by updating them.",
+    "displayName": "Deploy Dependency agent to be enabled on Windows virtual machine scale sets with Azure Monitoring Agent settings",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/af0082fd-fa58-4349-b916-b0e47abb0935",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.3.0"
+    },
+    "mode": "Indexed",
+    "name": "af0082fd-fa58-4349-b916-b0e47abb0935",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "enableProcessesAndDependencies": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "This is the flag for enabling processes and dependencies data collection in VMInsights. If you are using this standalone policy and what to install Dependency Agent, keep this value as true.",
+                "displayName": "Enable Processes and Dependencies",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "listOfImageIdToInclude": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Example value: '/subscriptions/<subscriptionId>/resourceGroups/YourResourceGroup/providers/Microsoft.Compute/images/ContosoStdImage'",
+                "displayName": "Optional: List of virtual machine images that have supported Windows OS to add to scope",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "scopeToSupportedImages": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "If set to true, the policy will apply only to virtual machine scale sets with supported operating systems. Otherwise, the policy will apply to all virtual machine scale sets resources in the assignment scope. For supported operating systems, see https://learn.microsoft.com/en-us/azure/azure-monitor/vm/vminsights-dependency-agent-maintenance",
+                "displayName": "Scope Policy to Dependency Agent-Supported Operating Systems",
+                "strongType": null
+            },
+            "type": "Boolean"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachineScaleSets",
+                    "field": "type"
+                },
+                {
+                    "equals": true,
+                    "value": "[parameters('enableProcessesAndDependencies')]"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "equals": false,
+                                    "value": "[parameters('scopeToSupportedImages')]"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.storageProfile.osDisk.osType",
+                                    "like": "Windows*"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.Compute/imageId",
+                            "in": "[parameters('listOfImageIdToInclude')]"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServer",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "in": [
+                                        "2008-R2-SP1",
+                                        "2008-R2-SP1-smalldisk",
+                                        "2012-Datacenter",
+                                        "2012-Datacenter-smalldisk",
+                                        "2012-R2-Datacenter",
+                                        "2012-R2-Datacenter-smalldisk",
+                                        "2016-Datacenter",
+                                        "2016-Datacenter-smalldisk",
+                                        "2016-Datacenter-with-Containers",
+                                        "2016-Datacenter-with-RDSH",
+                                        "2016-datacenter-gensecond",
+                                        "2019-Datacenter",
+                                        "2019-Datacenter-smalldisk",
+                                        "2019-Datacenter-with-Containers",
+                                        "2019-Datacenter-with-Containers-smalldisk",
+                                        "2019-Datacenter-zhcn",
+                                        "2019-datacenter-gensecond"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServerSemiAnnual",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "in": [
+                                        "Datacenter-Core-1709-smalldisk",
+                                        "Datacenter-Core-1709-with-Containers-smalldisk",
+                                        "Datacenter-Core-1803-with-Containers-smalldisk"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServerHPCPack",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServerHPCPack",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftSQLServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2016"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2016-BYOL"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2012R2"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2012R2-BYOL"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftRServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "MLServer-WS2016",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftVisualStudio",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "in": [
+                                        "VisualStudio",
+                                        "Windows"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftDynamicsAX",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "Dynamics",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "Pre-Req-AX7-Onebox-U8",
+                                    "field": "Microsoft.Compute/imageSKU"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftDynamicsAX",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "Dynamics",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "Pre-Req-AX7-Onebox-V4",
+                                    "field": "Microsoft.Compute/imageSKU"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoft-ads",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "windows-data-science-vm",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsDesktop",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "Windows-10",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {
+                                "policy": {
+                                    "type": "string",
+                                    "value": "[concat('Enabled extension for: ', parameters('vmName'))]"
+                                }
+                            },
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-04-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'), '/', variables('vmExtensionName'))]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "enableAutomaticUpgrade": true,
+                                        "publisher": "[variables('vmExtensionPublisher')]",
+                                        "settings": {
+                                            "enableAMA": "true"
+                                        },
+                                        "type": "[variables('vmExtensionType')]",
+                                        "typeHandlerVersion": "[variables('vmExtensionTypeHandlerVersion')]"
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachineScaleSets/extensions"
+                                }
+                            ],
+                            "variables": {
+                                "vmExtensionName": "DependencyAgentWindows",
+                                "vmExtensionPublisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                                "vmExtensionType": "DependencyAgentWindows",
+                                "vmExtensionTypeHandlerVersion": "9.10"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "DependencyAgentWindows",
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Monitoring.DependencyAgent",
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/publisher"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                ],
+                "type": "Microsoft.Compute/virtualMachineScaleSets/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

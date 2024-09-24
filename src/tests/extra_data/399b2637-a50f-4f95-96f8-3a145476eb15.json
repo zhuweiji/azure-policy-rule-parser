@@ -1,0 +1,63 @@
+{
+    "description": "Enable FTPS enforcement for enhanced security.",
+    "displayName": "Function apps should require FTPS only",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/399b2637-a50f-4f95-96f8-3a145476eb15",
+    "metadata": {
+        "category": "App Service",
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "399b2637-a50f-4f95-96f8-3a145476eb15",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "contains": "functionapp",
+                    "field": "kind"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "workflowapp"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Web/sites/config/ftpsState",
+                    "in": [
+                        "FtpsOnly",
+                        "Disabled"
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

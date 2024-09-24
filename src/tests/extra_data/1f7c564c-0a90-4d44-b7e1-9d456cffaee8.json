@@ -1,0 +1,59 @@
+{
+    "description": "To protect your machines from threats and vulnerabilities, install a supported endpoint protection solution.",
+    "displayName": "Endpoint protection should be installed on your machines",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1f7c564c-0a90-4d44-b7e1-9d456cffaee8",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "1f7c564c-0a90-4d44-b7e1-9d456cffaee8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Compute/virtualMachines",
+                        "Microsoft.ClassicCompute/virtualMachines",
+                        "Microsoft.HybridCompute/machines"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "4fb67663-9ab9-475d-b026-8c544cced439",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

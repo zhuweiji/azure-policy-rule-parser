@@ -1,0 +1,32 @@
+{
+    "description": "This policy ensures encryption is enabled on all Data Lake Store accounts",
+    "displayName": "Require encryption on Data Lake Store accounts",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a7ff3161-0087-490a-9ad9-ad6217f4f43a",
+    "metadata": {
+        "category": "Data Lake",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "a7ff3161-0087-490a-9ad9-ad6217f4f43a",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DataLakeStore/accounts",
+                    "field": "type"
+                },
+                {
+                    "equals": "Disabled",
+                    "field": "Microsoft.DataLakeStore/accounts/encryptionState"
+                }
+            ]
+        },
+        "then": {
+            "effect": "deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

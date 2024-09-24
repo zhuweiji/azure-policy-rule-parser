@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Identification and Authentication control",
+    "displayName": "Microsoft Managed Control 1347 - Identification And Authentication (Non-Organizational Users) | Acceptance Of Piv Credentials...",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/131a2706-61e9-4916-a164-00e052056462",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1347",
+        "category": "Regulatory Compliance",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "131a2706-61e9-4916-a164-00e052056462",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,61 @@
+{
+    "description": "Service Fabric provides three levels of protection (None, Sign and EncryptAndSign) for node-to-node communication using a primary cluster certificate. Set the protection level to ensure that all node-to-node messages are encrypted and digitally signed",
+    "displayName": "Service Fabric clusters should have the ClusterProtectionLevel property set to EncryptAndSign",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/617c02be-7f02-4efd-8836-3180d47b6c68",
+    "metadata": {
+        "category": "Service Fabric",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "617c02be-7f02-4efd-8836-3180d47b6c68",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ServiceFabric/clusters",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.ServiceFabric/clusters/fabricSettings[*].name",
+                            "notEquals": "Security"
+                        },
+                        {
+                            "field": "Microsoft.ServiceFabric/clusters/fabricSettings[*].parameters[*].name",
+                            "notEquals": "ClusterProtectionLevel"
+                        },
+                        {
+                            "field": "Microsoft.ServiceFabric/clusters/fabricSettings[*].parameters[*].value",
+                            "notEquals": "EncryptAndSign"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

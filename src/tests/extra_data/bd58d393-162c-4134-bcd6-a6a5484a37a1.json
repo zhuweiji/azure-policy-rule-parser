@@ -1,0 +1,53 @@
+{
+    "description": "Automatically prevent installation of the legacy Log Analytics Agent as the final step of migrating from legacy agents to Azure Monitor Agent. After you have uninstalled existing legacy extensions, this policy will deny all future installations of the legacy agent extension on Azure Arc enabled Linux servers. Learn more: https://aka.ms/migratetoAMA",
+    "displayName": "The legacy Log Analytics extension should not be installed on Azure Arc enabled Linux servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/bd58d393-162c-4134-bcd6-a6a5484a37a1",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "bd58d393-162c-4134-bcd6-a6a5484a37a1",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Deny",
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines/extensions",
+                    "field": "type"
+                },
+                {
+                    "equals": "Microsoft.EnterpriseCloud.Monitoring",
+                    "field": "Microsoft.HybridCompute/machines/extensions/publisher"
+                },
+                {
+                    "equals": "OmsAgentForLinux",
+                    "field": "Microsoft.HybridCompute/machines/extensions/type"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,52 @@
+{
+    "description": "With bring your own storage (BYOS), your workbooks are uploaded into a storage account that you control. That means you control the encryption-at-rest policy, the lifetime management policy, and network access. You will, however, be responsible for the costs associated with that storage account. For more information, visit https://aka.ms/workbooksByos",
+    "displayName": "Workbooks should be saved to storage accounts that you control",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6fc8115b-2008-441f-8c61-9b722c1e537f",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "6fc8115b-2008-441f-8c61-9b722c1e537f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "deny",
+                "Deny",
+                "audit",
+                "Audit",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Audit, Deny, or Disable the execution of this policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "microsoft.insights/workbooks",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "microsoft.insights/workbooks/storageUri"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

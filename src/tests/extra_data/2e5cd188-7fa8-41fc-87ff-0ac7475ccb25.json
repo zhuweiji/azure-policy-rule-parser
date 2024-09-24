@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Individual Participation and Redress control",
+    "displayName": "Microsoft Managed Control 1845 - Consent | Mechanisms Supporting Itemized or Tiered Consent ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2e5cd188-7fa8-41fc-87ff-0ac7475ccb25",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1845",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "2e5cd188-7fa8-41fc-87ff-0ac7475ccb25",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

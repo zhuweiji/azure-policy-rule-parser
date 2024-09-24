@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Accountability, Audit, and Risk Management control",
+    "displayName": "Microsoft Managed Control 1812 - Privacy Monitoring And Auditing ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f7161f06-5260-4f0f-aeae-4bbfb8612a10",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1812",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "f7161f06-5260-4f0f-aeae-4bbfb8612a10",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

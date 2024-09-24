@@ -1,0 +1,53 @@
+{
+    "description": "Threat intelligence-based filtering can be enabled for your firewall to alert and deny traffic from/to known malicious IP addresses and domains. The IP addresses and domains are sourced from the Microsoft Threat Intelligence feed.",
+    "displayName": "Azure Firewall Standard - Classic Rules should enable Threat Intelligence",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7c591a93-c34c-464c-94ac-8f9f9a46e3d6",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "7c591a93-c34c-464c-94ac-8f9f9a46e3d6",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/azureFirewalls",
+                    "field": "type"
+                },
+                {
+                    "equals": "Standard",
+                    "field": "Microsoft.Network/azureFirewalls/sku.tier"
+                },
+                {
+                    "equals": "off",
+                    "field": "Microsoft.Network/azureFirewalls/threatIntelMode"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

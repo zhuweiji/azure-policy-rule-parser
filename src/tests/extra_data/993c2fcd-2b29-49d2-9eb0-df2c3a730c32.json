@@ -1,0 +1,49 @@
+{
+    "description": "Disabling local authentication methods improves security by ensuring that Azure Kubernetes Service Clusters should exclusively require Azure Active Directory identities for authentication. Learn more at: https://aka.ms/aks-disable-local-accounts.",
+    "displayName": "Azure Kubernetes Service Clusters should have local authentication methods disabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/993c2fcd-2b29-49d2-9eb0-df2c3a730c32",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "993c2fcd-2b29-49d2-9eb0-df2c3a730c32",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerService/managedClusters",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.ContainerService/managedClusters/disableLocalAccounts",
+                    "notEquals": true
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

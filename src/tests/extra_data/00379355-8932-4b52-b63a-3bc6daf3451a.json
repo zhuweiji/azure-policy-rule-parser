@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Incident Response control",
+    "displayName": "Microsoft Managed Control 1375 - Incident Response Assistance | Automation Support For Availability Of Information / Support",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/00379355-8932-4b52-b63a-3bc6daf3451a",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1375",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "00379355-8932-4b52-b63a-3bc6daf3451a",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

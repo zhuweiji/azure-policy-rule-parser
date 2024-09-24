@@ -1,0 +1,49 @@
+{
+    "description": "A content type tag helps identify whether a secret is a password, connection string, etc. Different secrets have different rotation requirements. Content type tag should be set on secrets.",
+    "displayName": "Secrets should have content type set",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/75262d3e-ba4a-4f43-85f8-9f72c090e5e3",
+    "metadata": {
+        "category": "Key Vault",
+        "version": "1.0.1"
+    },
+    "mode": "Microsoft.KeyVault.Data",
+    "name": "75262d3e-ba4a-4f43-85f8-9f72c090e5e3",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created, but flags it as non-compliant. 'Deny' blocks the resource creation. 'Disable' turns off the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.KeyVault.Data/vaults/secrets",
+                    "field": "type"
+                },
+                {
+                    "exists": false,
+                    "field": "Microsoft.KeyVault.Data/vaults/secrets/contentType"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

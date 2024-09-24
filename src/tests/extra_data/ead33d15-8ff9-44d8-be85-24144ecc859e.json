@@ -1,0 +1,87 @@
+{
+    "description": "This policy prevents deployment of resource types outside of the explicitly allowed types, in order to maintain security in a virtual enclave. https://aka.ms/VirtualEnclaves",
+    "displayName": "Do not allow creation of resource types outside of the allowlist",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ead33d15-8ff9-44d8-be85-24144ecc859e",
+    "metadata": {
+        "category": "VirtualEnclaves",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ead33d15-8ff9-44d8-be85-24144ecc859e",
+    "parameters": {
+        "allowedResourceProviders": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of allowed resource providers or parent resource types as strings, such as microsoft.storage or microsoft.servicebus",
+                "displayName": "Allowed resource providers",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "allowedResourceTypes": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of allowed resource types as strings, such as microsoft.storage/storageaccounts",
+                "displayName": "Allowed resource types",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "count": {
+                        "name": "resourceType",
+                        "value": "[parameters('allowedResourceTypes')]",
+                        "where": {
+                            "equals": "[current('resourceType')]",
+                            "field": "type"
+                        }
+                    },
+                    "equals": 0
+                },
+                {
+                    "count": {
+                        "name": "resourceProvider",
+                        "value": "[parameters('allowedResourceProviders')]",
+                        "where": {
+                            "field": "type",
+                            "like": "[concat(current('resourceProvider'), '/*')]"
+                        }
+                    },
+                    "equals": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

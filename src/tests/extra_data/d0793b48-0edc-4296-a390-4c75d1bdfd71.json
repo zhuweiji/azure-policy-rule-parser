@@ -1,0 +1,73 @@
+{
+    "description": "Azure container registries by default accept connections over the internet from hosts on any network. To protect your registries from potential threats, allow access from only specific private endpoints, public IP addresses or address ranges. If your registry doesn't have network rules configured, it will appear in the unhealthy resources. Learn more about Container Registry network rules here: https://aka.ms/acr/privatelink, https://aka.ms/acr/portal/public-network and https://aka.ms/acr/vnet.",
+    "displayName": "Container registries should not allow unrestricted network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d0793b48-0edc-4296-a390-4c75d1bdfd71",
+    "metadata": {
+        "category": "Container Registry",
+        "version": "2.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d0793b48-0edc-4296-a390-4c75d1bdfd71",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerRegistry/registries",
+                    "field": "type"
+                },
+                {
+                    "allOf": [
+                        {
+                            "anyof": [
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.ContainerRegistry/registries/networkRuleSet.defaultAction"
+                                },
+                                {
+                                    "equals": "Allow",
+                                    "field": "Microsoft.ContainerRegistry/registries/networkRuleSet.defaultAction"
+                                }
+                            ]
+                        },
+                        {
+                            "anyof": [
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.ContainerRegistry/registries/publicNetworkAccess"
+                                },
+                                {
+                                    "equals": "Enabled",
+                                    "field": "Microsoft.ContainerRegistry/registries/publicNetworkAccess"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

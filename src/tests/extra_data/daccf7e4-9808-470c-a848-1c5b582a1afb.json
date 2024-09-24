@@ -1,0 +1,113 @@
+{
+    "description": "Content key policies define the conditions that must be met to access content keys. A token restriction ensures content keys can only be accessed by users that have valid tokens from an authentication service, for example Microsoft Entra ID.",
+    "displayName": "Azure Media Services content key policies should use token authentication",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/daccf7e4-9808-470c-a848-1c5b582a1afb",
+    "metadata": {
+        "category": "Media Services",
+        "version": "1.0.1"
+    },
+    "mode": "All",
+    "name": "daccf7e4-9808-470c-a848-1c5b582a1afb",
+    "parameters": {
+        "audience": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The permitted token audience. When using Microsoft Entra ID, this is the Application ID URI of the resource application.",
+                "displayName": "Audience",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "issuer": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The permitted token issuer. When using Microsoft Entra ID, this would be similar to 'https://sts.windows.net/{tenantId}/', where {tenantId} is replaced with the tenant (directory) ID.",
+                "displayName": "Issuer",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "openIdConnectDiscoveryDocument": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The permitted OpenID Connect discovery document. When using Microsoft Entra ID, this would be similar to 'https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration', where {tenantId} is replaced with the tenant (directory) ID.",
+                "displayName": "OpenID Connect discovery document",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Media/mediaservices/contentKeyPolicies",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Media/mediaServices/contentKeyPolicies/options[*]",
+                        "where": {
+                            "not": {
+                                "allOf": [
+                                    {
+                                        "exists": "true",
+                                        "field": "Microsoft.Media/mediaServices/contentKeyPolicies/options[*].restriction.#Microsoft-Media-ContentKeyPolicyTokenRestriction"
+                                    },
+                                    {
+                                        "field": "Microsoft.Media/mediaServices/contentKeyPolicies/options[*].restriction.#Microsoft-Media-ContentKeyPolicyTokenRestriction.restrictionTokenType",
+                                        "matchInsensitively": "Jwt"
+                                    },
+                                    {
+                                        "field": "Microsoft.Media/mediaServices/contentKeyPolicies/options[*].restriction.#Microsoft-Media-ContentKeyPolicyTokenRestriction.openIdConnectDiscoveryDocument",
+                                        "like": "[parameters('openIdConnectDiscoveryDocument')]"
+                                    },
+                                    {
+                                        "field": "Microsoft.Media/mediaServices/contentKeyPolicies/options[*].restriction.#Microsoft-Media-ContentKeyPolicyTokenRestriction.issuer",
+                                        "like": "[parameters('issuer')]"
+                                    },
+                                    {
+                                        "field": "Microsoft.Media/mediaServices/contentKeyPolicies/options[*].restriction.#Microsoft-Media-ContentKeyPolicyTokenRestriction.audience",
+                                        "like": "[parameters('audience')]"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "greater": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

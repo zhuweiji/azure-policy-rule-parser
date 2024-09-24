@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Incident Response control",
+    "displayName": "Microsoft Managed Control 1365 - Incident Handling | Continuity Of Operations",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/4116891d-72f7-46ee-911c-8056cc8dcbd5",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1365",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "4116891d-72f7-46ee-911c-8056cc8dcbd5",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

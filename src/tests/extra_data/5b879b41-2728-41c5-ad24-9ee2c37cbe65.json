@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Media Protection control",
+    "displayName": "Microsoft Managed Control 1433 - Media Transport",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5b879b41-2728-41c5-ad24-9ee2c37cbe65",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1433",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "5b879b41-2728-41c5-ad24-9ee2c37cbe65",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

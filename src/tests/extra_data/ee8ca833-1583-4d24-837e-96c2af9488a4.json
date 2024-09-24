@@ -1,0 +1,64 @@
+{
+    "description": "Use BitLocker to encrypt the OS and data volumes on Azure Stack HCI systems.",
+    "displayName": "[Preview]: Azure Stack HCI systems should have encrypted volumes",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ee8ca833-1583-4d24-837e-96c2af9488a4",
+    "metadata": {
+        "category": "Stack HCI",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "ee8ca833-1583-4d24-837e-96c2af9488a4",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "AuditIfNotExists"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.AzureStackHCI/clusters",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.AzureStackHCI/clusters/reportedProperties.clusterVersion",
+                    "greater": "10.0.20350"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "field": "Microsoft.AzureStackHCI/clusters/securitySettings/securityComplianceStatus.dataAtRestEncrypted",
+                            "in": [
+                                "Compliant",
+                                "Pending"
+                            ]
+                        }
+                    ]
+                },
+                "type": "Microsoft.AzureStackHCI/clusters/securitySettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

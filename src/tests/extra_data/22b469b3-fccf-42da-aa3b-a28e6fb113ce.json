@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Planning control",
+    "displayName": "Microsoft Managed Control 1493 - System Security Plan",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/22b469b3-fccf-42da-aa3b-a28e6fb113ce",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1493",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "22b469b3-fccf-42da-aa3b-a28e6fb113ce",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

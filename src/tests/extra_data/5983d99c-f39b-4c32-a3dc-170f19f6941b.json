@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Maintenance control",
+    "displayName": "Microsoft Managed Control 1425 - Timely Maintenance",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5983d99c-f39b-4c32-a3dc-170f19f6941b",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1425",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "5983d99c-f39b-4c32-a3dc-170f19f6941b",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

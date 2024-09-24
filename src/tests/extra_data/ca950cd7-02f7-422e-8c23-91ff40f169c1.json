@@ -1,0 +1,76 @@
+{
+    "description": "Using Azure Private Link with your Azure Virtual Desktop resources can improve security and keep your data safe. Learn more about private links at: https://aka.ms/avdprivatelink.",
+    "displayName": "Azure Virtual Desktop service should use private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ca950cd7-02f7-422e-8c23-91ff40f169c1",
+    "metadata": {
+        "category": "Desktop Virtualization",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ca950cd7-02f7-422e-8c23-91ff40f169c1",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.DesktopVirtualization/hostpools",
+                            "field": "type"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.DesktopVirtualization/hostpools/privateEndpointConnections[*]",
+                                "where": {
+                                    "equals": "Approved",
+                                    "field": "Microsoft.DesktopVirtualization/hostpools/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                                }
+                            },
+                            "less": 1
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.DesktopVirtualization/workspaces",
+                            "field": "type"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.DesktopVirtualization/workspaces/privateEndpointConnections[*]",
+                                "where": {
+                                    "equals": "Approved",
+                                    "field": "Microsoft.DesktopVirtualization/workspaces/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                                }
+                            },
+                            "less": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

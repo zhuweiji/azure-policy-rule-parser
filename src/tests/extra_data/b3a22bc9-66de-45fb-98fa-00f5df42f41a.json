@@ -1,0 +1,61 @@
+{
+    "description": "Require Azure SQL logical servers to use Microsoft Entra-only authentication. This policy doesn't block servers from being created with local authentication enabled. It does block local authentication from being enabled on resources after create. Consider using the 'Microsoft Entra-only authentication' initiative instead to require both. Learn more at: https://aka.ms/adonlycreate.",
+    "displayName": "Azure SQL Database should have Microsoft Entra-only authentication enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b3a22bc9-66de-45fb-98fa-00f5df42f41a",
+    "metadata": {
+        "category": "SQL",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "b3a22bc9-66de-45fb-98fa-00f5df42f41a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Sql/servers/azureADOnlyAuthentications",
+                    "field": "type"
+                },
+                {
+                    "notContains": "/providers/Microsoft.Synapse/",
+                    "value": "[resourcegroup().managedBy]"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Sql/servers/azureADOnlyAuthentications/azureADOnlyAuthentication"
+                        },
+                        {
+                            "equals": false,
+                            "field": "Microsoft.Sql/servers/azureADOnlyAuthentications/azureADOnlyAuthentication"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

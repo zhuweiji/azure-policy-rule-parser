@@ -1,0 +1,57 @@
+{
+    "description": "Disabling local authentication methods and allowing only Microsoft Entra Authentication improves security by ensuring that Azure PostgreSQL flexible server can exclusively be accessed by Microsoft Entra identities.",
+    "displayName": "[Preview]: Azure PostgreSQL flexible server should have Microsoft Entra Only Authentication enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fa498b91-8a7e-4710-9578-da944c68d1fe",
+    "metadata": {
+        "category": "SQL",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "fa498b91-8a7e-4710-9578-da944c68d1fe",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DBForPostgreSql/flexibleServers",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.DBForPostgreSql/flexibleServers/authConfig.activeDirectoryAuth",
+                            "notEquals": "Enabled"
+                        },
+                        {
+                            "field": "Microsoft.DBForPostgreSql/flexibleServers/authConfig.passwordAuth",
+                            "notEquals": "Disabled"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

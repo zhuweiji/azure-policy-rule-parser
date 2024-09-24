@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Data Minimization and Retention control",
+    "displayName": "Microsoft Managed Control 1831 - Minimization of Personally Identifiable Information",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/51d53eb3-6c02-4f3f-a608-a058af96fa6a",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1831",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "51d53eb3-6c02-4f3f-a608-a058af96fa6a",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

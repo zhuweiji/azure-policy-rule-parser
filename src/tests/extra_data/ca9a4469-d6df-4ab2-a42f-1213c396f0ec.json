@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Contingency Planning control",
+    "displayName": "Microsoft Managed Control 1243 - Contingency Planning Policy And Procedures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ca9a4469-d6df-4ab2-a42f-1213c396f0ec",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1243",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ca9a4469-d6df-4ab2-a42f-1213c396f0ec",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Communications Protection control",
+    "displayName": "Microsoft Managed Control 1643 - Cryptographic Key Establishment And Management",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6d8d492c-dd7a-46f7-a723-fa66a425b87c",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1643",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "6d8d492c-dd7a-46f7-a723-fa66a425b87c",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

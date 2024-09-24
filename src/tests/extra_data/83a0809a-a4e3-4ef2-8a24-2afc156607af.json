@@ -1,0 +1,218 @@
+{
+    "description": "This is a test policy only for internal use by Policy team. Prevents customers from applying AKS specific labels",
+    "displayName": "[Deprecated]: No AKS Specific Labels. Versioning Test BuiltIn.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/83a0809a-a4e3-4ef2-8a24-2afc156607af",
+    "metadata": {
+        "category": "BuiltInPolicyTest",
+        "deprecated": true,
+        "version": "2.2.0-deprecated"
+    },
+    "mode": "Microsoft.Kubernetes.Data",
+    "name": "83a0809a-a4e3-4ef2-8a24-2afc156607af",
+    "parameters": {
+        "allowedGroups": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Groups that are allowed to use AKS specific labels.",
+                "displayName": "Allowed Groups",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "allowedUsers": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Users that are allowed to use AKS specific labels.",
+                "displayName": "Allowed Users",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "'audit' allows a non-compliant resource to be created or updated, but flags it as non-compliant. 'deny' blocks the non-compliant resource creation or update. 'disabled' turns off the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "excludedNamespaces": {
+            "allowedValues": null,
+            "defaultValue": [
+                "kube-system",
+                "gatekeeper-system",
+                "azure-arc"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to exclude from policy evaluation.",
+                "displayName": "Namespace exclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "labelSelector": {
+            "allowedValues": null,
+            "defaultValue": {},
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Label query to select Kubernetes resources for policy evaluation. An empty label selector matches all Kubernetes resources.",
+                "displayName": "Kubernetes label selector",
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "description": "A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all resources.",
+                "properties": {
+                    "matchExpressions": {
+                        "description": "matchExpressions is a list of values, a key, and an operator.",
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "key": {
+                                    "description": "key is the label key that the selector applies to.",
+                                    "type": "string"
+                                },
+                                "operator": {
+                                    "description": "operator represents a key's relationship to a set of values.",
+                                    "enum": [
+                                        "In",
+                                        "NotIn",
+                                        "Exists",
+                                        "DoesNotExist"
+                                    ],
+                                    "type": "string"
+                                },
+                                "values": {
+                                    "description": "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty.",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "required": [
+                                "key",
+                                "operator"
+                            ],
+                            "type": "object"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "matchLabels": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "matchLabels is a map of {key,value} pairs.",
+                        "minProperties": 1,
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "labelsV2": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Labels specific to AKS.",
+                "displayName": "AKS Specific Labels",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "namespaces": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to only include in policy evaluation. An empty list means the policy is applied to all resources in all namespaces.",
+                "displayName": "Namespace inclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "testString": {
+            "allowedValues": null,
+            "defaultValue": "test",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "A string to be compared against 'test' in the policy rule to generate the desired compliance result.",
+                "displayName": "Test string",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "test",
+                    "value": "[parameters('testString')]"
+                },
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Kubernetes/connectedClusters",
+                        "Microsoft.ContainerService/managedClusters"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "apiGroups": [
+                    "",
+                    "apps"
+                ],
+                "excludedNamespaces": "[parameters('excludedNamespaces')]",
+                "kinds": [
+                    "Pod",
+                    "Node",
+                    "Service",
+                    "Deployment",
+                    "StatefulSet",
+                    "ReplicaSet"
+                ],
+                "labelSelector": "[parameters('labelSelector')]",
+                "namespaces": "[parameters('namespaces')]",
+                "templateInfo": {
+                    "sourceType": "PublicURL",
+                    "url": "https://store.policy.core.windows.net/kubernetes/restricted-labels/v1/template.yaml"
+                },
+                "values": {
+                    "allowedGroups": "[parameters('allowedGroups')]",
+                    "allowedUsers": "[parameters('allowedUsers')]",
+                    "labels": "[parameters('labelsV2')]"
+                }
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

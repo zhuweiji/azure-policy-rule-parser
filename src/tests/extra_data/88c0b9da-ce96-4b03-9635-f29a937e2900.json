@@ -1,0 +1,32 @@
+{
+    "description": "This policy denies the network interfaces which enabled IP forwarding. The setting of IP forwarding disables Azure's check of the source and destination for a network interface. This should be reviewed by the network security team.",
+    "displayName": "Network interfaces should disable IP forwarding",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/88c0b9da-ce96-4b03-9635-f29a937e2900",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "88c0b9da-ce96-4b03-9635-f29a937e2900",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/networkInterfaces",
+                    "field": "type"
+                },
+                {
+                    "equals": "true",
+                    "field": "Microsoft.Network/networkInterfaces/enableIpForwarding"
+                }
+            ]
+        },
+        "then": {
+            "effect": "deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

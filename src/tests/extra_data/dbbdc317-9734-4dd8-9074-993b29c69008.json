@@ -1,0 +1,52 @@
+{
+    "description": "Use Key Management Service (KMS) to encrypt secret data at rest in etcd for Kubernetes cluster security. Learn more at: https://aka.ms/aks/kmsetcdencryption.",
+    "displayName": "Azure Kubernetes Clusters should enable Key Management Service (KMS)",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/dbbdc317-9734-4dd8-9074-993b29c69008",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "dbbdc317-9734-4dd8-9074-993b29c69008",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerService/managedClusters",
+                    "field": "type"
+                },
+                {
+                    "field": "identity.type",
+                    "notEquals": "SystemAssigned"
+                },
+                {
+                    "field": "Microsoft.ContainerService/managedClusters/securityProfile.azureKeyVaultKms.enabled",
+                    "notEquals": true
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

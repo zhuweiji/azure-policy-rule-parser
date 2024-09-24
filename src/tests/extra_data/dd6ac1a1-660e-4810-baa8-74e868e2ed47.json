@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Incident Response control",
+    "displayName": "Microsoft Managed Control 1391 - Information Spillage Response | Training",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/dd6ac1a1-660e-4810-baa8-74e868e2ed47",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1391",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "dd6ac1a1-660e-4810-baa8-74e868e2ed47",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

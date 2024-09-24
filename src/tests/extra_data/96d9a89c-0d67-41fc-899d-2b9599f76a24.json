@@ -1,0 +1,69 @@
+{
+    "description": "Adds the specified tag and value to subscriptions via a remediation task. If the tag exists with a different value it will not be changed. See https://aka.ms/azurepolicyremediation for more information on policy remediation.",
+    "displayName": "Add a tag to subscriptions",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/96d9a89c-0d67-41fc-899d-2b9599f76a24",
+    "metadata": {
+        "category": "Tags",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "96d9a89c-0d67-41fc-899d-2b9599f76a24",
+    "parameters": {
+        "tagName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name of the tag, such as 'environment'",
+                "displayName": "Tag Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagValue": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Value of the tag, such as 'production'",
+                "displayName": "Tag Value",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Resources/subscriptions",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "[concat('tags[', parameters('tagName'), ']')]"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "operations": [
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "operation": "add",
+                        "value": "[parameters('tagValue')]"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/4a9ae827-6dc8-4573-8ac7-8239d42aa03f"
+                ]
+            },
+            "effect": "modify"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

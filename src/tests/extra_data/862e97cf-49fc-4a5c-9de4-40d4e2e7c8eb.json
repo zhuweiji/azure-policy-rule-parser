@@ -1,0 +1,113 @@
+{
+    "description": "Firewall rules should be defined on your Azure Cosmos DB accounts to prevent traffic from unauthorized sources. Accounts that have at least one IP rule defined with the virtual network filter enabled are deemed compliant. Accounts disabling public access are also deemed compliant.",
+    "displayName": "Azure Cosmos DB accounts should have firewall rules",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/862e97cf-49fc-4a5c-9de4-40d4e2e7c8eb",
+    "metadata": {
+        "category": "Cosmos DB",
+        "version": "2.1.0"
+    },
+    "mode": "All",
+    "name": "862e97cf-49fc-4a5c-9de4-40d4e2e7c8eb",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Policy Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DocumentDB/databaseAccounts",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/publicNetworkAccess"
+                        },
+                        {
+                            "equals": "Enabled",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/publicNetworkAccess"
+                        }
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/isVirtualNetworkFilterEnabled"
+                        },
+                        {
+                            "equals": "false",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/isVirtualNetworkFilterEnabled"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "anyOf": [
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.DocumentDB/databaseAccounts/ipRules"
+                                },
+                                {
+                                    "count": {
+                                        "field": "Microsoft.DocumentDB/databaseAccounts/ipRules[*]"
+                                    },
+                                    "equals": 0
+                                }
+                            ]
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.DocumentDB/databaseAccounts/ipRangeFilter"
+                                },
+                                {
+                                    "equals": "",
+                                    "field": "Microsoft.DocumentDB/databaseAccounts/ipRangeFilter"
+                                }
+                            ]
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "count": {
+                                        "field": "Microsoft.DocumentDB/databaseAccounts/privateEndpointConnections[*]",
+                                        "where": {
+                                            "equals": "Approved",
+                                            "field": "Microsoft.DocumentDB/databaseAccounts/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                                        }
+                                    },
+                                    "less": 1
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

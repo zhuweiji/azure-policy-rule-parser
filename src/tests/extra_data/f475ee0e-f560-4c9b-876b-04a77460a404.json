@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Information Integrity control",
+    "displayName": "Microsoft Managed Control 1706 - Security Alerts & Advisories",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f475ee0e-f560-4c9b-876b-04a77460a404",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1706",
+        "category": "Regulatory Compliance",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "f475ee0e-f560-4c9b-876b-04a77460a404",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

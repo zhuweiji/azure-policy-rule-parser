@@ -1,0 +1,62 @@
+{
+    "description": "Disable public network access for your Azure Cognitive Search service so that it is not accessible over the public internet. This can reduce data leakage risks. Learn more at: https://aka.ms/azure-cognitive-search/inbound-private-endpoints.",
+    "displayName": "Configure Azure Cognitive Search services to disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9cee519f-d9c1-4fd9-9f79-24ec3449ed30",
+    "metadata": {
+        "category": "Search",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "9cee519f-d9c1-4fd9-9f79-24ec3449ed30",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Search/searchServices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Search/searchServices/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "field": "Microsoft.Search/searchServices/publicNetworkAccess",
+                        "operation": "addOrReplace",
+                        "value": "Disabled"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7",
+                    "/providers/Microsoft.Authorization/roleDefinitions/7ca78c08-252a-4471-8644-bb5ff32d4ba0"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

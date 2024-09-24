@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Access Control control",
+    "displayName": "Microsoft Managed Control 1071 - Wireless Access Restrictions | Restrict Configurations By Users",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1a437f5b-9ad6-4f28-8861-de404d511ae4",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1071",
+        "category": "Regulatory Compliance",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "1a437f5b-9ad6-4f28-8861-de404d511ae4",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Transparency control",
+    "displayName": "Microsoft Managed Control 1867 - Dissemination of Privacy Program Information ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/cf1cad59-1012-4b55-9b80-427596ea1f4f",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1867",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "cf1cad59-1012-4b55-9b80-427596ea1f4f",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

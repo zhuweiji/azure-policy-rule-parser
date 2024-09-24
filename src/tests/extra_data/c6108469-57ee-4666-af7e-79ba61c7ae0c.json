@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Information Integrity control",
+    "displayName": "Microsoft Managed Control 1670 - Flaw Remediation",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c6108469-57ee-4666-af7e-79ba61c7ae0c",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1670",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c6108469-57ee-4666-af7e-79ba61c7ae0c",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

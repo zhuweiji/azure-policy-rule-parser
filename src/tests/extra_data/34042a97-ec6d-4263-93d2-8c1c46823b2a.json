@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Contingency Planning control",
+    "displayName": "Microsoft Managed Control 1282 - Telecommunications Services | Single Points Of Failure",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/34042a97-ec6d-4263-93d2-8c1c46823b2a",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1282",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "34042a97-ec6d-4263-93d2-8c1c46823b2a",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

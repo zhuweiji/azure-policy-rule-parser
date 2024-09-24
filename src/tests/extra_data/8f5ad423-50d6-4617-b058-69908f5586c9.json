@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Personnel Security control",
+    "displayName": "Microsoft Managed Control 1517 - Personnel Termination",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8f5ad423-50d6-4617-b058-69908f5586c9",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1517",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "8f5ad423-50d6-4617-b058-69908f5586c9",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

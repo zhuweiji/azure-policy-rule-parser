@@ -1,0 +1,61 @@
+{
+    "description": "Disabling the public network access property shuts down public connectivity such that Azure Data Explorer can only be accessed from a private endpoint. This configuration disables the public network access for all Azure Data Explorer clusters .",
+    "displayName": "Configure Azure Data Explorer to disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7b32f193-cb28-4e15-9a98-b9556db0bafa",
+    "metadata": {
+        "category": "Azure Data Explorer",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "7b32f193-cb28-4e15-9a98-b9556db0bafa",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Kusto/clusters",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Kusto/clusters/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "field": "Microsoft.Kusto/clusters/publicNetworkAccess",
+                        "operation": "addOrReplace",
+                        "value": "Disabled"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,184 @@
+{
+    "description": "Subscribe eligible Arc-enabled SQL Servers instances with License Type set to Paid or PAYG to Extended Security Updates. More on extended security updates https://go.microsoft.com/fwlink/?linkid=2239401.",
+    "displayName": "Subscribe eligible Arc-enabled SQL Servers instances to Extended Security Updates.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f692cc79-76fb-4c61-8861-467e454ac6f8",
+    "metadata": {
+        "category": "SQL Server",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "f692cc79-76fb-4c61-8861-467e454ac6f8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "enableESU": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Should be true to enable the ESU subscription for every SQL Server instance in the selected scope, false otherwise.",
+                "displayName": "Enable Extended Security Updates",
+                "strongType": null
+            },
+            "type": "Boolean"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines/extensions",
+                    "field": "type"
+                },
+                {
+                    "equals": "WindowsAgent.SqlServer",
+                    "field": "Microsoft.HybridCompute/machines/extensions/type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": 1,
+                            "value": "[if (empty(field('Microsoft.HybridCompute/machines/extensions/settings')), 0, length(intersection(field('Microsoft.HybridCompute/machines/extensions/settings'), createObject('LicenseType', 'PAYG'))))]"
+                        },
+                        {
+                            "equals": 1,
+                            "value": "[if (empty(field('Microsoft.HybridCompute/machines/extensions/settings')), 0, length(intersection(field('Microsoft.HybridCompute/machines/extensions/settings'), createObject('LicenseType', 'Paid'))))]"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "agentName": {
+                                "value": "[field('name')]"
+                            },
+                            "enableESU": {
+                                "value": "[parameters('enableESU')]"
+                            },
+                            "existingSettings": {
+                                "value": "[field('Microsoft.HybridCompute/machines/extensions/settings')]"
+                            },
+                            "extensionName": {
+                                "value": "[field('fullName')]"
+                            },
+                            "vmLocation": {
+                                "value": "[field('location')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "functions": [],
+                            "outputs": {},
+                            "parameters": {
+                                "agentName": {
+                                    "metadata": {
+                                        "description": "Name of the agent, i.e. WindowsAgent.SQLServer."
+                                    },
+                                    "type": "string"
+                                },
+                                "currentEpoch": {
+                                    "defaultValue": "[dateTimeToEpoch(utcNow())]",
+                                    "metadata": {
+                                        "description": "The current epoch."
+                                    },
+                                    "type": "int"
+                                },
+                                "enableESU": {
+                                    "metadata": {
+                                        "description": "Indicates the enablement/disablement of ESU."
+                                    },
+                                    "type": "bool"
+                                },
+                                "existingSettings": {
+                                    "metadata": {
+                                        "description": "The Existing settings on the extension."
+                                    },
+                                    "type": "object"
+                                },
+                                "extensionName": {
+                                    "metadata": {
+                                        "description": "The Resource name of the Arc server extension."
+                                    },
+                                    "type": "string"
+                                },
+                                "vmLocation": {
+                                    "metadata": {
+                                        "description": "The location of the Arc server."
+                                    },
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2022-11-10",
+                                    "location": "[parameters('vmLocation')]",
+                                    "name": "[parameters('extensionName')]",
+                                    "properties": {
+                                        "publisher": "[variables('vmExtensionPublisher')]",
+                                        "settings": "[union(parameters('existingSettings'), variables('esuSettings'))]",
+                                        "type": "[parameters('agentName')]"
+                                    },
+                                    "type": "Microsoft.HybridCompute/machines/extensions"
+                                }
+                            ],
+                            "variables": {
+                                "esuSettings": {
+                                    "enableExtendedSecurityUpdates": "[parameters('enableESU')]",
+                                    "esuLastUpdatedTimestamp": "[dateTimeFromEpoch(parameters('currentEpoch'))]"
+                                },
+                                "vmExtensionPublisher": "Microsoft.AzureData"
+                            }
+                        }
+                    }
+                },
+                "evaluationDelay": "AfterProvisioningSuccess",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.HybridCompute/machines/extensions/settings"
+                        },
+                        {
+                            "ContainsKey": "enableExtendedSecurityUpdates",
+                            "field": "Microsoft.HybridCompute/machines/extensions/settings"
+                        },
+                        {
+                            "equals": 1,
+                            "value": "[length(intersection(field('Microsoft.HybridCompute/machines/extensions/settings'), createObject('enableExtendedSecurityUpdates', parameters('enableESU'))))]"
+                        }
+                    ]
+                },
+                "name": "[field('fullName')]",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/7392c568-9289-4bde-aaaa-b7131215889d",
+                    "/providers/Microsoft.Authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7"
+                ],
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

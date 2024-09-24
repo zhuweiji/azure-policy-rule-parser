@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Media Protection control",
+    "displayName": "Microsoft Managed Control 1441 - Media Sanitization And Disposal | Equipment Testing",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6519d7f3-e8a2-4ff3-a935-9a9497152ad7",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1441",
+        "category": "Regulatory Compliance",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "6519d7f3-e8a2-4ff3-a935-9a9497152ad7",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

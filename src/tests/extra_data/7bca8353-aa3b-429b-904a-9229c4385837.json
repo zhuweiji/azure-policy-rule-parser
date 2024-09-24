@@ -1,0 +1,65 @@
+{
+    "description": "Ensure your subnets are secure by default by preventing default outbound access. For more information go to https://aka.ms/defaultoutboundaccessretirement",
+    "displayName": "Subnets should be private",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7bca8353-aa3b-429b-904a-9229c4385837",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "7bca8353-aa3b-429b-904a-9229c4385837",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Network/virtualNetworks",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.Network/virtualNetworks/subnets[*].defaultOutboundAccess",
+                            "notEquals": "false"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Network/virtualNetworks/subnets",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.Network/virtualNetworks/subnets/defaultOutboundAccess",
+                            "notEquals": "false"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

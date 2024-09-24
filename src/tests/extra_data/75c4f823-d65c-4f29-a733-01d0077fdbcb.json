@@ -1,0 +1,71 @@
+{
+    "description": "Some applications require the use of keys backed by a specific cryptographic type. Enforce a particular cryptographic key type, RSA or EC, in your environment.",
+    "displayName": "Keys should be the specified cryptographic type RSA or EC",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/75c4f823-d65c-4f29-a733-01d0077fdbcb",
+    "metadata": {
+        "category": "Key Vault",
+        "version": "1.0.1"
+    },
+    "mode": "Microsoft.KeyVault.Data",
+    "name": "75c4f823-d65c-4f29-a733-01d0077fdbcb",
+    "parameters": {
+        "allowedKeyTypes": {
+            "allowedValues": [
+                "RSA",
+                "RSA-HSM",
+                "EC",
+                "EC-HSM"
+            ],
+            "defaultValue": [
+                "RSA",
+                "RSA-HSM",
+                "EC",
+                "EC-HSM"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of allowed key types",
+                "displayName": "Allowed key types",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created, but flags it as non-compliant. 'Deny' blocks the resource creation. 'Disable' turns off the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.KeyVault.Data/vaults/keys",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.KeyVault.Data/vaults/keys/keyType",
+                    "notIn": "[parameters('allowedKeyTypes')]"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

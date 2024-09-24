@@ -1,0 +1,57 @@
+{
+    "description": "Disabling the public network access property improves security by ensuring your Azure Database for MySQL flexible servers can only be accessed from a private endpoint. This configuration strictly disables access from any public address space outside of Azure IP range and denies all logins that match IP or virtual network-based firewall rules.",
+    "displayName": "Public network access should be disabled for MySQL flexible servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c9299215-ae47-4f50-9c54-8a392f68a052",
+    "metadata": {
+        "category": "SQL",
+        "version": "2.1.0"
+    },
+    "mode": "Indexed",
+    "name": "c9299215-ae47-4f50-9c54-8a392f68a052",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DBforMySQL/flexibleServers",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.DBforMySQL/flexibleServers/network.delegatedSubnetResourceId"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.DBforMySQL/flexibleServers/network.privateDnsZoneResourceId"
+                },
+                {
+                    "field": "Microsoft.DBforMySQL/flexibleServers/network.publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

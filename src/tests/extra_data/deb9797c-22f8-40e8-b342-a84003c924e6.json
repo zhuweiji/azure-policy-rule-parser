@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Personnel Security control",
+    "displayName": "Microsoft Managed Control 1528 - Access Agreements",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/deb9797c-22f8-40e8-b342-a84003c924e6",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1528",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "deb9797c-22f8-40e8-b342-a84003c924e6",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

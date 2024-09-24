@@ -1,0 +1,432 @@
+{
+    "description": "Enable automation of Microsoft Defender for Cloud recommendations. This policy deploys a workflow automation with your conditions and triggers on the assigned scope. To deploy this policy on newly created subscriptions, open the Compliance tab, select the relevant non-compliant assignment and create a remediation task.",
+    "displayName": "Deploy Workflow Automation for Microsoft Defender for Cloud recommendations",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/73d6ab6c-2475-4850-afd6-43795f3492ef",
+    "metadata": {
+        "category": "Security Center",
+        "version": "5.0.1"
+    },
+    "mode": "All",
+    "name": "73d6ab6c-2475-4850-afd6-43795f3492ef",
+    "parameters": {
+        "automationName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "This is the automation name.",
+                "displayName": "Automation name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "createResourceGroup": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "If a resource group does not exists in the scope, a new resource group will be created. If the resource group exists and this flag is set to 'true' the policy will re-deploy the resource group. Please note this will reset any Azure Tag on the resource group.",
+                "displayName": "Create resource group",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "logicAppResourceId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "The Logic App that is triggered.",
+                "displayName": "Logic App",
+                "strongType": "Microsoft.Logic/workflows"
+            },
+            "type": "String"
+        },
+        "logicAppTrigger": {
+            "allowedValues": [
+                "Manual (Incoming HTTP request)",
+                "When an Azure Security Center Recommendation is created or triggered"
+            ],
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The trigger connector of the logic app that is triggered. Possible values: 'Manual (Incoming HTTP request)', 'When an Azure Security Center Recommendation is created or triggered'.",
+                "displayName": "Logic app trigger",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "recommendationNames": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "For all recommendations, leave empty. For specific recommendations, enter a list of recommendation IDs separated by semicolons (';'). Recommendation IDs are available through the Assessments API (https://docs.microsoft.com/en-us/rest/api/securitycenter/assessments), or Azure Resource Graph Explorer, choose securityresources and microsoft.security/assessments.",
+                "displayName": "Recommendation IDs",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "recommendationSeverities": {
+            "allowedValues": [
+                "High",
+                "Medium",
+                "Low"
+            ],
+            "defaultValue": [
+                "High",
+                "Medium",
+                "Low"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Determines recommendation severities. Example: High;Medium;Low;",
+                "displayName": "Recommendation severities",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "recommendationStates": {
+            "allowedValues": [
+                "Healthy",
+                "Unhealthy",
+                "Not Applicable"
+            ],
+            "defaultValue": [
+                "Healthy",
+                "Unhealthy",
+                "Not Applicable"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Determines recommendation states. Recommendations with unhealthy state require your attention to resolve. When a recommendation state is healthy, it no longer applies to the resource as Microsoft Defender for Cloud detects it as healthy. A recommendation is not-applicable if, for example, it was disabled in the Security Policy. Example: Healthy;Unhealthy;Not Applicable;",
+                "displayName": "Recommendation states",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "resourceGroupLocation": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The location where the resource group and the workflow automation are created.",
+                "displayName": "Resource group location",
+                "strongType": "location"
+            },
+            "type": "String"
+        },
+        "resourceGroupName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The resource group name where the workflow automation is created. If you enter a name for a resource group that doesn't exist, it'll be created in the subscription.",
+                "displayName": "Resource group name",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "ResourceGroupName": "[parameters('resourceGroupName')]",
+                "deployment": {
+                    "location": "westeurope",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "automationName": {
+                                "value": "[parameters('automationName')]"
+                            },
+                            "createResourceGroup": {
+                                "value": "[parameters('createResourceGroup')]"
+                            },
+                            "logicAppResourceId": {
+                                "value": "[parameters('logicAppResourceId')]"
+                            },
+                            "logicAppTrigger": {
+                                "value": "[parameters('logicAppTrigger')]"
+                            },
+                            "recommendationNames": {
+                                "value": "[parameters('recommendationNames')]"
+                            },
+                            "recommendationSeverities": {
+                                "value": "[parameters('recommendationSeverities')]"
+                            },
+                            "recommendationStates": {
+                                "value": "[parameters('recommendationStates')]"
+                            },
+                            "resourceGroupLocation": {
+                                "value": "[parameters('resourceGroupLocation')]"
+                            },
+                            "resourceGroupName": {
+                                "value": "[parameters('resourceGroupName')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "automationName": {
+                                    "type": "string"
+                                },
+                                "createResourceGroup": {
+                                    "type": "bool"
+                                },
+                                "guidValue": {
+                                    "defaultValue": "[newGuid()]",
+                                    "type": "string"
+                                },
+                                "logicAppResourceId": {
+                                    "type": "string"
+                                },
+                                "logicAppTrigger": {
+                                    "type": "string"
+                                },
+                                "recommendationNames": {
+                                    "type": "array"
+                                },
+                                "recommendationSeverities": {
+                                    "type": "array"
+                                },
+                                "recommendationStates": {
+                                    "type": "array"
+                                },
+                                "resourceGroupLocation": {
+                                    "type": "string"
+                                },
+                                "resourceGroupName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2019-10-01",
+                                    "condition": "[parameters('createResourceGroup')]",
+                                    "location": "[parameters('resourceGroupLocation')]",
+                                    "name": "[parameters('resourceGroupName')]",
+                                    "type": "Microsoft.Resources/resourceGroups"
+                                },
+                                {
+                                    "apiVersion": "2019-10-01",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]"
+                                    ],
+                                    "name": "[concat('nestedAutomationDeployment', '_', parameters('guidValue'))]",
+                                    "properties": {
+                                        "mode": "Incremental",
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {},
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2019-01-01-preview",
+                                                    "dependsOn": [],
+                                                    "location": "[parameters('resourceGroupLocation')]",
+                                                    "name": "[parameters('automationName')]",
+                                                    "properties": {
+                                                        "actions": [
+                                                            {
+                                                                "actionType": "LogicApp",
+                                                                "logicAppResourceId": "[parameters('logicAppResourceId')]",
+                                                                "uri": "[listCallbackUrl(concat(parameters('logicAppResourceId'), '/triggers/', variables('triggerMap')[parameters('logicAppTrigger')]),'2016-06-01').value]"
+                                                            }
+                                                        ],
+                                                        "description": "Workflow Automation for Microsoft Defender for Cloud recommendations via policy",
+                                                        "isEnabled": true,
+                                                        "scopes": [
+                                                            {
+                                                                "description": "[replace(variables('scopeDescription'),'{0}', subscription().subscriptionId)]",
+                                                                "scopePath": "[subscription().id]"
+                                                            }
+                                                        ],
+                                                        "sources": [
+                                                            {
+                                                                "copy": [
+                                                                    {
+                                                                        "count": "[mul(variables('recommendationNamesLengthIfEmpty'), mul(variables('recommendationSeveritiesLengthIfEmpty'),variables('recommendationStatesLengthIfEmpty')))]",
+                                                                        "input": {
+                                                                            "rules": [
+                                                                                {
+                                                                                    "expectedValue": "[if(equals(variables('recommendationNamesLength'), 0), 'Microsoft.Security/assessments', parameters('recommendationNames')[mod(div(copyIndex('ruleSets'), variables('totalRuleCombinationsForOneRecommendationName')), variables('recommendationNamesLength'))])]",
+                                                                                    "operator": "Contains",
+                                                                                    "propertyJPath": "[if(equals(variables('recommendationNamesLength'), 0), 'type', 'name')]",
+                                                                                    "propertyType": "string"
+                                                                                },
+                                                                                {
+                                                                                    "expectedValue": "[parameters('recommendationSeverities')[mod(div(copyIndex('ruleSets'), variables('totalRuleCombinationsForOneRecommendationSeverity')), variables('recommendationSeveritiesLength'))]]",
+                                                                                    "operator": "Equals",
+                                                                                    "propertyJPath": "properties.metadata.severity",
+                                                                                    "propertyType": "string"
+                                                                                },
+                                                                                {
+                                                                                    "expectedValue": "[variables('stateMap')[parameters('recommendationStates')[mod(div(copyIndex('ruleSets'), variables('totalRuleCombinationsForOneRecommendationState')), variables('recommendationStatesLength'))]]]",
+                                                                                    "operator": "Contains",
+                                                                                    "propertyJPath": "properties.status.code",
+                                                                                    "propertyType": "string"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "name": "ruleSets"
+                                                                    }
+                                                                ],
+                                                                "eventSource": "Assessments"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "tags": {},
+                                                    "type": "Microsoft.Security/automations"
+                                                }
+                                            ],
+                                            "variables": {}
+                                        }
+                                    },
+                                    "resourceGroup": "[parameters('resourceGroupName')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "recommendationNamesLength": "[length(parameters('recommendationNames'))]",
+                                "recommendationNamesLengthIfEmpty": "[if(equals(variables('recommendationNamesLength'), 0), 1, variables('recommendationNamesLength'))]",
+                                "recommendationSeveritiesLength": "[length(parameters('recommendationSeverities'))]",
+                                "recommendationSeveritiesLengthIfEmpty": "[if(equals(variables('recommendationSeveritiesLength'), 0), 1, variables('recommendationSeveritiesLength'))]",
+                                "recommendationStatesLength": "[length(parameters('recommendationStates'))]",
+                                "recommendationStatesLengthIfEmpty": "[if(equals(variables('recommendationStatesLength'), 0), 1, variables('recommendationStatesLength'))]",
+                                "scopeDescription": "scope for subscription {0}",
+                                "stateMap": {
+                                    "Healthy": "healthy",
+                                    "Not Applicable": "notapplicable",
+                                    "Unhealthy": "unhealthy"
+                                },
+                                "totalRuleCombinationsForOneRecommendationName": "[mul(variables('recommendationSeveritiesLengthIfEmpty'),variables('recommendationStatesLengthIfEmpty'))]",
+                                "totalRuleCombinationsForOneRecommendationSeverity": "[variables('recommendationStatesLengthIfEmpty')]",
+                                "totalRuleCombinationsForOneRecommendationState": 1,
+                                "triggerMap": {
+                                    "Manual (Incoming HTTP request)": "manual",
+                                    "When an Azure Security Center Recommendation is created or triggered": "When_a_Microsoft_Defender_for_Cloud_recommendation_is_created_or_triggered"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": true,
+                            "field": "Microsoft.Security/automations/isEnabled"
+                        },
+                        {
+                            "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*].expectedValue",
+                            "in": "[union(if(equals(length(parameters('recommendationNames')),0),array('Microsoft.Security/assessments'),parameters('recommendationNames')),parameters('recommendationSeverities'),if(contains(parameters('recommendationStates'),'Not Applicable'),union(parameters('recommendationStates'), array('notapplicable')),parameters('recommendationStates')))]"
+                        },
+                        {
+                            "count": {
+                                "name": "recommendationSeverity",
+                                "value": "[parameters('recommendationSeverities')]",
+                                "where": {
+                                    "count": {
+                                        "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*]",
+                                        "where": {
+                                            "allOf": [
+                                                {
+                                                    "equals": "properties.metadata.severity",
+                                                    "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*].propertyJPath"
+                                                },
+                                                {
+                                                    "equals": "[current('recommendationSeverity')]",
+                                                    "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*].expectedValue"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "equals": "[mul(max(1,length(parameters('recommendationNames'))),length(parameters('recommendationStates')))]"
+                                }
+                            },
+                            "equals": "[length(parameters('recommendationSeverities'))]"
+                        },
+                        {
+                            "count": {
+                                "name": "recommendationState",
+                                "value": "[parameters('recommendationStates')]",
+                                "where": {
+                                    "count": {
+                                        "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*]",
+                                        "where": {
+                                            "allOf": [
+                                                {
+                                                    "equals": "properties.status.code",
+                                                    "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*].propertyJPath"
+                                                },
+                                                {
+                                                    "equals": "[replace(current('recommendationState'), ' ','')]",
+                                                    "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*].expectedValue"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "equals": "[mul(max(1,length(parameters('recommendationNames'))),length(parameters('recommendationSeverities')))]"
+                                }
+                            },
+                            "equals": "[length(parameters('recommendationStates'))]"
+                        },
+                        {
+                            "count": {
+                                "name": "recommendationName",
+                                "value": "[parameters('recommendationNames')]",
+                                "where": {
+                                    "count": {
+                                        "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*]",
+                                        "where": {
+                                            "allOf": [
+                                                {
+                                                    "equals": "name",
+                                                    "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*].propertyJPath"
+                                                },
+                                                {
+                                                    "equals": "[current('recommendationName')]",
+                                                    "field": "Microsoft.Security/automations/sources[*].ruleSets[*].rules[*].expectedValue"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "equals": "[mul(length(parameters('recommendationSeverities')),length(parameters('recommendationStates')))]"
+                                }
+                            },
+                            "equals": "[length(parameters('recommendationNames'))]"
+                        }
+                    ]
+                },
+                "existenceScope": "resourcegroup",
+                "name": "[parameters('automationName')]",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.Security/automations"
+            },
+            "effect": "deployIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

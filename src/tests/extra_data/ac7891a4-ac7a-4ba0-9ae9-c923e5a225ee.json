@@ -1,0 +1,243 @@
+{
+    "description": "To ensure the operations performed against your SQL assets are captured, Synapse workspaces should have auditing enabled. This is sometimes required for compliance with regulatory standards.",
+    "displayName": "Configure Synapse workspaces to have auditing enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ac7891a4-ac7a-4ba0-9ae9-c923e5a225ee",
+    "metadata": {
+        "category": "Synapse",
+        "version": "2.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ac7891a4-ac7a-4ba0-9ae9-c923e5a225ee",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "retentionDays": {
+            "allowedValues": null,
+            "defaultValue": 180,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The value in days of the retention period (0 indicates unlimited retention)",
+                "displayName": "Retention days (optional, 180 days if unspecified)",
+                "strongType": null
+            },
+            "type": "Integer"
+        },
+        "storageAccountsResourceGroup": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "Auditing writes database events to an audit log in your Azure Storage account (a storage account will be created in each region where a Synapse workspace is created that will be shared by all Synapse workspaces in that region). Important - for proper operation of Auditing do not delete or rename the resource group or the storage accounts.",
+                "displayName": "Resource group name for storage accounts",
+                "strongType": "existingResourceGroups"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Synapse/workspaces",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "auditRetentionDays": {
+                                "value": "[parameters('retentionDays')]"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "storageAccountsResourceGroup": {
+                                "value": "[parameters('storageAccountsResourceGroup')]"
+                            },
+                            "workspaceName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "auditRetentionDays": {
+                                    "type": "int"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "storageAccountsResourceGroup": {
+                                    "type": "string"
+                                },
+                                "workspaceName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2017-05-10",
+                                    "name": "[variables('createStorageAccountDeploymentName')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "auditDeployName": {
+                                                "value": "[variables('auditDeployName')]"
+                                            },
+                                            "location": {
+                                                "value": "[parameters('location')]"
+                                            },
+                                            "retentionDays": {
+                                                "value": "[variables('retentionDays')]"
+                                            },
+                                            "serverResourceGroup": {
+                                                "value": "[variables('serverResourceGroup')]"
+                                            },
+                                            "storageAccountsResourceGroup": {
+                                                "value": "[parameters('storageAccountsResourceGroup')]"
+                                            },
+                                            "storageName": {
+                                                "value": "[variables('storageName')]"
+                                            },
+                                            "workspaceName": {
+                                                "value": "[parameters('workspaceName')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "outputs": {
+                                                "storageAccountEndPoint": {
+                                                    "type": "string",
+                                                    "value": "[reference(parameters('storageName')).primaryEndpoints.blob]"
+                                                }
+                                            },
+                                            "parameters": {
+                                                "auditDeployName": {
+                                                    "type": "string"
+                                                },
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "retentionDays": {
+                                                    "type": "int"
+                                                },
+                                                "serverResourceGroup": {
+                                                    "type": "string"
+                                                },
+                                                "storageAccountsResourceGroup": {
+                                                    "type": "string"
+                                                },
+                                                "storageName": {
+                                                    "type": "string"
+                                                },
+                                                "workspaceName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2017-10-01",
+                                                    "kind": "BlobStorage",
+                                                    "location": "[parameters('location')]",
+                                                    "name": "[parameters('storageName')]",
+                                                    "properties": {
+                                                        "accessTier": "Hot",
+                                                        "supportsHttpsTrafficOnly": true
+                                                    },
+                                                    "sku": {
+                                                        "name": "Standard_LRS"
+                                                    },
+                                                    "tags": {
+                                                        "createdBy": "Azure Policy - Configure Synapse workspaces to have auditing enabled"
+                                                    },
+                                                    "type": "Microsoft.Storage/storageAccounts"
+                                                },
+                                                {
+                                                    "apiVersion": "2017-05-10",
+                                                    "dependsOn": [
+                                                        "[resourceId(parameters('storageAccountsResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageName'))]"
+                                                    ],
+                                                    "name": "[parameters('auditDeployName')]",
+                                                    "properties": {
+                                                        "mode": "Incremental",
+                                                        "template": {
+                                                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                                            "contentVersion": "1.0.0.0",
+                                                            "resources": [
+                                                                {
+                                                                    "apiVersion": "2021-06-01",
+                                                                    "name": "[concat(parameters('workspaceName'), '/Default')]",
+                                                                    "properties": {
+                                                                        "isStorageSecondaryKeyInUse": false,
+                                                                        "retentionDays": "[parameters('retentionDays')]",
+                                                                        "state": "Enabled",
+                                                                        "storageAccountAccessKey": "[listKeys(resourceId(parameters('storageAccountsResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageName')), '2017-06-01').keys[0].value]",
+                                                                        "storageAccountSubscriptionId": "[subscription().subscriptionId]",
+                                                                        "storageEndpoint": "[reference(resourceId(parameters('storageAccountsResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageName'))).primaryEndpoints.blob]"
+                                                                    },
+                                                                    "type": "Microsoft.Synapse/workspaces/auditingSettings"
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    "resourceGroup": "[parameters('serverResourceGroup')]",
+                                                    "type": "Microsoft.Resources/deployments"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "resourceGroup": "[parameters('storageAccountsResourceGroup')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "auditDeployName": "[concat('workspaceAuditing_Enable-',uniqueString(variables('subscriptionId'), parameters('location'), resourceGroup().name, parameters('workspaceName'), deployment().name))]",
+                                "createStorageAccountDeploymentName": "[concat('workspaceAuditingStorageAccount-', uniqueString(variables('locationCode'), deployment().name))]",
+                                "locationCode": "[substring(parameters('location'), 0, 3)]",
+                                "retentionDays": "[parameters('auditRetentionDays')]",
+                                "serverResourceGroup": "[resourceGroup().name]",
+                                "storageName": "[tolower(concat('wsaudit', variables('locationCode'), variables('uniqueStorage')))]",
+                                "subscriptionId": "[subscription().subscriptionId]",
+                                "uniqueStorage": "[uniqueString(variables('subscriptionId'), parameters('location'), parameters('storageAccountsResourceGroup'))]"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "Enabled",
+                    "field": "Microsoft.Synapse/workspaces/auditingSettings/state"
+                },
+                "name": "Default",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3",
+                    "/providers/microsoft.authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
+                ],
+                "type": "Microsoft.Synapse/workspaces/auditingSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

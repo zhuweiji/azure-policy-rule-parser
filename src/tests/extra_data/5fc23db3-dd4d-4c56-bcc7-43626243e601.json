@@ -1,0 +1,216 @@
+{
+    "description": "This policy audits Windows virtual machines hosted in Azure that are supported by Guest Configuration but do not have the Guest Configuration extension enabled. For more information on Guest Configuration, visit https://aka.ms/gcpol.",
+    "displayName": "[Deprecated]: Audit Windows virtual machines on which the Windows Guest Configuration extension is not enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5fc23db3-dd4d-4c56-bcc7-43626243e601",
+    "metadata": {
+        "category": "Guest Configuration",
+        "deprecated": true,
+        "version": "2.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "5fc23db3-dd4d-4c56-bcc7-43626243e601",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Compute/imagePublisher",
+                            "in": [
+                                "esri",
+                                "incredibuild",
+                                "MicrosoftDynamicsAX",
+                                "MicrosoftSharepoint",
+                                "MicrosoftVisualStudio",
+                                "MicrosoftWindowsDesktop",
+                                "MicrosoftWindowsServerHPCPack"
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "notLike": "2008*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftSQLServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "notLike": "SQL2008*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoft-dsvm",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "dsvm-windows",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoft-ads",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "in": [
+                                        "standard-data-science-vm",
+                                        "windows-data-science-vm"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "batch",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "rendering-windows2016",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "center-for-internet-security-inc",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "like": "cis-windows-server-201*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "pivotal",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "like": "bosh-windows-server*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "cloud-infrastructure-services",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "like": "ad*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "anyOf": [
+                                        {
+                                            "exists": "true",
+                                            "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                            "like": "Windows*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "exists": "false",
+                                            "field": "Microsoft.Compute/imageSKU"
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "field": "Microsoft.Compute/imageSKU",
+                                                    "notLike": "2008*"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/imageOffer",
+                                                    "notLike": "SQL2008*"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.GuestConfiguration",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/publisher"
+                        },
+                        {
+                            "equals": "ConfigurationforWindows",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/type"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "name": "AzurePolicyforWindows",
+                "type": "Microsoft.Compute/virtualMachines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

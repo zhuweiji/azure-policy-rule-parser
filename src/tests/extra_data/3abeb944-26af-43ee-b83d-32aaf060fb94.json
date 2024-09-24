@@ -1,0 +1,57 @@
+{
+    "description": "Define Pod Security Policies to reduce the attack vector by removing unnecessary application privileges. It is recommended to configure Pod Security Policies to only allow pods to access the resources which they have permissions to access.",
+    "displayName": "[Deprecated]: Pod Security Policies should be defined on Kubernetes Services",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3abeb944-26af-43ee-b83d-32aaf060fb94",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "All",
+    "name": "3abeb944-26af-43ee-b83d-32aaf060fb94",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerService/managedClusters",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.ContainerService/managedClusters/enablePodSecurityPolicy"
+                        },
+                        {
+                            "equals": "false",
+                            "field": "Microsoft.ContainerService/managedClusters/enablePodSecurityPolicy"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

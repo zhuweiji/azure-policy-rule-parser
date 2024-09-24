@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Personnel Security control",
+    "displayName": "Microsoft Managed Control 1533 - Third-Party Personnel Security",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/bba2a036-fb3b-4261-b1be-a13dfb5fbcaa",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1533",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "bba2a036-fb3b-4261-b1be-a13dfb5fbcaa",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

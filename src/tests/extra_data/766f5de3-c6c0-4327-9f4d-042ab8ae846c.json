@@ -1,0 +1,61 @@
+{
+    "description": "Enable SSL only connections to Azure Cache for Redis. Use of secure connections ensures authentication between the server and the service and protects data in transit from network layer attacks such as man-in-the-middle, eavesdropping, and session-hijacking",
+    "displayName": "Configure Azure Cache for Redis to disable non SSL ports",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/766f5de3-c6c0-4327-9f4d-042ab8ae846c",
+    "metadata": {
+        "category": "Cache",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "766f5de3-c6c0-4327-9f4d-042ab8ae846c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Cache/Redis",
+                    "field": "type"
+                },
+                {
+                    "equals": "true",
+                    "field": "Microsoft.Cache/Redis/enableNonSslPort"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "field": "Microsoft.Cache/Redis/enableNonSslPort",
+                        "operation": "addOrReplace",
+                        "value": false
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/e0f68234-74aa-48ed-b826-c38b57376e17"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,49 @@
+{
+    "description": "Azure Front Door Premium supports Azure managed WAF rules and private link to supported Azure origins.",
+    "displayName": "Azure Front Door profiles should use Premium tier that supports managed WAF rules and private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/dfc212af-17ea-423a-9dcb-91e2cb2caa6b",
+    "metadata": {
+        "category": "CDN",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "dfc212af-17ea-423a-9dcb-91e2cb2caa6b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Cdn/Profiles",
+                    "field": "type"
+                },
+                {
+                    "equals": "Standard_AzureFrontDoor",
+                    "field": "Microsoft.Cdn/Profiles/sku.name"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

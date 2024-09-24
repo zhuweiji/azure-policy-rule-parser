@@ -1,0 +1,50 @@
+{
+    "description": "Azure Virtual Network deployment provides enhanced security and isolation for your Azure Cache for Redis, as well as subnets, access control policies, and other features to further restrict access.When an Azure Cache for Redis instance is configured with a virtual network, it is not publicly addressable and can only be accessed from virtual machines and applications within the virtual network.",
+    "displayName": "[Deprecated]: Azure Cache for Redis should reside within a virtual network",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7d092e0a-7acd-40d2-a975-dca21cae48c4",
+    "metadata": {
+        "category": "Cache",
+        "deprecated": true,
+        "version": "1.0.3-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "7d092e0a-7acd-40d2-a975-dca21cae48c4",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Cache/redis",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.Cache/Redis/subnetId"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

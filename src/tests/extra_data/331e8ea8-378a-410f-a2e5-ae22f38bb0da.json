@@ -1,0 +1,260 @@
+{
+    "description": "This policy deploys the Linux Guest Configuration extension to Linux virtual machines hosted in Azure that are supported by Guest Configuration. The Linux Guest Configuration extension is a prerequisite for all Linux Guest Configuration assignments and must be deployed to machines before using any Linux Guest Configuration policy definition. For more information on Guest Configuration, visit https://aka.ms/gcpol.",
+    "displayName": "Deploy the Linux Guest Configuration extension to enable Guest Configuration assignments on Linux VMs",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/331e8ea8-378a-410f-a2e5-ae22f38bb0da",
+    "metadata": {
+        "category": "Guest Configuration",
+        "version": "3.1.0"
+    },
+    "mode": "Indexed",
+    "name": "331e8ea8-378a-410f-a2e5-ae22f38bb0da",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Compute/imagePublisher",
+                            "in": [
+                                "microsoft-aks",
+                                "qubole-inc",
+                                "datastax",
+                                "couchbase",
+                                "scalegrid",
+                                "checkpoint",
+                                "paloaltonetworks",
+                                "debian",
+                                "credativ"
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "OpenLogic",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "notLike": "6*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "Oracle",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "notLike": "6*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "RedHat",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "notLike": "6*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "center-for-internet-security-inc",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "notLike": "cis-win*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "Suse",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "notLike": "11*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "Canonical",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "notLike": "12*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoft-dsvm",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "notLike": "dsvm-win*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "cloudera",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "notLike": "6*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoft-ads",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "like": "linux*"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "anyOf": [
+                                        {
+                                            "exists": "true",
+                                            "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                            "like": "Linux*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "exists": "false",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imagePublisher",
+                                            "notIn": [
+                                                "OpenLogic",
+                                                "RedHat",
+                                                "credativ",
+                                                "Suse",
+                                                "Canonical",
+                                                "microsoft-dsvm",
+                                                "cloudera",
+                                                "microsoft-ads",
+                                                "center-for-internet-security-inc",
+                                                "Oracle",
+                                                "AzureDatabricks",
+                                                "azureopenshift"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2019-07-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'), '/AzurePolicyforLinux')]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "enableAutomaticUpgrade": true,
+                                        "protectedSettings": {},
+                                        "publisher": "Microsoft.GuestConfiguration",
+                                        "settings": {},
+                                        "type": "ConfigurationforLinux",
+                                        "typeHandlerVersion": "1.0"
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachines/extensions"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.GuestConfiguration",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/publisher"
+                        },
+                        {
+                            "equals": "ConfigurationforLinux",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/type"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "name": "AzurePolicyforLinux",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.Compute/virtualMachines/extensions"
+            },
+            "effect": "deployIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

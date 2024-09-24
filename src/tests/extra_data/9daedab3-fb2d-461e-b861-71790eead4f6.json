@@ -1,0 +1,54 @@
+{
+    "description": "Azure Security Center has identified some of your network security groups' inbound rules to be too permissive. Inbound rules should not allow access from 'Any' or 'Internet' ranges. This can potentially enable attackers to target your resources.",
+    "displayName": "All network ports should be restricted on network security groups associated to your virtual machine",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9daedab3-fb2d-461e-b861-71790eead4f6",
+    "metadata": {
+        "category": "Security Center",
+        "version": "3.0.0"
+    },
+    "mode": "All",
+    "name": "9daedab3-fb2d-461e-b861-71790eead4f6",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.Compute/virtualMachines",
+                "Microsoft.ClassicCompute/virtualMachines"
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "3b20e985-f71f-483b-b078-f30d73936d43",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

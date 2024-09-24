@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Personnel Security control",
+    "displayName": "Microsoft Managed Control 1535 - Personnel Sanctions",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f9a165d2-967d-4733-8399-1074270dae2e",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1535",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "f9a165d2-967d-4733-8399-1074270dae2e",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

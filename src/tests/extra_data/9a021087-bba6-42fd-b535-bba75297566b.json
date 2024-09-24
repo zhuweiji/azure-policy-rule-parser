@@ -1,0 +1,251 @@
+{
+    "description": "Installing the Azure Backup Extension is a pre-requisite for protecting your AKS Clusters. Enforce installation of backup extension on all AKS clusters without a particular tag value. Doing this can help you manage Backup of AKS Clusters at scale.",
+    "displayName": "[Preview]: Install Azure Backup Extension in AKS clusters (Managed Cluster) without a given tag.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9a021087-bba6-42fd-b535-bba75297566b",
+    "metadata": {
+        "category": "Backup",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "9a021087-bba6-42fd-b535-bba75297566b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "exclusionTagName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name of the tag to use for excluding AKS Clusters from the scope of this policy. This should be used along with the Exclusion Tag Values parameter. Learn more at https://aka.ms/AB-AksBackupAzPolicies",
+                "displayName": "Exclusion Tag Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "exclusionTagValues": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Value of the tag to use for excluding AKS Clusters from the scope of this policy (in case of multiple values, use a comma-separated list). This should be used along with the Exclusion Tag Name parameter. Learn more at https://aka.ms/AB-AksBackupAzPolicies.",
+                "displayName": "Exclusion Tag Values",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "location": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specify the location of the AKS Clusters that you want to protect. For example - CanadaCentral",
+                "displayName": "Location (Specify the location of the AKS Clusters that you want to protect)",
+                "strongType": "location"
+            },
+            "type": "String"
+        },
+        "storageAccountId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The storage account is used to store backup data within a container. Please ensure that the storage account is in the same region as the AKS cluster to be backed up.",
+                "displayName": "Storage Account (In the same location as specified above)",
+                "strongType": "Microsoft.Storage/storageAccounts"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerService/managedClusters",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "not": {
+                                "field": "[concat('tags[', parameters('exclusionTagName'), ']')]",
+                                "in": "[parameters('exclusionTagValues')]"
+                            }
+                        },
+                        {
+                            "equals": "true",
+                            "value": "[empty(parameters('exclusionTagValues'))]"
+                        },
+                        {
+                            "equals": "true",
+                            "value": "[empty(parameters('exclusionTagName'))]"
+                        }
+                    ]
+                },
+                {
+                    "equals": "[parameters('location')]",
+                    "field": "location"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "clusterName": {
+                                "value": "[field('name')]"
+                            },
+                            "storageAccount": {
+                                "value": "[first(skip(split(parameters('storageAccountId'), '/'), 8))]"
+                            },
+                            "storageAccountId": {
+                                "value": "[parameters('storageAccountId')]"
+                            },
+                            "storageAccountResourceGroup": {
+                                "value": "[first(skip(split(parameters('storageAccountId'), '/'), 4))]"
+                            },
+                            "storageAccountSubscriptionId": {
+                                "value": "[first(skip(split(parameters('storageAccountId'), '/'), 2))]"
+                            },
+                            "tenantId": {
+                                "value": "[subscription().tenantId]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "clusterName": {
+                                    "type": "string"
+                                },
+                                "releaseTrain": {
+                                    "defaultValue": "stable",
+                                    "type": "string"
+                                },
+                                "storageAccount": {
+                                    "type": "string"
+                                },
+                                "storageAccountId": {
+                                    "type": "string"
+                                },
+                                "storageAccountResourceGroup": {
+                                    "type": "string"
+                                },
+                                "storageAccountSubscriptionId": {
+                                    "type": "string"
+                                },
+                                "tenantId": {
+                                    "type": "string"
+                                },
+                                "useAAD": {
+                                    "defaultValue": "true",
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-04-01",
+                                    "dependsOn": [
+                                        "[extensionResourceId(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), 'Microsoft.KubernetesConfiguration/extensions', variables('extensionName'))]"
+                                    ],
+                                    "name": "[variables('storageAccountContainerDeploymentName')]",
+                                    "parameters": {},
+                                    "properties": {
+                                        "mode": "incremental",
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {},
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2022-05-01",
+                                                    "dependsOn": [],
+                                                    "name": "[format('{0}/default/{1}', parameters('storageAccount'), variables('blobContainer'))]",
+                                                    "type": "Microsoft.Storage/storageAccounts/blobServices/containers"
+                                                },
+                                                {
+                                                    "apiVersion": "2020-10-01-preview",
+                                                    "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount')), resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), variables('storageBlobDataContributorRoleDefinitionId'))]",
+                                                    "properties": {
+                                                        "principalId": "[reference(extensionResourceId(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), 'Microsoft.KubernetesConfiguration/extensions', variables('extensionName')), '2021-09-01').aksAssignedIdentity.principalId]",
+                                                        "principalType": "ServicePrincipal",
+                                                        "roleDefinitionId": "[variables('storageBlobDataContributorRoleDefinitionId')]"
+                                                    },
+                                                    "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccount'))]",
+                                                    "type": "Microsoft.Authorization/roleAssignments"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "resourceGroup": "[parameters('storageAccountResourceGroup')]",
+                                    "subscriptionId": "[parameters('storageAccountSubscriptionId')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                },
+                                {
+                                    "apiVersion": "2022-03-01",
+                                    "comments": "Install the Backup Extension in the managed (AKS) cluster.",
+                                    "name": "[variables('extensionName')]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": "true",
+                                        "configurationSettings": {
+                                            "configuration.backupStorageLocation.bucket": "[variables('blobContainer')]",
+                                            "configuration.backupStorageLocation.config.resourceGroup": "[parameters('storageAccountResourceGroup')]",
+                                            "configuration.backupStorageLocation.config.storageAccount": "[parameters('storageAccount')]",
+                                            "configuration.backupStorageLocation.config.storageAccountURI": "[reference(parameters('storageAccountId'), '2021-04-01').primaryEndpoints.blob]",
+                                            "configuration.backupStorageLocation.config.subscriptionId": "[parameters('storageAccountSubscriptionId')]",
+                                            "configuration.backupStorageLocation.config.useAAD": "[parameters('useAAD')]",
+                                            "credentials.tenantId": "[parameters('tenantId')]"
+                                        },
+                                        "extensionType": "microsoft.dataprotection.kubernetes",
+                                        "releaseTrain": "[parameters('releaseTrain')]"
+                                    },
+                                    "scope": "[concat('Microsoft.ContainerService/managedClusters/',parameters('clusterName'))]",
+                                    "type": "Microsoft.KubernetesConfiguration/extensions"
+                                }
+                            ],
+                            "variables": {
+                                "blobContainer": "[take(concat('azure-aks-backup-', parameters('clusterName')), 63)]",
+                                "extensionName": "azure-aks-backup",
+                                "storageAccountContainerDeploymentName": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount')))]",
+                                "storageBlobDataContributorRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]"
+                            }
+                        }
+                    }
+                },
+                "evaluationDelay": "PT30M",
+                "existenceCondition": {
+                    "equals": "microsoft.dataprotection.kubernetes",
+                    "field": "Microsoft.KubernetesConfiguration/extensions/extensionType"
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+                ],
+                "type": "Microsoft.KubernetesConfiguration/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

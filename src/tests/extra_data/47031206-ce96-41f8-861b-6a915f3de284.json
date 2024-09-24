@@ -1,0 +1,64 @@
+{
+    "description": "Use customer-managed keys to manage the encryption at rest of your IoT Hub device provisioning service. The data is automatically encrypted at rest with service-managed keys, but customer-managed keys (CMK) are commonly required to meet regulatory compliance standards. CMKs enable the data to be encrypted with an Azure Key Vault key created and owned by you. Learn more about CMK encryption at https://aka.ms/dps/CMK.",
+    "displayName": "[Preview]: IoT Hub device provisioning service data should be encrypted using customer-managed keys (CMK)",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/47031206-ce96-41f8-861b-6a915f3de284",
+    "metadata": {
+        "category": "Internet of Things",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "47031206-ce96-41f8-861b-6a915f3de284",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Devices/provisioningServices",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Devices/provisioningServices/encryption.keyVaultProperties[*]",
+                        "where": {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.Devices/provisioningServices/encryption.keyVaultProperties[*].keyIdentifier"
+                                },
+                                {
+                                    "field": "Microsoft.Devices/provisioningServices/encryption.keyVaultProperties[*].keyIdentifier",
+                                    "notequals": ""
+                                }
+                            ]
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

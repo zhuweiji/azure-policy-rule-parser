@@ -1,0 +1,67 @@
+{
+    "description": "This policy audits any Windows virtual machine not configured with automatic update of Microsoft Antimalware protection signatures.",
+    "displayName": "Microsoft Antimalware for Azure should be configured to automatically update protection signatures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c43e4a30-77cb-48ab-a4dd-93f175c63b57",
+    "metadata": {
+        "category": "Compute",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c43e4a30-77cb-48ab-a4dd-93f175c63b57",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "equals": "Windows",
+                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "IaaSAntimalware",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Security",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/publisher"
+                        },
+                        {
+                            "equals": "true",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/autoUpgradeMinorVersion"
+                        }
+                    ]
+                },
+                "type": "Microsoft.Compute/virtualMachines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

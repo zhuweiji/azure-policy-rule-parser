@@ -1,0 +1,48 @@
+{
+    "description": "Enabling DNS Proxy will make the Azure Firewall associated with this policy to listen on port 53 and forward the DNS requests to specified DNS server",
+    "displayName": "Azure Firewall Policy should have DNS Proxy Enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3f84c9b0-8b64-4208-98d4-6ada96bb49c3",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "3f84c9b0-8b64-4208-98d4-6ada96bb49c3",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/firewallPolicies",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.Network/firewallPolicies/dnsSettings.enableProxy"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

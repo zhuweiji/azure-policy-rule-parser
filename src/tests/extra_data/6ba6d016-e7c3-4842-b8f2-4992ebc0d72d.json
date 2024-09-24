@@ -1,0 +1,54 @@
+{
+    "description": "SQL vulnerability assessment scans your database for security vulnerabilities, and exposes any deviations from best practices such as misconfigurations, excessive permissions, and unprotected sensitive data. Resolving the vulnerabilities found can greatly improve your database security posture.",
+    "displayName": "SQL servers on machines should have vulnerability findings resolved",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6ba6d016-e7c3-4842-b8f2-4992ebc0d72d",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "6ba6d016-e7c3-4842-b8f2-4992ebc0d72d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.Compute/virtualMachines",
+                "Microsoft.HybridCompute/machines"
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "f97aa83c-9b63-4f9a-99f6-b22c4398f936",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

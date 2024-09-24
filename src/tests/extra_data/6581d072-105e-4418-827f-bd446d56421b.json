@@ -1,0 +1,49 @@
+{
+    "description": "Azure Defender for SQL provides functionality for surfacing and mitigating potential database vulnerabilities, detecting anomalous activities that could indicate threats to SQL databases, and discovering and classifying sensitive data.",
+    "displayName": "Azure Defender for SQL servers on machines should be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6581d072-105e-4418-827f-bd446d56421b",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.2"
+    },
+    "mode": "All",
+    "name": "6581d072-105e-4418-827f-bd446d56421b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "Standard",
+                    "field": "Microsoft.Security/pricings/pricingTier"
+                },
+                "existenceScope": "subscription",
+                "name": "SqlServerVirtualMachines",
+                "type": "Microsoft.Security/pricings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

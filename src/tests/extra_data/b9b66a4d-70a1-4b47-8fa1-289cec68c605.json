@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Communications Protection control",
+    "displayName": "Microsoft Managed Control 1625 - Boundary Protection | Access Points",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b9b66a4d-70a1-4b47-8fa1-289cec68c605",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1625",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "b9b66a4d-70a1-4b47-8fa1-289cec68c605",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

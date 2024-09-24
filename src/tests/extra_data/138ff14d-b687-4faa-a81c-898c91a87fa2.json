@@ -1,0 +1,109 @@
+{
+    "description": "Resource logs enable recreating activity trails to use for investigation purposes when a security incident occurs or when your network is compromised.",
+    "displayName": "Resource logs in Azure Databricks Workspaces should be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/138ff14d-b687-4faa-a81c-898c91a87fa2",
+    "metadata": {
+        "category": "Azure Databricks",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "138ff14d-b687-4faa-a81c-898c91a87fa2",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "requiredRetentionDays": {
+            "allowedValues": null,
+            "defaultValue": "365",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The required resource logs retention in days if exporting to an Azure Storage account",
+                "displayName": "Required retention (days)",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Databricks/workspaces",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "count": {
+                        "field": "Microsoft.Insights/diagnosticSettings/logs[*]",
+                        "where": {
+                            "anyOf": [
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "true",
+                                            "field": "Microsoft.Insights/diagnosticSettings/logs[*].retentionPolicy.enabled"
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "equals": "0",
+                                                    "field": "Microsoft.Insights/diagnosticSettings/logs[*].retentionPolicy.days"
+                                                },
+                                                {
+                                                    "greaterOrEquals": "[padLeft(parameters('requiredRetentionDays'), 3, '0')]",
+                                                    "value": "[padLeft(current('Microsoft.Insights/diagnosticSettings/logs[*].retentionPolicy.days'), 3, '0')]"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "equals": "true",
+                                            "field": "Microsoft.Insights/diagnosticSettings/logs.enabled"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "true",
+                                            "field": "Microsoft.Insights/diagnosticSettings/logs.enabled"
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "field": "Microsoft.Insights/diagnosticSettings/logs[*].retentionPolicy.enabled",
+                                                    "notEquals": "true"
+                                                },
+                                                {
+                                                    "exists": false,
+                                                    "field": "Microsoft.Insights/diagnosticSettings/storageAccountId"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "greaterOrEquals": 1
+                },
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

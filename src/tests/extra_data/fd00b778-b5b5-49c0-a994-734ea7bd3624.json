@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Risk Assessment control",
+    "displayName": "Microsoft Managed Control 1543 - Risk Assessment",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fd00b778-b5b5-49c0-a994-734ea7bd3624",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1543",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "fd00b778-b5b5-49c0-a994-734ea7bd3624",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

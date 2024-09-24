@@ -1,0 +1,66 @@
+{
+    "description": "Setting InternalEncryption to true encrypts the pagefile, worker disks, and internal network traffic between the front ends and workers in an App Service Environment. To learn more, refer to https://docs.microsoft.com/azure/app-service/environment/app-service-app-service-environment-custom-settings#enable-internal-encryption.",
+    "displayName": "App Service Environment should have internal encryption enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fb74e86f-d351-4b8d-b034-93da7391c01f",
+    "metadata": {
+        "category": "App Service",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "fb74e86f-d351-4b8d-b034-93da7391c01f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/hostingEnvironments",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "ASE*"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Web/HostingEnvironments/clusterSettings[*]",
+                        "where": {
+                            "allOf": [
+                                {
+                                    "equals": "InternalEncryption",
+                                    "field": "Microsoft.Web/HostingEnvironments/clusterSettings[*].name"
+                                },
+                                {
+                                    "equals": "true",
+                                    "field": "Microsoft.Web/HostingEnvironments/clusterSettings[*].value"
+                                }
+                            ]
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

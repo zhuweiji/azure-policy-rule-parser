@@ -1,0 +1,63 @@
+{
+    "description": "Auditing on your Synapse workspace should be enabled to track database activities across all databases on the dedicated SQL pools and save them in an audit log.",
+    "displayName": "Auditing on Synapse workspace should be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e04e5000-cd89-451d-bb21-a14d24ff9c73",
+    "metadata": {
+        "category": "Synapse",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "e04e5000-cd89-451d-bb21-a14d24ff9c73",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "setting": {
+            "allowedValues": [
+                "enabled",
+                "disabled"
+            ],
+            "defaultValue": "enabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": null,
+                "displayName": "Desired Auditing setting",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Synapse/workspaces",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "[parameters('setting')]",
+                    "field": "Microsoft.Synapse/workspaces/auditingSettings/state"
+                },
+                "name": "default",
+                "type": "Microsoft.Synapse/workspaces/auditingSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

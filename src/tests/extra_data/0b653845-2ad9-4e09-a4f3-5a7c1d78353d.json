@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Audit and Accountability control",
+    "displayName": "Microsoft Managed Control 1115 - Audit Review, Analysis, And Reporting",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0b653845-2ad9-4e09-a4f3-5a7c1d78353d",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1115",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "0b653845-2ad9-4e09-a4f3-5a7c1d78353d",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,100 @@
+{
+    "description": "Periodically, newer versions are released for TLS either due to security flaws, include additional functionality, and enhance speed. Upgrade to the latest TLS version for Function apps to take advantage of security fixes, if any, and/or new functionalities of the latest version.",
+    "displayName": "Configure Function app slots to use the latest TLS version",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fa3a6357-c6d6-4120-8429-855577ec0063",
+    "metadata": {
+        "category": "App Service",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "fa3a6357-c6d6-4120-8429-855577ec0063",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites/slots",
+                    "field": "type"
+                },
+                {
+                    "contains": "functionapp",
+                    "field": "kind"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "workflowapp"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "siteId": {
+                                "value": "[field('id')]"
+                            },
+                            "siteName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {},
+                            "parameters": {
+                                "siteId": {
+                                    "type": "string"
+                                },
+                                "siteName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-02-01",
+                                    "name": "[format('{0}/{1}/web', split(parameters('siteId'),'/')[8], parameters('siteName'))]",
+                                    "properties": {
+                                        "minTlsVersion": "1.2"
+                                    },
+                                    "type": "Microsoft.Web/sites/slots/config"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "1.2",
+                    "field": "Microsoft.Web/sites/slots/config/minTlsVersion"
+                },
+                "name": "web",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772"
+                ],
+                "type": "Microsoft.Web/sites/slots/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

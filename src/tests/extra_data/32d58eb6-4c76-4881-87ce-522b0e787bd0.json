@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Program Management control",
+    "displayName": "Microsoft Managed Control 1735 - Information Security Resources",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/32d58eb6-4c76-4881-87ce-522b0e787bd0",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1735",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "32d58eb6-4c76-4881-87ce-522b0e787bd0",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

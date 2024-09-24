@@ -1,0 +1,202 @@
+{
+    "description": "Enable resource logs for public IP addressess in diagnostic settings to stream to a Log Analytics workspace. Get detailed visibility into attack traffic and actions taken to mitigate DDoS attacks via notifications, reports and flow logs.",
+    "displayName": "Public IP addresses should have resource logs enabled for Azure DDoS Protection",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/752154a7-1e0f-45c6-a880-ac75a7e4f648",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "752154a7-1e0f-45c6-a880-ac75a7e4f648",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "logAnalytics": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "The target Log Analytics workspace for the diagnostic settings",
+                "displayName": "Log Analytics workspace",
+                "strongType": "omsWorkspace"
+            },
+            "type": "String"
+        },
+        "logsEnabled": {
+            "allowedValues": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "True",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable Logs - True or False",
+                "displayName": "Enable Logs",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "metricsEnabled": {
+            "allowedValues": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "False",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable Metrics - True or False",
+                "displayName": "Enable Metrics",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "profileName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Profile name for the Azure diagnostic settings resource",
+                "displayName": "Diagnostic setting name",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Network/publicIPAddresses",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "logAnalytics": {
+                                "value": "[parameters('logAnalytics')]"
+                            },
+                            "logsEnabled": {
+                                "value": "[parameters('logsEnabled')]"
+                            },
+                            "metricsEnabled": {
+                                "value": "[parameters('metricsEnabled')]"
+                            },
+                            "name": {
+                                "value": "[field('name')]"
+                            },
+                            "profileName": {
+                                "value": "[parameters('profileName')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {
+                                "policy": {
+                                    "type": "string",
+                                    "value": "[concat(parameters('logAnalytics'), 'configured for resource logs for ', ': ', parameters('name'))]"
+                                }
+                            },
+                            "parameters": {
+                                "logAnalytics": {
+                                    "type": "string"
+                                },
+                                "logsEnabled": {
+                                    "type": "string"
+                                },
+                                "metricsEnabled": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "profileName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2017-05-01-preview",
+                                    "dependsOn": [],
+                                    "name": "[concat(parameters('name'), '/', 'Microsoft.Insights/', parameters('profileName'))]",
+                                    "properties": {
+                                        "logs": [
+                                            {
+                                                "category": "DDoSProtectionNotifications",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "DDoSMitigationFlowLogs",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "DDoSMitigationReports",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            }
+                                        ],
+                                        "metrics": [
+                                            {
+                                                "category": "AllMetrics",
+                                                "enabled": "[parameters('metricsEnabled')]",
+                                                "retentionPolicy": {
+                                                    "days": 0,
+                                                    "enabled": false
+                                                }
+                                            }
+                                        ],
+                                        "workspaceId": "[parameters('logAnalytics')]"
+                                    },
+                                    "type": "Microsoft.Network/publicIPAddresses/providers/diagnosticSettings"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "[parameters('LogsEnabled')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/logs.enabled"
+                        },
+                        {
+                            "equals": "[parameters('MetricsEnabled')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/metrics.enabled"
+                        },
+                        {
+                            "equals": "[parameters('logAnalytics')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/workspaceId"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+                ],
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

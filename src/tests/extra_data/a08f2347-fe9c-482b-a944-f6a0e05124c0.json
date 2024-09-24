@@ -1,0 +1,49 @@
+{
+    "description": "Disables Grafana Enterprise upgrade in Grafana workspace.",
+    "displayName": "Azure Managed Grafana workspaces should disable Grafana Enterprise upgrade",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a08f2347-fe9c-482b-a944-f6a0e05124c0",
+    "metadata": {
+        "category": "Managed Grafana",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "a08f2347-fe9c-482b-a944-f6a0e05124c0",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Dashboard/grafana",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Dashboard/grafana/enterpriseConfigurations",
+                    "notEquals": "null"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

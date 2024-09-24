@@ -1,0 +1,84 @@
+{
+    "description": "Periodically, newer versions are released for Python software either due to security flaws or to include additional functionality. Using the latest Python version for Function apps is recommended in order to take advantage of security fixes, if any, and/or new functionalities of the latest version. This policy only applies to Linux apps. This policy requires you to specify a Python version that meets your requirements.",
+    "displayName": "Function app slots that use Python should use a specified 'Python version'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/829b40f3-d3db-4fd2-be46-76663d3aeeb2",
+    "metadata": {
+        "category": "App Service",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "829b40f3-d3db-4fd2-be46-76663d3aeeb2",
+    "parameters": {
+        "LinuxPythonVersion": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specify a supported Python version for Function apps",
+                "displayName": "Linux Python version",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites/slots",
+                    "field": "type"
+                },
+                {
+                    "contains": "functionapp",
+                    "field": "kind"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "workflowapp"
+                },
+                {
+                    "contains": "linux",
+                    "field": "kind"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Web/sites/slots/config/web.linuxFxVersion",
+                            "notContains": "PYTHON"
+                        },
+                        {
+                            "equals": "[concat('PYTHON|', parameters('LinuxPythonVersion'))]",
+                            "field": "Microsoft.Web/sites/slots/config/web.linuxFxVersion"
+                        }
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/slots/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

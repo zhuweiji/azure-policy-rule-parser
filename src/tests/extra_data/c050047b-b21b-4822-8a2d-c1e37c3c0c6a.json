@@ -1,0 +1,418 @@
+{
+    "description": "Deploy a 'sourceControlConfiguration' to Kubernetes clusters to assure that the clusters get their source of truth for workloads and configurations from the defined git repo. This definition requires a SSH private key secret in Key Vault. For instructions, visit https://aka.ms/K8sGitOpsPolicy.",
+    "displayName": "Configure Kubernetes clusters with specified GitOps configuration using SSH secrets",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c050047b-b21b-4822-8a2d-c1e37c3c0c6a",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "c050047b-b21b-4822-8a2d-c1e37c3c0c6a",
+    "parameters": {
+        "chartValues": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Parameters for the Helm chart for installing Flux Helm, separated by spaces. For example, --set helm.versions=v3",
+                "displayName": "Helm chart parameters for installing Flux Helm",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "chartVersion": {
+            "allowedValues": null,
+            "defaultValue": "1.2.0",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The version of the Helm chart for installing Flux Helm. For example, 1.2.0",
+                "displayName": "Helm chart version for installing Flux Helm",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "configurationResourceName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The name for the sourceControlConfiguration.  Learn more about setting up GitOps configuration: https://aka.ms/AzureArcK8sUsingGitOps.",
+                "displayName": "Configuration resource name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "auditIfNotExists",
+                "AuditIfNotExists",
+                "deployIfNotExists",
+                "DeployIfNotExists",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "enableHelmOperator": {
+            "allowedValues": [
+                "true",
+                "false"
+            ],
+            "defaultValue": "true",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Indicate whether to enable Helm for this instance of Flux. Learn more: http://aka.ms/AzureArcK8sGitOpsWithHelm.",
+                "displayName": "Enable Helm",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "keyVaultResourceId": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "The resource id for the Key Vault that holds the SSH or HTTPS secrets. For example: '/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.KeyVault/vaults/<key-vault-name>'",
+                "displayName": "Key Vault resource id",
+                "strongType": "Microsoft.KeyVault/vaults"
+            },
+            "type": "String"
+        },
+        "operatorInstanceName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name used in the operator instances. Maximum of 23 lowercase alphanumeric characters or hyphen. Must start and end with an alphanumeric character.",
+                "displayName": "Operator instance name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "operatorNamespace": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Namespace within which the operators will be installed. Maximum of 23 lowercase alphanumeric characters or hyphen. Must start and end with an alphanumeric character.",
+                "displayName": "Operator namespace",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "operatorParams": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Parameters to set on the Flux operator, separated by spaces.  For example, --git-readonly --sync-garbage-collection.  Learn more: http://aka.ms/AzureArcK8sFluxOperatorParams.",
+                "displayName": "Operator parameters",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "operatorScope": {
+            "allowedValues": [
+                "cluster",
+                "namespace"
+            ],
+            "defaultValue": "namespace",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The permission scope for the operator. Possible values are 'cluster' (full access) or 'namespace' (restricted access).",
+                "displayName": "Operator scope",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "operatorType": {
+            "allowedValues": [
+                "Flux"
+            ],
+            "defaultValue": "Flux",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The type of operator to install. Currently, 'Flux' is supported.",
+                "displayName": "Operator type",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "repositoryUrl": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The URL for the source control repository. Learn more about URL formats: https://aka.ms/GitOpsRepoUrlParameters",
+                "displayName": "Repository Url",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "sshKnownHostsContents": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The base64-encoded known hosts content.",
+                "displayName": "Base64-encoded known hosts content",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "sshPrivateKeyKeyVaultSecretName": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The name of the Key Vault secret that holds the base64-encoded SSH private key.",
+                "displayName": "SSH private key Key Vault secret",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.Kubernetes/connectedClusters",
+                "Microsoft.ContainerService/managedClusters"
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "chartValues": {
+                                "value": "[parameters('chartValues')]"
+                            },
+                            "chartVersion": {
+                                "value": "[parameters('chartVersion')]"
+                            },
+                            "clusterLocation": {
+                                "value": "[field('location')]"
+                            },
+                            "clusterName": {
+                                "value": "[field('name')]"
+                            },
+                            "clusterResourceType": {
+                                "value": "[field('type')]"
+                            },
+                            "configurationResourceName": {
+                                "value": "[parameters('configurationResourceName')]"
+                            },
+                            "enableHelmOperator": {
+                                "value": "[parameters('enableHelmOperator')]"
+                            },
+                            "operatorInstanceName": {
+                                "value": "[parameters('operatorInstanceName')]"
+                            },
+                            "operatorNamespace": {
+                                "value": "[parameters('operatorNamespace')]"
+                            },
+                            "operatorParams": {
+                                "value": "[parameters('operatorParams')]"
+                            },
+                            "operatorScope": {
+                                "value": "[parameters('operatorScope')]"
+                            },
+                            "operatorType": {
+                                "value": "[parameters('operatorType')]"
+                            },
+                            "repositoryUrl": {
+                                "value": "[parameters('repositoryUrl')]"
+                            },
+                            "sshKnownHostsContents": {
+                                "value": "[parameters('sshKnownHostsContents')]"
+                            },
+                            "sshPrivateKey": {
+                                "reference": {
+                                    "keyVault": {
+                                        "id": "[parameters('keyVaultResourceId')]"
+                                    },
+                                    "secretName": "[parameters('sshPrivateKeyKeyVaultSecretName')]"
+                                }
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "chartValues": {
+                                    "type": "string"
+                                },
+                                "chartVersion": {
+                                    "type": "string"
+                                },
+                                "clusterLocation": {
+                                    "type": "string"
+                                },
+                                "clusterName": {
+                                    "type": "string"
+                                },
+                                "clusterResourceType": {
+                                    "type": "string"
+                                },
+                                "configurationResourceName": {
+                                    "type": "string"
+                                },
+                                "enableHelmOperator": {
+                                    "type": "string"
+                                },
+                                "operatorInstanceName": {
+                                    "type": "string"
+                                },
+                                "operatorNamespace": {
+                                    "type": "string"
+                                },
+                                "operatorParams": {
+                                    "type": "string"
+                                },
+                                "operatorScope": {
+                                    "type": "string"
+                                },
+                                "operatorType": {
+                                    "type": "string"
+                                },
+                                "repositoryUrl": {
+                                    "type": "string"
+                                },
+                                "sshKnownHostsContents": {
+                                    "type": "string"
+                                },
+                                "sshPrivateKey": {
+                                    "type": "securestring"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-03-01",
+                                    "condition": "[contains(toLower(parameters('clusterResourceType')), toLower('connectedclusters'))]",
+                                    "name": "[concat(parameters('clusterName'), '/Microsoft.KubernetesConfiguration/', parameters('configurationResourceName'))]",
+                                    "properties": {
+                                        "configurationProtectedSettings": {
+                                            "sshPrivateKey": "[parameters('sshPrivateKey')]"
+                                        },
+                                        "enableHelmOperator": "[parameters('enableHelmOperator')]",
+                                        "helmOperatorProperties": {
+                                            "chartValues": "[parameters('chartValues')]",
+                                            "chartVersion": "[parameters('chartVersion')]"
+                                        },
+                                        "operatorInstanceName": "[parameters('operatorInstanceName')]",
+                                        "operatorNamespace": "[parameters('operatorNamespace')]",
+                                        "operatorParams": "[parameters('operatorParams')]",
+                                        "operatorScope": "[parameters('operatorScope')]",
+                                        "operatorType": "[parameters('operatorType')]",
+                                        "repositoryUrl": "[parameters('repositoryUrl')]",
+                                        "sshKnownHostsContents": "[parameters('sshKnownHostsContents')]"
+                                    },
+                                    "type": "Microsoft.Kubernetes/connectedClusters/providers/sourceControlConfigurations"
+                                },
+                                {
+                                    "apiVersion": "2021-03-01",
+                                    "condition": "[contains(toLower(parameters('clusterResourceType')), toLower('managedclusters'))]",
+                                    "name": "[concat(parameters('clusterName'), '/Microsoft.KubernetesConfiguration/', parameters('configurationResourceName'))]",
+                                    "properties": {
+                                        "configurationProtectedSettings": {
+                                            "sshPrivateKey": "[parameters('sshPrivateKey')]"
+                                        },
+                                        "enableHelmOperator": "[parameters('enableHelmOperator')]",
+                                        "helmOperatorProperties": {
+                                            "chartValues": "[parameters('chartValues')]",
+                                            "chartVersion": "[parameters('chartVersion')]"
+                                        },
+                                        "operatorInstanceName": "[parameters('operatorInstanceName')]",
+                                        "operatorNamespace": "[parameters('operatorNamespace')]",
+                                        "operatorParams": "[parameters('operatorParams')]",
+                                        "operatorScope": "[parameters('operatorScope')]",
+                                        "operatorType": "[parameters('operatorType')]",
+                                        "repositoryUrl": "[parameters('repositoryUrl')]",
+                                        "sshKnownHostsContents": "[parameters('sshKnownHostsContents')]"
+                                    },
+                                    "type": "Microsoft.ContainerService/managedClusters/providers/sourceControlConfigurations"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "deploymentScope": "ResourceGroup",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "field": "Microsoft.KubernetesConfiguration/sourceControlConfigurations/operatorParams",
+                            "in": [
+                                "[parameters('operatorParams')]",
+                                "[concat('--git-readonly ',parameters('operatorParams'))]"
+                            ]
+                        },
+                        {
+                            "equals": "[parameters('repositoryUrl')]",
+                            "field": "Microsoft.KubernetesConfiguration/sourceControlConfigurations/repositoryUrl"
+                        },
+                        {
+                            "equals": "[parameters('sshKnownHostsContents')]",
+                            "field": "Microsoft.KubernetesConfiguration/sourceControlConfigurations/sshKnownHostsContents"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "equals": "false",
+                                    "field": "Microsoft.KubernetesConfiguration/sourceControlConfigurations/enableHelmOperator"
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "true",
+                                            "field": "Microsoft.KubernetesConfiguration/sourceControlConfigurations/enableHelmOperator"
+                                        },
+                                        {
+                                            "equals": "[parameters('chartVersion')]",
+                                            "field": "Microsoft.KubernetesConfiguration/sourceControlConfigurations/helmOperatorProperties.chartVersion"
+                                        },
+                                        {
+                                            "equals": "[parameters('chartValues')]",
+                                            "field": "Microsoft.KubernetesConfiguration/sourceControlConfigurations/helmOperatorProperties.chartValues"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "name": "[parameters('configurationResourceName')]",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.KubernetesConfiguration/sourceControlConfigurations"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

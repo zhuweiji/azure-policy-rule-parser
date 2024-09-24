@@ -1,0 +1,64 @@
+{
+    "description": "Reduces attack surface introduced by escalating privileges as root user in the presence of security vulnerabilities.",
+    "displayName": "[Preview]: Sets Kubernetes cluster Pod securityContext.runAsUser fields to 1000, a non-root user id",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fe74a23d-79e4-401c-bd0d-fd7a5b35af32",
+    "metadata": {
+        "category": "Kubernetes",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Microsoft.Kubernetes.Data",
+    "name": "fe74a23d-79e4-401c-bd0d-fd7a5b35af32",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Mutate",
+                "Disabled"
+            ],
+            "defaultValue": "Mutate",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "'Mutate' modifies a non-compliant resource to be compliant when creating or updating. 'Disabled' turns off the policy.",
+                "displayName": "Effect",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "excludedNamespaces": {
+            "allowedValues": null,
+            "defaultValue": [
+                "kube-system",
+                "gatekeeper-system",
+                "azure-arc"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to exclude from policy evaluation.",
+                "displayName": "Namespace exclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ContainerService/managedClusters",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "excludedNamespaces": "[parameters('excludedNamespaces')]",
+                "mutationInfo": {
+                    "sourceType": "PublicURL",
+                    "url": "https://store.policy.core.windows.net/kubernetes/mutate-run-as-user-pod/v1/mutation.yaml"
+                }
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Communications Protection control",
+    "displayName": "Microsoft Managed Control 1631 - Boundary Protection | Deny By Default / Allow By Exception",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/74ae9b8e-e7bb-4c9c-992f-c535282f7a2c",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1631",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "74ae9b8e-e7bb-4c9c-992f-c535282f7a2c",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

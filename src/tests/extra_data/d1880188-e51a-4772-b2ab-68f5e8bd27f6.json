@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Maintenance control",
+    "displayName": "Microsoft Managed Control 1409 - Maintenance Tools | Prevent Unauthorized Removal",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d1880188-e51a-4772-b2ab-68f5e8bd27f6",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1409",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d1880188-e51a-4772-b2ab-68f5e8bd27f6",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

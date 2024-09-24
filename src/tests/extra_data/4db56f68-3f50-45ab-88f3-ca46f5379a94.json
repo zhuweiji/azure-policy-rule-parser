@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Maintenance control",
+    "displayName": "Microsoft Managed Control 1394 - System Maintenance Policy And Procedures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/4db56f68-3f50-45ab-88f3-ca46f5379a94",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1394",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "4db56f68-3f50-45ab-88f3-ca46f5379a94",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,147 @@
+{
+    "description": "Azure Defender includes vulnerability scanning for your machines at no extra cost. You don't need a Qualys license or even a Qualys account - everything's handled seamlessly inside Security Center. When you enable this policy, Azure Defender automatically deploys the Qualys vulnerability assessment provider to all supported machines that don't already have it installed.",
+    "displayName": "Configure machines to receive a vulnerability assessment provider",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/13ce0167-8ca6-4048-8e6b-f996402e3c1b",
+    "metadata": {
+        "category": "Security Center",
+        "version": "4.0.0"
+    },
+    "mode": "Indexed",
+    "name": "13ce0167-8ca6-4048-8e6b-f996402e3c1b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "vaType": {
+            "allowedValues": [
+                "default",
+                "mdeTvm"
+            ],
+            "defaultValue": "default",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Select the vulnerability assessment solution to provision to machines.",
+                "displayName": "Vulnerability assessment provider type",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyof": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.HybridCompute/machines",
+                            "field": "type"
+                        },
+                        {
+                            "field": "tags",
+                            "notContainsKey": "MDFCSecurityConnector"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "Incremental",
+                        "parameters": {
+                            "resourceType": {
+                                "value": "[field('type')]"
+                            },
+                            "vaType": {
+                                "value": "[parameters('vaType')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "resourceType": {
+                                    "type": "string"
+                                },
+                                "vaType": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "String"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-01-01",
+                                    "condition": "[equals(toLower(parameters('resourceType')), toLower('microsoft.compute/virtualmachines'))]",
+                                    "name": "[variables('resourceNameAndVaType')]",
+                                    "type": "Microsoft.Compute/virtualMachines/providers/serverVulnerabilityAssessments"
+                                },
+                                {
+                                    "apiVersion": "2020-01-01",
+                                    "condition": "[equals(toLower(parameters('resourceType')), toLower('microsoft.hybridcompute/machines'))]",
+                                    "name": "[variables('resourceNameAndVaType')]",
+                                    "type": "Microsoft.HybridCompute/machines/providers/serverVulnerabilityAssessments"
+                                }
+                            ],
+                            "variables": {
+                                "resourceNameAndVaType": "[concat(parameters('vmName'), '/Microsoft.Security/', parameters('vaType'))]"
+                            }
+                        }
+                    }
+                },
+                "evaluationDelay": "PT60M",
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "equals": "NotApplicable",
+                            "field": "Microsoft.Security/assessments/status.code"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "Healthy",
+                                    "field": "Microsoft.Security/assessments/status.code"
+                                },
+                                {
+                                    "equals": "[parameters('vaType')]",
+                                    "field": "Microsoft.Security/assessments/status.cause"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "name": "ffff0522-1e88-47fc-8382-2a80ba848f5d",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+                ],
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

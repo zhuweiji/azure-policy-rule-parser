@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Communications Protection control",
+    "displayName": "Microsoft Managed Control 1633 - Boundary Protection | Route Traffic To Authenticated Proxy Servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/07557aa0-e02f-4460-9a81-8ecd2fed601a",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1633",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "07557aa0-e02f-4460-9a81-8ecd2fed601a",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

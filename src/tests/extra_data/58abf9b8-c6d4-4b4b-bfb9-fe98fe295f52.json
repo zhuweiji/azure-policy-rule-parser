@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Risk Assessment control",
+    "displayName": "Microsoft Managed Control 1547 - Vulnerability Scanning",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/58abf9b8-c6d4-4b4b-bfb9-fe98fe295f52",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1547",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "58abf9b8-c6d4-4b4b-bfb9-fe98fe295f52",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

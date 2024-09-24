@@ -1,0 +1,60 @@
+{
+    "description": "Restrict access to the Kubernetes Service Management API by granting API access only to IP addresses in specific ranges. It is recommended to limit access to authorized IP ranges to ensure that only applications from allowed networks can access the cluster.",
+    "displayName": "Authorized IP ranges should be defined on Kubernetes Services",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0e246bcf-5f6f-4f87-bc6f-775d4712c7ea",
+    "metadata": {
+        "category": "Security Center",
+        "version": "2.0.1"
+    },
+    "mode": "All",
+    "name": "0e246bcf-5f6f-4f87-bc6f-775d4712c7ea",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerService/managedClusters",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.ContainerService/managedClusters/apiServerAccessProfile.authorizedIPRanges"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.ContainerService/managedClusters/apiServerAccessProfile.enablePrivateCluster"
+                        },
+                        {
+                            "equals": "false",
+                            "field": "Microsoft.ContainerService/managedClusters/apiServerAccessProfile.enablePrivateCluster"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

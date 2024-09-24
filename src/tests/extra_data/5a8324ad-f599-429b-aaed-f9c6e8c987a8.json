@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Personnel Security control",
+    "displayName": "Microsoft Managed Control 1512 - Personnel Screening",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5a8324ad-f599-429b-aaed-f9c6e8c987a8",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1512",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "5a8324ad-f599-429b-aaed-f9c6e8c987a8",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

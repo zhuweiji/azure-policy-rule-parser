@@ -1,0 +1,93 @@
+{
+    "description": "Disable or PermanentlyDisable Cross Subscription Restore for your Recovery Services vault so that restore targets cannot be in different subscription from the vault subscription. Learn more at: https://aka.ms/csrenhancements.",
+    "displayName": "[Preview]: Disable Cross Subscription Restore for Azure Recovery Services vaults",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f19b0c83-716f-4b81-85e3-2dbf057c35d6",
+    "metadata": {
+        "category": "Backup",
+        "preview": true,
+        "version": "1.1.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "f19b0c83-716f-4b81-85e3-2dbf057c35d6",
+    "parameters": {
+        "crossSubscriptionRestoreState": {
+            "allowedValues": [
+                "Disable",
+                "PermanentlyDisable"
+            ],
+            "defaultValue": "Disable",
+            "metadata": {
+                "assignPermissions": null,
+                "deprecated": true,
+                "description": "Settings to disable or permanently disable Cross Subscription Restore. Please note that Cross Subscription Restore once permanently disabled on a vault cannot be re-enabled.",
+                "displayName": "[Deprecated]: Cross Subscription Restore State",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "crossSubscriptionRestoreStateParameter": {
+            "allowedValues": [
+                "Disabled",
+                "PermanentlyDisabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Settings to disable or permanently disable Cross Subscription Restore. Please note that Cross Subscription Restore once permanently disabled on a vault cannot be re-enabled.",
+                "displayName": "Cross Subscription Restore State",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.RecoveryServices/vaults",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.RecoveryServices/vaults/restoreSettings.crossSubscriptionRestoreSettings.crossSubscriptionRestoreState",
+                    "notEquals": "[parameters('crossSubscriptionRestoreStateParameter')]"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "deny",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2023-02-01')]",
+                        "field": "Microsoft.RecoveryServices/vaults/restoreSettings.crossSubscriptionRestoreSettings.crossSubscriptionRestoreState",
+                        "operation": "addOrReplace",
+                        "value": "[parameters('crossSubscriptionRestoreStateParameter')]"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/5e467623-bb1f-42f4-a55d-6e525e11384b"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

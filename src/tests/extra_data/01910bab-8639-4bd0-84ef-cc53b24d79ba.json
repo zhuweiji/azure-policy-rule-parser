@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Awareness and Training control",
+    "displayName": "Microsoft Managed Control 1099 - Security Training Records",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/01910bab-8639-4bd0-84ef-cc53b24d79ba",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1099",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "01910bab-8639-4bd0-84ef-cc53b24d79ba",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

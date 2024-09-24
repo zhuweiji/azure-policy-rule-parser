@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Planning control",
+    "displayName": "Microsoft Managed Control 1490 - Security Planning Policy And Procedures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9e61da80-0957-4892-b70c-609d5eaafb6b",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1490",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "9e61da80-0957-4892-b70c-609d5eaafb6b",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

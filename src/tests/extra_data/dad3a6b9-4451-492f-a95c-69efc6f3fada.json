@@ -1,0 +1,64 @@
+{
+    "description": "At a minimum, apply the Microsoft WDAC base policy in enforced mode on all Azure Stack HCI servers. Applied Windows Defender Application Control (WDAC) policies must be consistent across servers in the same cluster.",
+    "displayName": "[Preview]: Azure Stack HCI servers should have consistently enforced application control policies",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/dad3a6b9-4451-492f-a95c-69efc6f3fada",
+    "metadata": {
+        "category": "Stack HCI",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "dad3a6b9-4451-492f-a95c-69efc6f3fada",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "AuditIfNotExists"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.AzureStackHCI/clusters",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.AzureStackHCI/clusters/reportedProperties.clusterVersion",
+                    "greater": "10.0.20350"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "field": "Microsoft.AzureStackHCI/clusters/securitySettings/securityComplianceStatus.wdacCompliance",
+                            "in": [
+                                "Compliant",
+                                "Pending"
+                            ]
+                        }
+                    ]
+                },
+                "type": "Microsoft.AzureStackHCI/clusters/securitySettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

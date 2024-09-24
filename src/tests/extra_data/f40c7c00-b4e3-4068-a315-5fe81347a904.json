@@ -1,0 +1,660 @@
+{
+    "description": "This policy adds a user-assigned managed identity to virtual machines hosted in Azure that are supported by Guest Configuration. A user-assigned managed identity is a prerequisite for all Guest Configuration assignments and must be added to machines before using any Guest Configuration policy definitions. For more information on Guest Configuration, visit https://aka.ms/gcpol.",
+    "displayName": "[Preview]: Add user-assigned managed identity to enable Guest Configuration assignments on virtual machines",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f40c7c00-b4e3-4068-a315-5fe81347a904",
+    "metadata": {
+        "category": "Guest Configuration",
+        "preview": true,
+        "version": "2.1.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "f40c7c00-b4e3-4068-a315-5fe81347a904",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match.",
+                "displayName": "Policy Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Compute/imagePublisher",
+                                    "in": [
+                                        "esri",
+                                        "incredibuild",
+                                        "MicrosoftDynamicsAX",
+                                        "MicrosoftSharepoint",
+                                        "MicrosoftVisualStudio",
+                                        "MicrosoftWindowsDesktop",
+                                        "MicrosoftWindowsServerHPCPack"
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftWindowsServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftSQLServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "notLike": "SQL2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-dsvm",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "dsvm-win*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-ads",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "in": [
+                                                "standard-data-science-vm",
+                                                "windows-data-science-vm"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "batch",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "equals": "rendering-windows2016",
+                                            "field": "Microsoft.Compute/imageOffer"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "center-for-internet-security-inc",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "cis-windows-server-201*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "pivotal",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "bosh-windows-server*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "cloud-infrastructure-services",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "ad*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "like": "Windows*"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/imageSKU"
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "notLike": "2008*"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "notLike": "SQL2008*"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Compute/imagePublisher",
+                                    "in": [
+                                        "microsoft-aks",
+                                        "qubole-inc",
+                                        "datastax",
+                                        "couchbase",
+                                        "scalegrid",
+                                        "checkpoint",
+                                        "paloaltonetworks",
+                                        "debian",
+                                        "credativ"
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "OpenLogic",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "6*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Oracle",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "6*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "RedHat",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "6*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "center-for-internet-security-inc",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "notLike": "cis-win*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Suse",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "11*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Canonical",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "12*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-dsvm",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "notLike": "dsvm-win*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "cloudera",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "6*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-ads",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "linux*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "like": "Linux*"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/imagePublisher"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/imagePublisher",
+                                                    "notIn": [
+                                                        "OpenLogic",
+                                                        "RedHat",
+                                                        "credativ",
+                                                        "Suse",
+                                                        "Canonical",
+                                                        "microsoft-dsvm",
+                                                        "cloudera",
+                                                        "microsoft-ads",
+                                                        "center-for-internet-security-inc",
+                                                        "Oracle",
+                                                        "AzureDatabricks",
+                                                        "azureopenshift"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "greaterOrEquals": "2018-10-01",
+                    "value": "[requestContext().apiVersion]"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "eastus",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "bringYourOwnUserAssignedManagedIdentity": {
+                                "value": false
+                            },
+                            "identityResourceGroup": {
+                                "value": "Built-In-Identity-RG"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "resourceId": {
+                                "value": "[field('id')]"
+                            },
+                            "uaName": {
+                                "value": "Built-In-Identity"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            },
+                            "vmResourceGroup": {
+                                "value": "[resourceGroup().name]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                            "contentVersion": "1.0.0.1",
+                            "parameters": {
+                                "bringYourOwnUserAssignedManagedIdentity": {
+                                    "type": "bool"
+                                },
+                                "identityResourceGroup": {
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "resourceId": {
+                                    "type": "string"
+                                },
+                                "uaName": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                },
+                                "vmResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "condition": "[not(parameters('bringYourOwnUserAssignedManagedIdentity'))]",
+                                    "location": "eastus",
+                                    "name": "[parameters('identityResourceGroup')]",
+                                    "type": "Microsoft.Resources/resourceGroups"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "condition": "[parameters('bringYourOwnUserAssignedManagedIdentity')]",
+                                    "name": "[variables('deployUALockName')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "uaName": {
+                                                "value": "[parameters('uaName')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "uaName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2016-09-01",
+                                                    "name": "[concat('CanNotDeleteLock-', parameters('uaName'))]",
+                                                    "properties": {
+                                                        "level": "CanNotDelete",
+                                                        "notes": "Please do not delete this User-Assigned Identity since extensions enabled by Azure Policy are relying on their existence."
+                                                    },
+                                                    "scope": "[concat('Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('uaName'))]",
+                                                    "type": "Microsoft.Authorization/locks"
+                                                }
+                                            ],
+                                            "variables": {}
+                                        }
+                                    },
+                                    "resourceGroup": "[parameters('identityResourceGroup')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "condition": "[not(parameters('bringYourOwnUserAssignedManagedIdentity'))]",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Resources/resourceGroups', parameters('identityResourceGroup'))]"
+                                    ],
+                                    "name": "[variables('deployUAName')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "location": {
+                                                "value": "[parameters('location')]"
+                                            },
+                                            "uaName": {
+                                                "value": "[variables('uaNameWithLocation')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "uaName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2018-11-30",
+                                                    "location": "[parameters('location')]",
+                                                    "name": "[parameters('uaName')]",
+                                                    "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+                                                },
+                                                {
+                                                    "apiVersion": "2016-09-01",
+                                                    "dependsOn": [
+                                                        "[parameters('uaName')]"
+                                                    ],
+                                                    "name": "[concat(parameters('uaName'), '/Microsoft.Authorization/', 'CanNotDeleteLock-', parameters('uaName'))]",
+                                                    "properties": {
+                                                        "level": "CanNotDelete",
+                                                        "notes": "Please do not delete this User-Assigned Identity since extensions enabled by Azure Policy are relying on their existence."
+                                                    },
+                                                    "type": "Microsoft.ManagedIdentity/userAssignedIdentities/providers/locks"
+                                                }
+                                            ],
+                                            "variables": {}
+                                        }
+                                    },
+                                    "resourceGroup": "[parameters('identityResourceGroup')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Resources/resourceGroups', parameters('identityResourceGroup'))]",
+                                        "[variables('deployUAName')]"
+                                    ],
+                                    "location": "eastus",
+                                    "name": "[variables('deployGetResourceProperties')]",
+                                    "properties": {
+                                        "mode": "Incremental",
+                                        "template": {
+                                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "outputs": {
+                                                "resource": {
+                                                    "type": "object",
+                                                    "value": "[reference(parameters('resourceId'), '2019-07-01', 'Full')]"
+                                                }
+                                            },
+                                            "resources": []
+                                        }
+                                    },
+                                    "type": "Microsoft.Resources/deployments"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Resources/resourceGroups', parameters('identityResourceGroup'))]",
+                                        "[variables('deployUAName')]",
+                                        "[variables('deployGetResourceProperties')]"
+                                    ],
+                                    "name": "[concat(variables('deployAssignUAName'))]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "identityType": {
+                                                "value": "[if(contains(reference(variables('deployGetResourceProperties')).outputs.resource.value, 'identity'), reference(variables('deployGetResourceProperties')).outputs.resource.value.identity.type, '')]"
+                                            },
+                                            "location": {
+                                                "value": "[parameters('location')]"
+                                            },
+                                            "uaId": {
+                                                "value": "[if(parameters('bringYourOwnUserAssignedManagedIdentity'), variables('precreatedUaId'), variables('autocreatedUaId'))]"
+                                            },
+                                            "userAssignedIdentities": {
+                                                "value": "[if(and(contains(reference(variables('deployGetResourceProperties')).outputs.resource.value, 'identity'), contains(reference(variables('deployGetResourceProperties')).outputs.resource.value.identity, 'userAssignedIdentities')), reference(variables('deployGetResourceProperties')).outputs.resource.value.identity.userAssignedIdentities, createObject())]"
+                                            },
+                                            "vmName": {
+                                                "value": "[parameters('vmName')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "identityType": {
+                                                    "type": "string"
+                                                },
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "uaId": {
+                                                    "type": "string"
+                                                },
+                                                "userAssignedIdentities": {
+                                                    "type": "object"
+                                                },
+                                                "vmName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2019-07-01",
+                                                    "identity": {
+                                                        "type": "[variables('identityTypeValue')]",
+                                                        "userAssignedIdentities": "[variables('userAssignedIdentitiesValue')]"
+                                                    },
+                                                    "location": "[parameters('location')]",
+                                                    "name": "[parameters('vmName')]",
+                                                    "type": "Microsoft.Compute/virtualMachines"
+                                                }
+                                            ],
+                                            "variables": {
+                                                "identityTypeValue": "[if(contains(parameters('identityType'), 'SystemAssigned'), 'SystemAssigned,UserAssigned', 'UserAssigned')]",
+                                                "userAssignedIdentitiesValue": "[union(parameters('userAssignedIdentities'), createObject(parameters('uaId'), createObject()))]"
+                                            }
+                                        }
+                                    },
+                                    "resourceGroup": "[parameters('vmResourceGroup')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "autocreatedUaId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', trim(parameters('identityResourceGroup')), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', trim(parameters('uaName')), '-', parameters('location'))]",
+                                "deployAssignUAName": "[concat('deployAssignUA-', uniqueString(deployment().name))]",
+                                "deployGetResourceProperties": "[concat('deployGetResourceProperties-', uniqueString(deployment().name))]",
+                                "deployUALockName": "[concat('deployUALock-', uniqueString(deployment().name))]",
+                                "deployUAName": "[concat('deployUA-', uniqueString(deployment().name))]",
+                                "precreatedUaId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', trim(parameters('identityResourceGroup')), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', trim(parameters('uaName')))]",
+                                "uaNameWithLocation": "[concat(parameters('uaName'),'-', parameters('location'))]"
+                            }
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "evaluationDelay": "AfterProvisioning",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "contains": "UserAssigned",
+                            "field": "identity.type"
+                        },
+                        {
+                            "containsKey": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/Built-In-Identity-RG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/Built-In-Identity-', field('location'))]",
+                            "field": "identity.userAssignedIdentities"
+                        }
+                    ]
+                },
+                "name": "[field('name')]",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                    "/providers/Microsoft.Authorization/roleDefinitions/18d7d88d-d35e-4fb5-a5c3-7773c20a72d9"
+                ],
+                "type": "Microsoft.Compute/virtualMachines"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

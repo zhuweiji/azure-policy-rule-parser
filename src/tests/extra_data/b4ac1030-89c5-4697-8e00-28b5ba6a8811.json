@@ -1,0 +1,63 @@
+{
+    "description": "To secure the data at rest on the device, ensure it's double-encrypted, the access to data is controlled, and once the device is deactivated, the data is securely erased off the data disks. Double encryption is the use of two layers of encryption: BitLocker XTS-AES 256-bit encryption on the data volumes and built-in encryption of the hard drives. Learn more in the security overview documentation for the specific Stack Edge device.",
+    "displayName": "Azure Stack Edge devices should use double-encryption",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b4ac1030-89c5-4697-8e00-28b5ba6a8811",
+    "metadata": {
+        "category": "Azure Stack Edge",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "b4ac1030-89c5-4697-8e00-28b5ba6a8811",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DataBoxEdge/DataBoxEdgeDevices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.DataboxEdge/DataBoxEdgeDevices/sku.name",
+                    "notIn": [
+                        "TEA_1Node",
+                        "TEA_1Node_UPS",
+                        "TEA_1Node_Heater",
+                        "TEA_1Node_UPS_Heater",
+                        "TEA_4Node_Heater",
+                        "TEA_4Node_UPS_Heater",
+                        "TMA",
+                        "EdgePR_Base",
+                        "EdgePR_Base_UPS",
+                        "EdgeMR_Mini"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

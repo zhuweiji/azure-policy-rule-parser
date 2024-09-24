@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Accountability, Audit, and Risk Management control",
+    "displayName": "Microsoft Managed Control 1819 - Accounting of Disclosures ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c6c43097-8552-4279-8b38-7dcabff781d3",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1819",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c6c43097-8552-4279-8b38-7dcabff781d3",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

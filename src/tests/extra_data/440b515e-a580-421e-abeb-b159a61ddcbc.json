@@ -1,0 +1,163 @@
+{
+    "description": "Restrict containers to listen only on allowed ports to secure access to the Kubernetes cluster. The policy is deprecating since container port is only informative field which cannot decide the port container is actually using. For more information, see https://aka.ms/kubepolicydoc.",
+    "displayName": "[Deprecated]: Kubernetes cluster containers should only listen on allowed ports",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/440b515e-a580-421e-abeb-b159a61ddcbc",
+    "metadata": {
+        "category": "Kubernetes",
+        "deprecated": true,
+        "version": "6.2.0-deprecated"
+    },
+    "mode": "Microsoft.Kubernetes.Data",
+    "name": "440b515e-a580-421e-abeb-b159a61ddcbc",
+    "parameters": {
+        "allowedContainerPortsList": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of container ports allowed in a Kubernetes cluster. Array only accepts strings. Example: [\"443\", \"80\"]",
+                "displayName": "Allowed container ports list",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created, but flags it as non-compliant. 'Deny' blocks the resource creation. 'Disable' turns off the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "excludedNamespaces": {
+            "allowedValues": null,
+            "defaultValue": [
+                "kube-system",
+                "gatekeeper-system",
+                "azure-arc"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to exclude from policy evaluation. System namespaces \"kube-system\", \"gatekeeper-system\" and \"azure-arc\" are always excluded by design.",
+                "displayName": "Namespace exclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "labelSelector": {
+            "allowedValues": null,
+            "defaultValue": {},
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Label query to select Kubernetes resources for policy evaluation. An empty label selector matches all Kubernetes resources.",
+                "displayName": "Kubernetes label selector",
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "description": "A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all resources.",
+                "properties": {
+                    "matchExpressions": {
+                        "description": "matchExpressions is a list of values, a key, and an operator.",
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "key": {
+                                    "description": "key is the label key that the selector applies to.",
+                                    "type": "string"
+                                },
+                                "operator": {
+                                    "description": "operator represents a key's relationship to a set of values.",
+                                    "enum": [
+                                        "In",
+                                        "NotIn",
+                                        "Exists",
+                                        "DoesNotExist"
+                                    ],
+                                    "type": "string"
+                                },
+                                "values": {
+                                    "description": "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty.",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "required": [
+                                "key",
+                                "operator"
+                            ],
+                            "type": "object"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "matchLabels": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "matchLabels is a map of {key,value} pairs.",
+                        "minProperties": 1,
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "namespaces": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to only include in policy evaluation. An empty list means the policy is applied to all resources in all namespaces.",
+                "displayName": "Namespace inclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "AKS Engine",
+                "Microsoft.Kubernetes/connectedClusters",
+                "Microsoft.ContainerService/managedClusters"
+            ]
+        },
+        "then": {
+            "details": {
+                "constraint": "https://store.policy.core.windows.net/kubernetes/container-allowed-ports/v1/constraint.yaml",
+                "constraintTemplate": "https://store.policy.core.windows.net/kubernetes/container-allowed-ports/v1/template.yaml",
+                "excludedNamespaces": "[parameters('excludedNamespaces')]",
+                "labelSelector": "[parameters('labelSelector')]",
+                "namespaces": "[parameters('namespaces')]",
+                "values": {
+                    "allowedContainerPorts": "[parameters('allowedContainerPortsList')]",
+                    "allowedPorts": "[parameters('allowedContainerPortsList')]"
+                }
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

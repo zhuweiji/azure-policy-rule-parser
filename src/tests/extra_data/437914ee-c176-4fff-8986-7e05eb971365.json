@@ -1,0 +1,225 @@
+{
+    "description": "Use private DNS zones to override the DNS resolution for a private endpoint. A private DNS zone links to your virtual network to resolve to Azure Monitor private link scope. Learn more at: https://docs.microsoft.com/azure/azure-monitor/logs/private-link-security#connect-to-a-private-endpoint.",
+    "displayName": "Configure Azure Monitor Private Link Scope to use private DNS zones",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/437914ee-c176-4fff-8986-7e05eb971365",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "437914ee-c176-4fff-8986-7e05eb971365",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId1": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "One of the five private DNS zone IDs required for Microsoft.Insights/privateLinkScopes to resolve a private DNS Zone to your Azure Monitor Private Link scope.",
+                "displayName": "Private DNS Zone for global endpoints used by Azure Monitor",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId2": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "One of the five private DNS zone IDs required for Microsoft.Insights/privateLinkScopes to resolve a private DNS Zone to your Azure Monitor Private Link scope.",
+                "displayName": "Private DNS Zone for workspace-specific mapping to OMS agents endpoints",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId3": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "One of the five private DNS zone IDs required for Microsoft.Insights/privateLinkScopes to resolve a private DNS Zone to your Azure Monitor Private Link scope.",
+                "displayName": "Private DNS Zone for workspace-specific mapping to ingestion endpoints",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId4": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "One of the five private DNS zone IDs required for Microsoft.Insights/privateLinkScopes to resolve a private DNS Zone.",
+                "displayName": "Private DNS Zone for workspace-specific mapping to the agent service automation endpoints",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId5": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "One of the five private DNS zone IDs required for Microsoft.Insights/privateLinkScopes to resolve a private DNS Zone.",
+                "displayName": "Private DNS Zone for connectivity to the global agent's solution packs storage account",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/privateEndpoints",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*]",
+                        "where": {
+                            "allOf": [
+                                {
+                                    "contains": "Microsoft.Insights/privateLinkScopes",
+                                    "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].privateLinkServiceId"
+                                },
+                                {
+                                    "equals": "azuremonitor",
+                                    "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]"
+                                }
+                            ]
+                        }
+                    },
+                    "greaterOrEquals": 1
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "privateDnsZoneId1": {
+                                "value": "[parameters('privateDnsZoneId1')]"
+                            },
+                            "privateDnsZoneId2": {
+                                "value": "[parameters('privateDnsZoneId2')]"
+                            },
+                            "privateDnsZoneId3": {
+                                "value": "[parameters('privateDnsZoneId3')]"
+                            },
+                            "privateDnsZoneId4": {
+                                "value": "[parameters('privateDnsZoneId4')]"
+                            },
+                            "privateDnsZoneId5": {
+                                "value": "[parameters('privateDnsZoneId5')]"
+                            },
+                            "privateEndpointName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId1": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId2": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId3": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId4": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId5": {
+                                    "type": "string"
+                                },
+                                "privateEndpointName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-03-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('privateEndpointName'), '/deployedByPolicy')]",
+                                    "properties": {
+                                        "privateDnsZoneConfigs": [
+                                            {
+                                                "name": "privateDnsZone1",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId1')]"
+                                                }
+                                            },
+                                            {
+                                                "name": "privateDnsZone2",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId2')]"
+                                                }
+                                            },
+                                            {
+                                                "name": "privateDnsZone3",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId3')]"
+                                                }
+                                            },
+                                            {
+                                                "name": "privateDnsZone4",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId4')]"
+                                                }
+                                            },
+                                            {
+                                                "name": "privateDnsZone5",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId5')]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+                ],
+                "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

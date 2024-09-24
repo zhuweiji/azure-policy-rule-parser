@@ -1,0 +1,73 @@
+{
+    "description": "This policy requires non-admin user accounts to be created for the labs managed through lab-services.",
+    "displayName": "Lab Services should require non-admin user for labs",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0fd9915e-cab3-4f24-b200-6e20e1aa276a",
+    "metadata": {
+        "category": "Lab Services",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "0fd9915e-cab3-4f24-b200-6e20e1aa276a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "excludeLabPlanId": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Optionally enter the lab Plan Id to exclude for this policy assignment.",
+                "displayName": "Lab Plan Id to exclude",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.LabServices/labs",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.LabServices/labs/labPlanId",
+                    "notEquals": "[parameters('excludeLabPlanId')]"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.LabServices/labs/virtualMachineProfile.nonAdminUser.username"
+                        },
+                        {
+                            "equals": "",
+                            "field": "Microsoft.LabServices/labs/virtualMachineProfile.nonAdminUser.username"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

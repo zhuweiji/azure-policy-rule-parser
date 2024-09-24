@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Communications Protection control",
+    "displayName": "Microsoft Managed Control 1635 - Boundary Protection | Host-Based Protection",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/87551b5d-1deb-4d0f-86cc-9dc14cb4bf7e",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1635",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "87551b5d-1deb-4d0f-86cc-9dc14cb4bf7e",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

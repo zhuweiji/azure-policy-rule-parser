@@ -1,0 +1,48 @@
+{
+    "description": "Audit for flow log resources to verify if flow log status is enabled. Enabling flow logs allows to log information about IP traffic flowing. It can be used for optimizing network flows, monitoring throughput, verifying compliance, detecting intrusions and more.",
+    "displayName": "All flow log resources should be in enabled state",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/27960feb-a23c-4577-8d36-ef8b5f35e0be",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "27960feb-a23c-4577-8d36-ef8b5f35e0be",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allof": [
+                {
+                    "equals": "Microsoft.Network/networkWatchers/flowLogs",
+                    "field": "type"
+                },
+                {
+                    "equals": false,
+                    "field": "Microsoft.Network/networkWatchers/flowLogs/enabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

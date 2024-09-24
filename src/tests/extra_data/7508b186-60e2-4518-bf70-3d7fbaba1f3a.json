@@ -1,0 +1,62 @@
+{
+    "description": "Authenticaton type must be Microsoft EntraID for packet core diagnostic access over local APIs",
+    "displayName": "Configure Packet Core Control Plane diagnostic access to use authentication type Microsoft EntraID",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7508b186-60e2-4518-bf70-3d7fbaba1f3a",
+    "metadata": {
+        "category": "Mobile Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "7508b186-60e2-4518-bf70-3d7fbaba1f3a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.MobileNetwork/packetCoreControlPlanes",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.MobileNetwork/packetCoreControlPlanes/localDiagnosticsAccess.authenticationType",
+                    "notEquals": "AAD"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2022-11-01')]",
+                        "field": "Microsoft.MobileNetwork/packetCoreControlPlanes/localDiagnosticsAccess.authenticationType",
+                        "operation": "addOrReplace",
+                        "value": "AAD"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

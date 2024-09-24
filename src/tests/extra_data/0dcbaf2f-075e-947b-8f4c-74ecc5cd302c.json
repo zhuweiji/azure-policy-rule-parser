@@ -1,0 +1,44 @@
+{
+    "description": "CMA_C1566 - Identify individuals with security roles and responsibilities",
+    "displayName": "Identify individuals with security roles and responsibilities",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0dcbaf2f-075e-947b-8f4c-74ecc5cd302c",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_C1566",
+        "category": "Regulatory Compliance",
+        "version": "1.1.1"
+    },
+    "mode": "All",
+    "name": "0dcbaf2f-075e-947b-8f4c-74ecc5cd302c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

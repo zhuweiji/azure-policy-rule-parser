@@ -1,0 +1,75 @@
+{
+    "description": "Automatically prevent installation of the legacy Log Analytics Agent as the final step of migrating from legacy agents to Azure Monitor Agent. After you have uninstalled existing legacy extensions, this policy will deny all future installations of the legacy agent extension on Linux virtual machine scale sets. Learn more: https://aka.ms/migratetoAMA",
+    "displayName": "The legacy Log Analytics extension should not be installed on Linux virtual machine scale sets",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/383c45fa-8b64-4d1c-aa9f-e69d2d879aa4",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "383c45fa-8b64-4d1c-aa9f-e69d2d879aa4",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Deny",
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/virtualMachineScaleSets/extensions",
+                            "field": "type"
+                        },
+                        {
+                            "equals": "Microsoft.EnterpriseCloud.Monitoring",
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/publisher"
+                        },
+                        {
+                            "equals": "OmsAgentForLinux",
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/type"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/virtualMachineScaleSets",
+                            "field": "type"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Compute/VirtualMachineScaleSets/extensionProfile.extensions[*]",
+                                "where": {
+                                    "equals": "OmsAgentForLinux",
+                                    "field": "Microsoft.Compute/VirtualMachineScaleSets/extensionProfile.extensions[*].type"
+                                }
+                            },
+                            "greater": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

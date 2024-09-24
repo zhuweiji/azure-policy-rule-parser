@@ -1,0 +1,242 @@
+{
+    "description": "This policy definition is no longer the recommended way to achieve its intent. Learn more about policy definition deprecation at aka.ms/policydefdeprecation.",
+    "displayName": "[Deprecated]: Kubernetes clusters should gate deployment of vulnerable images",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/13cd7ae3-5bc0-4ac4-a62d-4f7c120b9759",
+    "metadata": {
+        "category": "Kubernetes",
+        "deprecated": true,
+        "version": "2.1.0-deprecated"
+    },
+    "mode": "Microsoft.Kubernetes.Data",
+    "name": "13cd7ae3-5bc0-4ac4-a62d-4f7c120b9759",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created or updated, but flags it as non-compliant. 'Deny' blocks the non-compliant resource creation or update. 'Disabled' turns off the policy.",
+                "displayName": "Effect",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "excludeFindingIDs": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "assignPermissions": null,
+                "description": "A list of finding IDs that the policy should exempt.",
+                "displayName": "Exclude findings IDs",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "excludedImages": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "assignPermissions": null,
+                "description": "A list of RegEx rules used to exclude container images from policy evaluation. For example: exclude all images from the repo microsoft-defender-in-cluster-defense-repo in the blockreg ACR -  [\"(blockreg.azurecr.io/microsoft-defender-in-cluster-defense-repo).*\"]. Use an empty list to apply this policy to all container images.",
+                "displayName": "Excluded images regex",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "excludedNamespaces": {
+            "allowedValues": null,
+            "defaultValue": [
+                "kube-system",
+                "gatekeeper-system",
+                "azure-arc",
+                "azure-extensions-usage-system"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to exclude from policy evaluation. System namespaces \"kube-system\", \"gatekeeper-system\" and \"azure-arc\" are always excluded by design. \"azure-extensions-usage-system\" is optional to remove.",
+                "displayName": "Namespace exclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "labelSelector": {
+            "allowedValues": null,
+            "defaultValue": {},
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Label query to select Kubernetes resources for policy evaluation. An empty label selector matches all Kubernetes resources.",
+                "displayName": "Kubernetes label selector",
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "description": "A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all resources.",
+                "properties": {
+                    "matchExpressions": {
+                        "description": "matchExpressions is a list of values, a key, and an operator.",
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "key": {
+                                    "description": "key is the label key that the selector applies to.",
+                                    "type": "string"
+                                },
+                                "operator": {
+                                    "description": "operator represents a key's relationship to a set of values.",
+                                    "enum": [
+                                        "In",
+                                        "NotIn",
+                                        "Exists",
+                                        "DoesNotExist"
+                                    ],
+                                    "type": "string"
+                                },
+                                "values": {
+                                    "description": "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty.",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "required": [
+                                "key",
+                                "operator"
+                            ],
+                            "type": "object"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "matchLabels": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "matchLabels is a map of {key,value} pairs.",
+                        "minProperties": 1,
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "namespaces": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces the policy would apply to. An empty list means the policy is applied to all resources in all namespaces.",
+                "displayName": "Namespace inclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "severity": {
+            "allowedValues": null,
+            "defaultValue": {
+                "High": 0,
+                "Low": 0,
+                "Medium": 0
+            },
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The number of allowed findings per severity for an image. e.g. \"{\"High\":0,\"Medium\":3,\"Low\":10}\"",
+                "displayName": "Severity threshold",
+                "portalReview": true,
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "properties": {
+                    "High": {
+                        "type": "integer"
+                    },
+                    "Low": {
+                        "type": "integer"
+                    },
+                    "Medium": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "High",
+                    "Medium",
+                    "Low"
+                ],
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "severityThresholdForExcludingNotPatchableFindings": {
+            "allowedValues": [
+                "None",
+                "Low",
+                "Medium",
+                "High"
+            ],
+            "defaultValue": "None",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "Specify the maximum severity for exempting vulnerabilities without a patch. For example, specify Medium to ignore Low and Medium vulnerabilities without a patch.",
+                "displayName": "Severity threshold for excluding vulnerabilities without a patch",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.ContainerService/managedClusters"
+            ]
+        },
+        "then": {
+            "details": {
+                "apiGroups": [
+                    "",
+                    "apps"
+                ],
+                "excludedNamespaces": "[parameters('excludedNamespaces')]",
+                "kinds": [
+                    "Pod",
+                    "Deployment",
+                    "ReplicaSet",
+                    "StatefulSet",
+                    "DaemonSet",
+                    "Job",
+                    "CronJob",
+                    "ReplicationController"
+                ],
+                "labelSelector": "[parameters('labelSelector')]",
+                "namespaces": "[parameters('namespaces')]",
+                "templateInfo": {
+                    "sourceType": "PublicURL",
+                    "url": "https://store.policy.core.windows.net/kubernetes/container-no-vulnerable-images/v1/template.yaml"
+                },
+                "values": {
+                    "excludeFindingIDs": "[parameters('excludeFindingIDs')]",
+                    "excludedImages": "[parameters('excludedImages')]",
+                    "severity": "[parameters('severity')]",
+                    "severityThresholdForExcludingNotPatchableFindings": "[parameters('severityThresholdForExcludingNotPatchableFindings')]"
+                }
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

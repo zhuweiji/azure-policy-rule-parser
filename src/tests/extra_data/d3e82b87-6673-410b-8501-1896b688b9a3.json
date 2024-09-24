@@ -1,0 +1,69 @@
+{
+    "description": "Manage your organizational compliance requirements by specifying custom or internal certificate authorities that can issue certificates in your key vault.",
+    "displayName": "[Preview]: Certificates should be issued by one of the specified non-integrated certificate authorities",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d3e82b87-6673-410b-8501-1896b688b9a3",
+    "metadata": {
+        "category": "Key Vault",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Microsoft.KeyVault.Data",
+    "name": "d3e82b87-6673-410b-8501-1896b688b9a3",
+    "parameters": {
+        "caCommonNames": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The common names (CN) of the Certificate Authority (CA) provider which are allowed. For example, if certificate create with Certificate Authority CN = Contoso, OU = .., DC  and parameter caCommonNames is set as  ['Contoso', 'AnotherCA'] then the certificate create will be allowed because the certificate authority contains Contoso which is one of the parameter values",
+                "displayName": "The common names of the certificate authorities which are allowed",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created, but flags it as non-compliant. 'Deny' blocks the resource creation. 'Disable' turns off the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.KeyVault.Data/vaults/certificates",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "name": "caCommonName",
+                        "value": "[parameters('caCommonNames')]",
+                        "where": {
+                            "contains": "[current('caCommonName')]",
+                            "field": "Microsoft.KeyVault.Data/vaults/certificates/issuer.commonName"
+                        }
+                    },
+                    "equals": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

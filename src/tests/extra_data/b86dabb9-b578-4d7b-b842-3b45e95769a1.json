@@ -1,0 +1,49 @@
+{
+    "description": "This policy maintains a set of best available regions where your subscription can deploy resources. The objective of this policy is to ensure that your subscription has full access to Azure services with optimal performance. Should you need additional or different regions, contact support.",
+    "displayName": "Allowed resource deployment regions",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b86dabb9-b578-4d7b-b842-3b45e95769a1",
+    "metadata": {
+        "category": "System Policy",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "b86dabb9-b578-4d7b-b842-3b45e95769a1",
+    "parameters": {
+        "listOfAllowedLocations": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of locations that can be specified when deploying resources.",
+                "displayName": "Allowed locations",
+                "strongType": "location"
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "location",
+                    "notIn": "[parameters('listOfAllowedLocations')]"
+                },
+                {
+                    "field": "location",
+                    "notEquals": "global"
+                },
+                {
+                    "field": "type",
+                    "notEquals": "Microsoft.AzureActiveDirectory/b2cDirectories"
+                }
+            ]
+        },
+        "then": {
+            "effect": "deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

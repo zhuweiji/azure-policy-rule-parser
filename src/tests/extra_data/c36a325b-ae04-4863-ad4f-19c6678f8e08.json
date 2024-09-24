@@ -1,0 +1,65 @@
+{
+    "description": "You can enable Blob storage versioning to automatically maintain previous versions of an object. When blob versioning is enabled, you can access earlier versions of a blob to recover your data if it's modified or deleted.",
+    "displayName": "Configure your Storage account to enable blob versioning",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c36a325b-ae04-4863-ad4f-19c6678f8e08",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "c36a325b-ae04-4863-ad4f-19c6678f8e08",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Storage/storageAccounts/blobServices",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "less": "2019-10-10",
+                                    "value": "[requestContext().apiVersion]"
+                                },
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.Storage/storageAccounts/blobServices/isVersioningEnabled"
+                                }
+                            ]
+                        },
+                        {
+                            "equals": "false",
+                            "field": "Microsoft.Storage/storageAccounts/blobServices/isVersioningEnabled"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

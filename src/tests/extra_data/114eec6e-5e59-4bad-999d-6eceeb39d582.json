@@ -1,0 +1,62 @@
+{
+    "description": "Disabling the public network access property improves security by ensuring your Azure IoT Hub can only be accessed from a private endpoint. This policy disables public network access on IoT Hub resources.",
+    "displayName": "Modify - Configure Azure IoT Hubs to disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/114eec6e-5e59-4bad-999d-6eceeb39d582",
+    "metadata": {
+        "category": "Internet of Things",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "114eec6e-5e59-4bad-999d-6eceeb39d582",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Devices/IotHubs",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Devices/IotHubs/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2020-03-01')]",
+                        "field": "Microsoft.Devices/IotHubs/publicNetworkAccess",
+                        "operation": "addOrReplace",
+                        "value": "Disabled"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

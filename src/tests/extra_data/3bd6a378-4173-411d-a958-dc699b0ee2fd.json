@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Program Management control",
+    "displayName": "Microsoft Managed Control 1737 - Plan Of Action And Milestones Process",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3bd6a378-4173-411d-a958-dc699b0ee2fd",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1737",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "3bd6a378-4173-411d-a958-dc699b0ee2fd",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

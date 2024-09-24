@@ -1,0 +1,111 @@
+{
+    "description": "This policy enables Advanced Data Security on SQL Servers. This includes turning on Threat Detection and Vulnerability Assessment. It will automatically create a storage account in the same region and resource group as the SQL server to store scan results, with a 'sqlva' prefix.",
+    "displayName": "Deploy Advanced Data Security on SQL servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6134c3db-786f-471e-87bc-8f479dc890f6",
+    "metadata": {
+        "category": "SQL",
+        "version": "1.3.0"
+    },
+    "mode": "Indexed",
+    "name": "6134c3db-786f-471e-87bc-8f479dc890f6",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Sql/servers",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "serverName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "serverName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2019-04-01",
+                                    "kind": "StorageV2",
+                                    "location": "[parameters('location')]",
+                                    "name": "[variables('storageName')]",
+                                    "properties": {
+                                        "allowBlobPublicAccess": "false",
+                                        "minimumTlsVersion": "TLS1_2",
+                                        "supportsHttpsTrafficOnly": "true"
+                                    },
+                                    "sku": {
+                                        "name": "Standard_LRS"
+                                    },
+                                    "type": "Microsoft.Storage/storageAccounts"
+                                },
+                                {
+                                    "apiVersion": "2017-03-01-preview",
+                                    "name": "[concat(parameters('serverName'), '/Default')]",
+                                    "properties": {
+                                        "emailAccountAdmins": false,
+                                        "state": "Enabled"
+                                    },
+                                    "type": "Microsoft.Sql/servers/securityAlertPolicies"
+                                },
+                                {
+                                    "apiVersion": "2018-06-01-preview",
+                                    "dependsOn": [
+                                        "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+                                        "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/securityAlertPolicies/Default')]"
+                                    ],
+                                    "name": "[concat(parameters('serverName'), '/Default')]",
+                                    "properties": {
+                                        "recurringScans": {
+                                            "emailSubscriptionAdmins": true,
+                                            "emails": [],
+                                            "isEnabled": true
+                                        },
+                                        "storageAccountAccessKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2018-02-01').keys[0].value]",
+                                        "storageContainerPath": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))).primaryEndpoints.blob, 'vulnerability-assessment')]"
+                                    },
+                                    "type": "Microsoft.Sql/servers/vulnerabilityAssessments"
+                                }
+                            ],
+                            "variables": {
+                                "serverResourceGroupName": "[resourceGroup().name]",
+                                "storageName": "[tolower(concat('sqlva', variables('uniqueStorage')))]",
+                                "subscriptionId": "[subscription().subscriptionId]",
+                                "uniqueStorage": "[uniqueString(variables('subscriptionId'), variables('serverResourceGroupName'), parameters('location'))]"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "Enabled",
+                    "field": "Microsoft.Sql/securityAlertPolicies.state"
+                },
+                "name": "Default",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3",
+                    "/providers/microsoft.authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
+                ],
+                "type": "Microsoft.Sql/servers/securityAlertPolicies"
+            },
+            "effect": "DeployIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

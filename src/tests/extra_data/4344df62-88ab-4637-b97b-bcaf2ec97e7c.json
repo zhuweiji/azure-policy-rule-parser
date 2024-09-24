@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Audit and Accountability control",
+    "displayName": "Microsoft Managed Control 1137 - Audit Generation",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/4344df62-88ab-4637-b97b-bcaf2ec97e7c",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1137",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "4344df62-88ab-4637-b97b-bcaf2ec97e7c",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

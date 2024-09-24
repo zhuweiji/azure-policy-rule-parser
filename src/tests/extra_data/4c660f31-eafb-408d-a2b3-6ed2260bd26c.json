@@ -1,0 +1,41 @@
+{
+    "description": "This policy enables you to restrict the creation or modification of ESU licenses for Windows Server 2012 Arc machines. For more details on pricing please visit https://aka.ms/ArcWS2012ESUPricing",
+    "displayName": "[Preview]: Deny Extended Security Updates (ESUs) license creation or modification.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/4c660f31-eafb-408d-a2b3-6ed2260bd26c",
+    "metadata": {
+        "category": "Azure Arc",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "4c660f31-eafb-408d-a2b3-6ed2260bd26c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.HybridCompute/licenses",
+            "field": "type"
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

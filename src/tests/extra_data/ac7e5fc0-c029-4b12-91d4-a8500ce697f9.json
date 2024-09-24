@@ -1,0 +1,32 @@
+{
+    "description": "Allows resource creation if the 'environment' tag is set to one of the following values: production, dev, test, staging",
+    "displayName": "[Deprecated]: Allow resource creation if 'environment' tag value in allowed values",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ac7e5fc0-c029-4b12-91d4-a8500ce697f9",
+    "metadata": {
+        "category": "Tags",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "ac7e5fc0-c029-4b12-91d4-a8500ce697f9",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "not": {
+                "field": "tags['environment']",
+                "in": [
+                    "production",
+                    "dev",
+                    "test",
+                    "staging"
+                ]
+            }
+        },
+        "then": {
+            "effect": "Deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

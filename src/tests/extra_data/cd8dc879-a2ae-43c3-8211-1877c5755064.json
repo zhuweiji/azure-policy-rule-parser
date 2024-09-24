@@ -1,0 +1,27 @@
+{
+    "description": "Allows resource creation only if the 'department' tag is set",
+    "displayName": "[Deprecated]: Allow resource creation if 'department' tag set",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/cd8dc879-a2ae-43c3-8211-1877c5755064",
+    "metadata": {
+        "category": "Tags",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "cd8dc879-a2ae-43c3-8211-1877c5755064",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "not": {
+                "containsKey": "department",
+                "field": "tags"
+            }
+        },
+        "then": {
+            "effect": "Deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,67 @@
+{
+    "description": "To enhance data security, the data stored on the virtual machine (VM) host of your Azure Kubernetes Service nodes VMs should be encrypted at rest. This is a common requirement in many regulatory and industry compliance standards.",
+    "displayName": "Temp disks and cache for agent node pools in Azure Kubernetes Service clusters should be encrypted at host",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/41425d9f-d1a5-499a-9932-f8ed8453932c",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "41425d9f-d1a5-499a-9932-f8ed8453932c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created or updated, but flags it as non-compliant. 'Deny' blocks the non-compliant resource creation or update. 'Disabled' turns off the policy.",
+                "displayName": "Effect",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerService/managedClusters",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*]",
+                        "where": {
+                            "anyOf": [
+                                {
+                                    "exists": "False",
+                                    "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].enableEncryptionAtHost"
+                                },
+                                {
+                                    "equals": "",
+                                    "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].enableEncryptionAtHost"
+                                },
+                                {
+                                    "equals": "false",
+                                    "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].enableEncryptionAtHost"
+                                }
+                            ]
+                        }
+                    },
+                    "greater": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

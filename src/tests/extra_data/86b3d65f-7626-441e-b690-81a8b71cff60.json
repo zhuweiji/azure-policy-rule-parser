@@ -1,0 +1,54 @@
+{
+    "description": "Missing security system updates on your servers will be monitored by Azure Security Center as recommendations",
+    "displayName": "System updates should be installed on your machines",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/86b3d65f-7626-441e-b690-81a8b71cff60",
+    "metadata": {
+        "category": "Security Center",
+        "version": "4.0.0"
+    },
+    "mode": "All",
+    "name": "86b3d65f-7626-441e-b690-81a8b71cff60",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.Compute/virtualMachines",
+                "Microsoft.ClassicCompute/virtualMachines"
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "4ab6e3c5-74dd-8b35-9ab9-f61b30875b27",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

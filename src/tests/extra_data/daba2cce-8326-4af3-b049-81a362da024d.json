@@ -1,0 +1,91 @@
+{
+    "description": "Private link ensures private connectivity between AFD Premium and Azure Storage Blob or Azure App Service over the Azure backbone network, without the Azure Storage Blob or the Azure App Service being publicly exposed to the internet.",
+    "displayName": "Secure private connectivity between Azure Front Door Premium and Azure Storage Blob, or Azure App Service",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/daba2cce-8326-4af3-b049-81a362da024d",
+    "metadata": {
+        "category": "CDN",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "daba2cce-8326-4af3-b049-81a362da024d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "originType": {
+            "allowedValues": [
+                "StorageBlob",
+                "AppService"
+            ],
+            "defaultValue": "StorageBlob",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Azure Storage Blob or Azure App Service origin type",
+                "displayName": "Origin Type",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Cdn/profiles/originGroups/origins",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "StorageBlob",
+                                    "value": "[parameters('originType')]"
+                                },
+                                {
+                                    "field": "Microsoft.Cdn/profiles/originGroups/origins/hostName",
+                                    "like": "*.blob.core.windows.net"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "AppService",
+                                    "value": "[parameters('originType')]"
+                                },
+                                {
+                                    "field": "Microsoft.Cdn/profiles/originGroups/origins/hostName",
+                                    "like": "*.azurewebsites.net"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "exists": false,
+                    "field": "Microsoft.Cdn/profiles/originGroups/origins/sharedPrivateLinkResource.privateLink"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

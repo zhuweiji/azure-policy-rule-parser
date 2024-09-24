@@ -1,0 +1,71 @@
+{
+    "description": "Azure Spring Cloud instances should use virtual network injection for the following purposes: 1. Isolate Azure Spring Cloud from Internet. 2. Enable Azure Spring Cloud to interact with systems in either on premises data centers or Azure service in other virtual networks. 3. Empower customers to control inbound and outbound network communications for Azure Spring Cloud.",
+    "displayName": "Azure Spring Cloud should use network injection",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/af35e2a4-ef96-44e7-a9ae-853dd97032c4",
+    "metadata": {
+        "category": "App Platform",
+        "version": "1.2.0"
+    },
+    "mode": "Indexed",
+    "name": "af35e2a4-ef96-44e7-a9ae-853dd97032c4",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "evaluatedSkuNames": {
+            "allowedValues": [
+                "Standard",
+                "Enterprise"
+            ],
+            "defaultValue": [
+                "Standard",
+                "Enterprise"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Azure Spring Cloud SKUs against which this policy will be evaluated.",
+                "displayName": "Azure Spring Cloud SKU Names",
+                "strongType": null
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.AppPlatform/Spring",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.AppPlatform/Spring/sku.tier",
+                    "in": "[parameters('evaluatedSkuNames')]"
+                },
+                {
+                    "exists": false,
+                    "field": "Microsoft.AppPlatform/Spring/networkProfile.serviceRuntimeSubnetId"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

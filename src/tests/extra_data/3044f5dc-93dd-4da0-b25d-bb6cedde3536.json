@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Transparency control",
+    "displayName": "Microsoft Managed Control 1862 - System of Records Notices And Privacy Act Statements",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3044f5dc-93dd-4da0-b25d-bb6cedde3536",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1862",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "3044f5dc-93dd-4da0-b25d-bb6cedde3536",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

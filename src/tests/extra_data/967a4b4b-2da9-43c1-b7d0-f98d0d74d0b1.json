@@ -1,0 +1,49 @@
+{
+    "description": "Customer-managed keys provide enhanced data protection by allowing you to manage your encryption keys. This is often required to meet compliance requirements.",
+    "displayName": "App Configuration should use a customer-managed key",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/967a4b4b-2da9-43c1-b7d0-f98d0d74d0b1",
+    "metadata": {
+        "category": "App Configuration",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "967a4b4b-2da9-43c1-b7d0-f98d0d74d0b1",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.AppConfiguration/configurationStores",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.AppConfiguration/configurationStores/encryption.keyVaultProperties.keyIdentifier"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

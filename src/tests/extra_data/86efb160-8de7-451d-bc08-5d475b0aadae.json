@@ -1,0 +1,71 @@
+{
+    "description": "Use a customer-managed key to control the encryption of the device unlock password for Azure Data Box. Customer-managed keys also help manage access to the device unlock password by the Data Box service in order to prepare the device and copy data in an automated manner. The data on the device itself is already encrypted at rest with Advanced Encryption Standard 256-bit encryption, and the device unlock password is encrypted by default with a Microsoft managed key.",
+    "displayName": "Azure Data Box jobs should use a customer-managed key to encrypt the device unlock password",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/86efb160-8de7-451d-bc08-5d475b0aadae",
+    "metadata": {
+        "category": "Data Box",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "86efb160-8de7-451d-bc08-5d475b0aadae",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "supportedSKUs": {
+            "allowedValues": [
+                "DataBox",
+                "DataBoxHeavy"
+            ],
+            "defaultValue": [
+                "DataBox",
+                "DataBoxHeavy"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of SKUs that support customer-managed key encryption key",
+                "displayName": "Supported SKUs",
+                "strongType": null
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DataBox/jobs",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Databox/jobs/sku.name",
+                    "in": "[parameters('supportedSKUs')]"
+                },
+                {
+                    "field": "Microsoft.DataBox/jobs/details.keyEncryptionKey.kekType",
+                    "notEquals": "CustomerManaged"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

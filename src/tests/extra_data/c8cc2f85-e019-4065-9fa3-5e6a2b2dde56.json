@@ -1,0 +1,65 @@
+{
+    "description": "Azure Private Link lets you connect your virtual networks to Azure services without a public IP address at the source or destination. The Private Link platform handles the connectivity between the consumer and services over the Azure backbone network. By mapping private endpoints to Azure HDInsight clusters, you can reduce data leakage risks. Learn more about private links at: https://aka.ms/hdi.pl.",
+    "displayName": "Azure HDInsight should use private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c8cc2f85-e019-4065-9fa3-5e6a2b2dde56",
+    "metadata": {
+        "category": "HDInsight",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c8cc2f85-e019-4065-9fa3-5e6a2b2dde56",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HDInsight/clusters",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": "Enabled",
+                            "field": "Microsoft.HDInsight/clusters/networkProperties.privateLink"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.HDInsight/clusters/privateLinkConfigurations[*]"
+                            },
+                            "greaterOrEquals": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "Approved",
+                    "field": "Microsoft.HDInsight/clusters/privateEndpointConnections/privateLinkServiceConnectionState.status"
+                },
+                "type": "Microsoft.HDInsight/clusters/privateEndpointConnections"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

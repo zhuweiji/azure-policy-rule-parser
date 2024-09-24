@@ -1,0 +1,59 @@
+{
+    "description": "Protect your storage accounts from potential threats using virtual network rules as a preferred method instead of IP-based filtering. Disabling IP-based filtering prevents public IPs from accessing your storage accounts.",
+    "displayName": "Storage accounts should restrict network access using virtual network rules",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2a1a9cdf-e04d-429a-8416-3bfb72a1b26f",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "2a1a9cdf-e04d-429a-8416-3bfb72a1b26f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the audit policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Storage/storageAccounts",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Storage/storageAccounts/networkAcls.defaultAction",
+                            "notEquals": "Deny"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Storage/storageAccounts/networkAcls.ipRules[*]"
+                            },
+                            "greaterOrEquals": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

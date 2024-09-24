@@ -1,0 +1,62 @@
+{
+    "description": "Disable local authentication methods so that your App Configuration stores require Microsoft Entra identities exclusively for authentication. Learn more at: https://go.microsoft.com/fwlink/?linkid=2161954.",
+    "displayName": "Configure App Configuration stores to disable local authentication methods",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/72bc14af-4ab8-43af-b4e4-38e7983f9a1f",
+    "metadata": {
+        "category": "App Configuration",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "72bc14af-4ab8-43af-b4e4-38e7983f9a1f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.AppConfiguration/configurationStores",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.AppConfiguration/configurationStores/disableLocalAuth",
+                    "notEquals": true
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2021-03-01-preview')]",
+                        "field": "Microsoft.AppConfiguration/configurationStores/disableLocalAuth",
+                        "operation": "addOrReplace",
+                        "value": true
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

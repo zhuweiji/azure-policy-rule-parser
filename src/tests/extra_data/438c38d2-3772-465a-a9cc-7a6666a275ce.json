@@ -1,0 +1,57 @@
+{
+    "description": "Disabling public network access improves security by ensuring that the Machine Learning Workspaces aren't exposed on the public internet. You can control exposure of your workspaces by creating private endpoints instead. Learn more at: https://learn.microsoft.com/azure/machine-learning/how-to-configure-private-link?view=azureml-api-2&tabs=azure-portal.",
+    "displayName": "Azure Machine Learning Workspaces should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/438c38d2-3772-465a-a9cc-7a6666a275ce",
+    "metadata": {
+        "category": "Machine Learning",
+        "version": "2.0.1"
+    },
+    "mode": "Indexed",
+    "name": "438c38d2-3772-465a-a9cc-7a6666a275ce",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.MachineLearningServices/workspaces",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.MachineLearningServices/workspaces/publicNetworkAccess"
+                        },
+                        {
+                            "field": "Microsoft.MachineLearningServices/workspaces/publicNetworkAccess",
+                            "notEquals": "Disabled"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

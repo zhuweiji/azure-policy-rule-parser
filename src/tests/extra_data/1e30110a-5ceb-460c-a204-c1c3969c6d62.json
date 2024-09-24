@@ -1,0 +1,51 @@
+{
+    "description": "Enforces a required tag and its value. Does not apply to resource groups.",
+    "displayName": "Require a tag and its value on resources",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1e30110a-5ceb-460c-a204-c1c3969c6d62",
+    "metadata": {
+        "category": "Tags",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "1e30110a-5ceb-460c-a204-c1c3969c6d62",
+    "parameters": {
+        "tagName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name of the tag, such as 'environment'",
+                "displayName": "Tag Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagValue": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Value of the tag, such as 'production'",
+                "displayName": "Tag Value",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "not": {
+                "equals": "[parameters('tagValue')]",
+                "field": "[concat('tags[', parameters('tagName'), ']')]"
+            }
+        },
+        "then": {
+            "effect": "deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

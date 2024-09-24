@@ -1,0 +1,484 @@
+{
+    "description": "Deploy a 'fluxConfiguration' to Kubernetes clusters to assure that the clusters get their source of truth for workloads and configurations from the defined Bucket. This definition requires a Bucket SecretKey stored in Key Vault. For instructions, visit https://aka.ms/GitOpsFlux2Policy.",
+    "displayName": "Configure Kubernetes clusters with Flux v2 configuration using Bucket source and secrets in KeyVault",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5174c1db-ca42-e0d4-b320-4f1cf6a1fa93",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "5174c1db-ca42-e0d4-b320-4f1cf6a1fa93",
+    "parameters": {
+        "bucketAccessKey": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Access key ID used to authenticate with the Bucket source.",
+                "displayName": "Bucket Access Key",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "bucketInsecure": {
+            "allowedValues": null,
+            "defaultValue": false,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Communicate with a Bucket without TLS. Enter true or false.",
+                "displayName": "Bucket Insecure",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "bucketName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The name of the Bucket.",
+                "displayName": "Bucket Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "bucketSyncInterval": {
+            "allowedValues": null,
+            "defaultValue": 600,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The time period, in seconds, between attempted syncs of the Bucket source to the cluster.",
+                "displayName": "Bucket Sync Interval (seconds)",
+                "strongType": null
+            },
+            "type": "Integer"
+        },
+        "bucketTimeout": {
+            "allowedValues": null,
+            "defaultValue": 600,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The maximum allowed time, in seconds, for syncing the Bucket source to the cluster, after which the sync fails and tries again in the next sync interval.",
+                "displayName": "Bucket Timeout (seconds)",
+                "strongType": null
+            },
+            "type": "Integer"
+        },
+        "bucketUrl": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The URL for the Bucket. Formats supported: http://, https://, s3://.",
+                "displayName": "Bucket Url",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "configurationName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The name for the fluxConfigurations resource in Azure. Maximum of 30 lowercase alphanumeric characters or hyphens. Must start and end with an alphanumeric character. Learn more about setting up GitOps configuration: https://aka.ms/doc-use-flux2.",
+                "displayName": "Configuration Instance Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "configurationNamespace": {
+            "allowedValues": null,
+            "defaultValue": "default",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The namespace in the cluster within which the Flux custom resources will be installed for this configuration. This can be an existing namespace or a new one that will be created when the configuration is deployed. Maximum of 63 lowercase alphanumeric characters or hyphens. Must start and end with an alphanumeric character.",
+                "displayName": "Configuration Namespace",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "configurationScope": {
+            "allowedValues": [
+                "cluster",
+                "namespace"
+            ],
+            "defaultValue": "cluster",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The permission scope for the Flux configuration. Possible values are 'cluster' (create resources throughout cluster) or 'namespace' (create resources only in namespace).",
+                "displayName": "Configuration Scope",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "keyVaultName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "The name of the Key Vault that holds the Bucket-key Key Vault secret.",
+                "displayName": "Key Vault name",
+                "strongType": "Microsoft.KeyVault/vaults"
+            },
+            "type": "String"
+        },
+        "keyVaultSecretName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The name of the Key Vault secret that holds the base64-encoded bucket secret key.",
+                "displayName": "Bucket-key Key Vault secret name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "kustomizationForce": {
+            "allowedValues": null,
+            "defaultValue": false,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable force to instruct the controller to recreate resources if they can't be changed due to an immutable field change.",
+                "displayName": "Kustomization Force",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "kustomizationName": {
+            "allowedValues": null,
+            "defaultValue": "kustomization-1",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The name of the Kustomization. Maximum of 30 lowercase alphanumeric characters or hyphen. Must start and end with an alphanumeric character.",
+                "displayName": "Kustomization Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "kustomizationPath": {
+            "allowedValues": null,
+            "defaultValue": "./",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The path within the source where the Kustomization will begin looking for manifests to reconcile. If left blank, the root path of the repository will be used.",
+                "displayName": "Kustomization Path",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "kustomizationPrune": {
+            "allowedValues": null,
+            "defaultValue": false,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable prune to assure that objects are removed from the cluster if they are removed from the GitRepository or Bucket source or when this Kustomization or GitOps configuration is removed from the cluster.",
+                "displayName": "Kustomization Prune",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "kustomizationRetryInterval": {
+            "allowedValues": null,
+            "defaultValue": 600,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The retry interval, in seconds, specifies how often the Kustomization will retry a previously failed reconciliation. If left blank, the value of the sync interval will be used.",
+                "displayName": "Kustomization Retry Interval (seconds)",
+                "strongType": null
+            },
+            "type": "Integer"
+        },
+        "kustomizationSyncInterval": {
+            "allowedValues": null,
+            "defaultValue": 600,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The sync interval, in seconds, defines how often the Kustomization reconciles the cluster with the manifests to ensure that the cluster remains in sync with the GitRepository or Bucket source. A Kustomization sync interval more frequent than the source sync interval can be used to catch and reconcile any cluster drift.",
+                "displayName": "Kustomization Sync Interval (seconds)",
+                "strongType": null
+            },
+            "type": "Integer"
+        },
+        "kustomizationTimeout": {
+            "allowedValues": null,
+            "defaultValue": 600,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The sync timeout, in seconds, defines how long a Kustomization reconciliation will be allowed to continue before timing out.",
+                "displayName": "Kustomization Timeout (seconds)",
+                "strongType": null
+            },
+            "type": "Integer"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.Kubernetes/connectedClusters",
+                "Microsoft.ContainerService/managedClusters"
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "bucketAccessKey": {
+                                "value": "[parameters('bucketAccessKey')]"
+                            },
+                            "bucketInsecure": {
+                                "value": "[parameters('bucketInsecure')]"
+                            },
+                            "bucketName": {
+                                "value": "[parameters('bucketName')]"
+                            },
+                            "bucketSecretKey": {
+                                "reference": {
+                                    "keyVault": {
+                                        "id": "[parameters('keyVaultName')]"
+                                    },
+                                    "secretName": "[parameters('keyVaultSecretName')]"
+                                }
+                            },
+                            "bucketSyncInterval": {
+                                "value": "[parameters('bucketSyncInterval')]"
+                            },
+                            "bucketTimeout": {
+                                "value": "[parameters('bucketTimeout')]"
+                            },
+                            "bucketUrl": {
+                                "value": "[parameters('bucketUrl')]"
+                            },
+                            "clusterName": {
+                                "value": "[field('name')]"
+                            },
+                            "clusterResourceType": {
+                                "value": "[field('type')]"
+                            },
+                            "configurationName": {
+                                "value": "[parameters('configurationName')]"
+                            },
+                            "configurationNamespace": {
+                                "value": "[parameters('configurationNamespace')]"
+                            },
+                            "configurationScope": {
+                                "value": "[parameters('configurationScope')]"
+                            },
+                            "kustomizationForce": {
+                                "value": "[parameters('kustomizationForce')]"
+                            },
+                            "kustomizationName": {
+                                "value": "[parameters('kustomizationName')]"
+                            },
+                            "kustomizationPath": {
+                                "value": "[parameters('kustomizationPath')]"
+                            },
+                            "kustomizationPrune": {
+                                "value": "[parameters('kustomizationPrune')]"
+                            },
+                            "kustomizationRetryInterval": {
+                                "value": "[parameters('kustomizationRetryInterval')]"
+                            },
+                            "kustomizationSyncInterval": {
+                                "value": "[parameters('kustomizationSyncInterval')]"
+                            },
+                            "kustomizationTimeout": {
+                                "value": "[parameters('kustomizationTimeout')]"
+                            },
+                            "sourceKind": {
+                                "value": "Bucket"
+                            },
+                            "suspend": {
+                                "value": false
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "bucketAccessKey": {
+                                    "type": "string"
+                                },
+                                "bucketInsecure": {
+                                    "type": "bool"
+                                },
+                                "bucketName": {
+                                    "type": "string"
+                                },
+                                "bucketSecretKey": {
+                                    "type": "securestring"
+                                },
+                                "bucketSyncInterval": {
+                                    "type": "int"
+                                },
+                                "bucketTimeout": {
+                                    "type": "int"
+                                },
+                                "bucketUrl": {
+                                    "type": "string"
+                                },
+                                "clusterName": {
+                                    "type": "string"
+                                },
+                                "clusterResourceType": {
+                                    "type": "string"
+                                },
+                                "configurationName": {
+                                    "type": "string"
+                                },
+                                "configurationNamespace": {
+                                    "type": "string"
+                                },
+                                "configurationScope": {
+                                    "type": "string"
+                                },
+                                "kustomizationForce": {
+                                    "type": "bool"
+                                },
+                                "kustomizationName": {
+                                    "type": "string"
+                                },
+                                "kustomizationPath": {
+                                    "type": "string"
+                                },
+                                "kustomizationPrune": {
+                                    "type": "bool"
+                                },
+                                "kustomizationRetryInterval": {
+                                    "type": "int"
+                                },
+                                "kustomizationSyncInterval": {
+                                    "type": "int"
+                                },
+                                "kustomizationTimeout": {
+                                    "type": "int"
+                                },
+                                "sourceKind": {
+                                    "type": "string"
+                                },
+                                "suspend": {
+                                    "type": "bool"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2022-03-01",
+                                    "comments": "Create a Flux configuration with Bucket source in the connected (ARC) or managed (AKS) cluster using a Key Vault secret.",
+                                    "name": "[parameters('configurationName')]",
+                                    "properties": {
+                                        "bucket": {
+                                            "accessKey": "[if(not(empty(parameters('bucketAccessKey'))), parameters('bucketAccessKey'), json('null'))]",
+                                            "bucketName": "[parameters('bucketName')]",
+                                            "insecure": "[parameters('bucketInsecure')]",
+                                            "syncIntervalInSeconds": "[parameters('bucketSyncInterval')]",
+                                            "timeoutInSeconds": "[parameters('bucketTimeout')]",
+                                            "url": "[parameters('bucketUrl')]"
+                                        },
+                                        "configurationProtectedSettings": {
+                                            "bucketSecretKey": "[parameters('bucketSecretKey')]"
+                                        },
+                                        "kustomizations": {
+                                            "[parameters('kustomizationName')]": {
+                                                "force": "[parameters('kustomizationForce')]",
+                                                "path": "[parameters('kustomizationPath')]",
+                                                "prune": "[parameters('kustomizationPrune')]",
+                                                "retryIntervalInSeconds": "[parameters('kustomizationRetryInterval')]",
+                                                "syncIntervalInSeconds": "[parameters('kustomizationSyncInterval')]",
+                                                "timeoutInSeconds": "[parameters('kustomizationTimeout')]"
+                                            }
+                                        },
+                                        "namespace": "[parameters('configurationNamespace')]",
+                                        "scope": "[parameters('configurationScope')]",
+                                        "sourceKind": "[parameters('sourceKind')]",
+                                        "suspend": "[parameters('suspend')]"
+                                    },
+                                    "scope": "[concat(if(contains(toLower(parameters('clusterResourceType')), toLower('connectedclusters')),'Microsoft.Kubernetes/connectedClusters/','Microsoft.ContainerService/managedClusters/'),parameters('clusterName'))]",
+                                    "type": "Microsoft.KubernetesConfiguration/fluxConfigurations"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "[parameters('configurationScope')]",
+                            "field": "Microsoft.KubernetesConfiguration/fluxConfigurations/scope"
+                        },
+                        {
+                            "equals": "[parameters('configurationNamespace')]",
+                            "field": "Microsoft.KubernetesConfiguration/fluxConfigurations/namespace"
+                        },
+                        {
+                            "equals": "[parameters('bucketUrl')]",
+                            "field": "Microsoft.KubernetesConfiguration/fluxConfigurations/bucket.url"
+                        },
+                        {
+                            "equals": "[parameters('bucketTimeout')]",
+                            "field": "Microsoft.KubernetesConfiguration/fluxConfigurations/bucket.timeoutInSeconds"
+                        },
+                        {
+                            "equals": "[parameters('bucketSyncInterval')]",
+                            "field": "Microsoft.KubernetesConfiguration/fluxConfigurations/bucket.syncIntervalInSeconds"
+                        },
+                        {
+                            "equals": "[parameters('bucketInsecure')]",
+                            "field": "Microsoft.KubernetesConfiguration/fluxConfigurations/bucket.insecure"
+                        },
+                        {
+                            "equals": "[parameters('bucketName')]",
+                            "field": "Microsoft.KubernetesConfiguration/fluxConfigurations/bucket.bucketName"
+                        },
+                        {
+                            "equals": "[parameters('bucketAccessKey')]",
+                            "field": "Microsoft.KubernetesConfiguration/fluxConfigurations/bucket.accessKey"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.KubernetesConfiguration/fluxConfigurations"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

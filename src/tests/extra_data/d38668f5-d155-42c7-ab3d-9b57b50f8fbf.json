@@ -1,0 +1,48 @@
+{
+    "description": "Audit PostgreSQL flexible servers without Advanced Data Security",
+    "displayName": "Azure Defender for SQL should be enabled for unprotected PostgreSQL flexible servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d38668f5-d155-42c7-ab3d-9b57b50f8fbf",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d38668f5-d155-42c7-ab3d-9b57b50f8fbf",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.DBforPostgreSQL/flexibleservers",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "Enabled",
+                    "field": "Microsoft.DBforPostgreSQL/flexibleServers/advancedThreatProtectionSettings/state"
+                },
+                "name": "Default",
+                "type": "Microsoft.DBforPostgreSQL/flexibleservers/advancedThreatProtectionSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

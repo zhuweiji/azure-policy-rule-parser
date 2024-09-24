@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Services Acquisition control",
+    "displayName": "Microsoft Managed Control 1597 - Developer Configuration Management",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/68b250ec-2e4f-4eee-898a-117a9fda7016",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1597",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "68b250ec-2e4f-4eee-898a-117a9fda7016",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

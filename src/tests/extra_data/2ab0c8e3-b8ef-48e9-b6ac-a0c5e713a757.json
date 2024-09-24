@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Program Management control",
+    "displayName": "Microsoft Managed Control 1746 - Security Authorization Process",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2ab0c8e3-b8ef-48e9-b6ac-a0c5e713a757",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1746",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "2ab0c8e3-b8ef-48e9-b6ac-a0c5e713a757",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

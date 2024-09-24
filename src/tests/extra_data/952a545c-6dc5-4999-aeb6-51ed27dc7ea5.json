@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Security control",
+    "displayName": "Microsoft Managed Control 1854 - Inventory of Personally Identifiable Information ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/952a545c-6dc5-4999-aeb6-51ed27dc7ea5",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1854",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "952a545c-6dc5-4999-aeb6-51ed27dc7ea5",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

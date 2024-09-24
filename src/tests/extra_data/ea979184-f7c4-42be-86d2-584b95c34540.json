@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Use Limitation control",
+    "displayName": "Microsoft Managed Control 1869 - Information Sharing with Third Parties ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ea979184-f7c4-42be-86d2-584b95c34540",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1869",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ea979184-f7c4-42be-86d2-584b95c34540",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

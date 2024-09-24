@@ -1,0 +1,65 @@
+{
+    "description": "Client certificates allow for the app to request a certificate for incoming requests. Only clients with valid certificates will be able to reach the app. This policy has been replaced by a new policy with the same name because Http 2.0 doesn't support client certificates.",
+    "displayName": "[Deprecated]: Function app slots should have 'Client Certificates (Incoming client certificates)' enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/cf9ca02d-383e-4506-a421-258cc1a5300d",
+    "metadata": {
+        "category": "App Service",
+        "deprecated": true,
+        "version": "1.1.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "cf9ca02d-383e-4506-a421-258cc1a5300d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites/slots",
+                    "field": "type"
+                },
+                {
+                    "contains": "functionapp",
+                    "field": "kind"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "workflowapp"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.Web/sites/slots/clientCertEnabled"
+                        },
+                        {
+                            "equals": "false",
+                            "field": "Microsoft.Web/sites/slots/clientCertEnabled"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,61 @@
+{
+    "description": "Adds or replaces the specified tag and value when any resource is created or updated. Existing resources can be remediated by triggering a remediation task. Does not modify tags on resource groups.",
+    "displayName": "Add or replace a tag on resources",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5ffd78d9-436d-4b41-a421-5baa819e3008",
+    "metadata": {
+        "category": "Tags",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "5ffd78d9-436d-4b41-a421-5baa819e3008",
+    "parameters": {
+        "tagName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name of the tag, such as 'environment'",
+                "displayName": "Tag Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagValue": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Value of the tag, such as 'production'",
+                "displayName": "Tag Value",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "[concat('tags[', parameters('tagName'), ']')]",
+            "notEquals": "[parameters('tagValue')]"
+        },
+        "then": {
+            "details": {
+                "operations": [
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "operation": "addOrReplace",
+                        "value": "[parameters('tagValue')]"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "modify"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

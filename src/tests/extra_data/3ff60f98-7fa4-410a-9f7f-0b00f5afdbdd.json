@@ -1,0 +1,314 @@
+{
+    "description": "Windows machines should have the specified Group Policy settings in the category 'Security Options - Network Access' for including access for anonymous users, local accounts, and remote access to the registry. This policy requires that the Guest Configuration prerequisites have been deployed to the policy assignment scope. For details, visit https://aka.ms/gcpol.",
+    "displayName": "Windows machines should meet requirements for 'Security Options - Network Access'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3ff60f98-7fa4-410a-9f7f-0b00f5afdbdd",
+    "metadata": {
+        "category": "Guest Configuration",
+        "guestConfiguration": {
+            "configurationParameter": {
+                "NetworkAccessRemotelyAccessibleRegistryPaths": "Network access: Remotely accessible registry paths;ExpectedValue",
+                "NetworkAccessRemotelyAccessibleRegistryPathsAndSubpaths": "Network access: Remotely accessible registry paths and sub-paths;ExpectedValue",
+                "NetworkAccessSharesThatCanBeAccessedAnonymously": "Network access: Shares that can be accessed anonymously;ExpectedValue"
+            },
+            "name": "AzureBaseline_SecurityOptionsNetworkAccess",
+            "version": "1.*"
+        },
+        "requiredProviders": [
+            "Microsoft.GuestConfiguration"
+        ],
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "3ff60f98-7fa4-410a-9f7f-0b00f5afdbdd",
+    "parameters": {
+        "IncludeArcMachines": {
+            "allowedValues": [
+                "true",
+                "false"
+            ],
+            "defaultValue": "false",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "By selecting this option, you agree to be charged monthly per Arc connected machine.",
+                "displayName": "Include Arc connected servers",
+                "portalReview": "true",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "NetworkAccessRemotelyAccessibleRegistryPaths": {
+            "allowedValues": null,
+            "defaultValue": "System\\CurrentControlSet\\Control\\ProductOptions|#|System\\CurrentControlSet\\Control\\Server Applications|#|Software\\Microsoft\\Windows NT\\CurrentVersion",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies which registry paths will be accessible over the network, regardless of the users or groups listed in the access control list (ACL) of the `winreg` registry key.",
+                "displayName": "Network access: Remotely accessible registry paths",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "NetworkAccessRemotelyAccessibleRegistryPathsAndSubpaths": {
+            "allowedValues": null,
+            "defaultValue": "System\\CurrentControlSet\\Control\\Print\\Printers|#|System\\CurrentControlSet\\Services\\Eventlog|#|Software\\Microsoft\\OLAP Server|#|Software\\Microsoft\\Windows NT\\CurrentVersion\\Print|#|Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows|#|System\\CurrentControlSet\\Control\\ContentIndex|#|System\\CurrentControlSet\\Control\\Terminal Server|#|System\\CurrentControlSet\\Control\\Terminal Server\\UserConfig|#|System\\CurrentControlSet\\Control\\Terminal Server\\DefaultUserConfiguration|#|Software\\Microsoft\\Windows NT\\CurrentVersion\\Perflib|#|System\\CurrentControlSet\\Services\\SysmonLog",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies which registry paths and sub-paths will be accessible over the network, regardless of the users or groups listed in the access control list (ACL) of the `winreg` registry key.",
+                "displayName": "Network access: Remotely accessible registry paths and sub-paths",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "NetworkAccessSharesThatCanBeAccessedAnonymously": {
+            "allowedValues": null,
+            "defaultValue": "0",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies which network shares can be accessed by anonymous users. The default configuration for this policy setting has little effect because all users have to be authenticated before they can access shared resources on the server.",
+                "displayName": "Network access: Shares that can be accessed anonymously",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of this policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/virtualMachines",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Compute/imagePublisher",
+                                    "in": [
+                                        "esri",
+                                        "incredibuild",
+                                        "MicrosoftDynamicsAX",
+                                        "MicrosoftSharepoint",
+                                        "MicrosoftVisualStudio",
+                                        "MicrosoftWindowsDesktop",
+                                        "MicrosoftWindowsServerHPCPack"
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftWindowsServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftSQLServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "notLike": "SQL2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-dsvm",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "dsvm-win*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-ads",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "in": [
+                                                "standard-data-science-vm",
+                                                "windows-data-science-vm"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "batch",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "equals": "rendering-windows2016",
+                                            "field": "Microsoft.Compute/imageOffer"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "center-for-internet-security-inc",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "cis-windows-server-201*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "pivotal",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "bosh-windows-server*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "cloud-infrastructure-services",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "ad*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "like": "Windows*"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/imageSKU"
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "notLike": "2008*"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "notLike": "SQL2008*"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "true",
+                            "value": "[parameters('IncludeArcMachines')]"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.HybridCompute/machines",
+                                            "field": "type"
+                                        },
+                                        {
+                                            "field": "Microsoft.HybridCompute/imageOffer",
+                                            "like": "windows*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.ConnectedVMwarevSphere/virtualMachines",
+                                            "field": "type"
+                                        },
+                                        {
+                                            "field": "Microsoft.ConnectedVMwarevSphere/virtualMachines/osProfile.osType",
+                                            "like": "windows*"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Compliant",
+                            "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/complianceStatus"
+                        },
+                        {
+                            "equals": "[base64(concat('Network access: Remotely accessible registry paths;ExpectedValue', '=', parameters('NetworkAccessRemotelyAccessibleRegistryPaths'), ',', 'Network access: Remotely accessible registry paths and sub-paths;ExpectedValue', '=', parameters('NetworkAccessRemotelyAccessibleRegistryPathsAndSubpaths'), ',', 'Network access: Shares that can be accessed anonymously;ExpectedValue', '=', parameters('NetworkAccessSharesThatCanBeAccessedAnonymously')))]",
+                            "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/parameterHash"
+                        }
+                    ]
+                },
+                "name": "AzureBaseline_SecurityOptionsNetworkAccess",
+                "type": "Microsoft.GuestConfiguration/guestConfigurationAssignments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

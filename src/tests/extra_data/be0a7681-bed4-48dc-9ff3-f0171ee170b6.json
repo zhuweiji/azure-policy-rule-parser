@@ -1,0 +1,76 @@
+{
+    "description": "Use the latest supported Java version for the latest security classes. Using older classes and types can make your application vulnerable.",
+    "displayName": "[Deprecated]: Audit Web Applications that are not using latest supported Java Framework",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/be0a7681-bed4-48dc-9ff3-f0171ee170b6",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "All",
+    "name": "be0a7681-bed4-48dc-9ff3-f0171ee170b6",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allof": [
+                {
+                    "equals": "microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "anyof": [
+                        {
+                            "equals": "app",
+                            "field": "kind"
+                        },
+                        {
+                            "equals": "WebApp",
+                            "field": "kind"
+                        },
+                        {
+                            "equals": "app,linux",
+                            "field": "kind"
+                        },
+                        {
+                            "equals": "app,linux,container",
+                            "field": "kind"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/complianceResults/resourceStatus",
+                    "in": [
+                        "OffByPolicy",
+                        "Healthy"
+                    ]
+                },
+                "name": "UseLatestJava",
+                "type": "Microsoft.Security/complianceResults"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

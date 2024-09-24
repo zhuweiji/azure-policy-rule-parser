@@ -1,0 +1,204 @@
+{
+    "description": "Deploy Diagnostic Settings for Recovery Services Vault to stream to Log Analytics workspace for Resource specific categories. If any of the Resource specific categories are not enabled, a new diagnostic setting is created.",
+    "displayName": "Deploy Diagnostic Settings for Recovery Services Vault to Log Analytics workspace for resource specific categories.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c717fb0c-d118-4c43-ab3d-ece30ac81fb3",
+    "metadata": {
+        "category": "Backup",
+        "version": "1.0.2"
+    },
+    "mode": "Indexed",
+    "name": "c717fb0c-d118-4c43-ab3d-ece30ac81fb3",
+    "parameters": {
+        "logAnalytics": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "Select Log Analytics workspace from dropdown list. If this workspace is outside of the scope of the assignment you must manually grant 'Log Analytics Contributor' permissions (or similar) to the policy assignment's principal ID.",
+                "displayName": "Log Analytics workspace",
+                "strongType": "omsWorkspace"
+            },
+            "type": "String"
+        },
+        "profileName": {
+            "allowedValues": null,
+            "defaultValue": "setbypolicy_logAnalytics",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The diagnostic settings profile name",
+                "displayName": "Profile name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagName": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name of the tag to use for excluding vaults from this policy. This should be used along with the Exclusion Tag Value parameter.",
+                "displayName": "Exclusion Tag Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagValue": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Value of the tag to use for excluding vaults from this policy. This should be used along with the Exclusion Tag Name parameter.",
+                "displayName": "Exclusion Tag Value",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allof": [
+                {
+                    "equals": "Microsoft.RecoveryServices/vaults",
+                    "field": "type"
+                },
+                {
+                    "not": {
+                        "equals": "[parameters('tagValue')]",
+                        "field": "[concat('tags[',parameters('tagName'), ']')]"
+                    }
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "logAnalytics": {
+                                "value": "[parameters('logAnalytics')]"
+                            },
+                            "profileName": {
+                                "value": "[parameters('profileName')]"
+                            },
+                            "vaultName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {
+                                "policy": {
+                                    "type": "string",
+                                    "value": "[concat(parameters('logAnalytics'), 'configured for resource logs for ', ': ', parameters('vaultName'), '/', 'Microsoft.Insights/', parameters('profileName'))]"
+                                }
+                            },
+                            "parameters": {
+                                "logAnalytics": {
+                                    "type": "string"
+                                },
+                                "profileName": {
+                                    "type": "string"
+                                },
+                                "vaultName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2017-05-01-preview",
+                                    "dependsOn": [],
+                                    "name": "[concat(parameters('vaultName'), '/', 'Microsoft.Insights/', parameters('profileName'))]",
+                                    "properties": {
+                                        "logAnalyticsDestinationType": "Dedicated",
+                                        "logs": [
+                                            {
+                                                "category": "CoreAzureBackup",
+                                                "enabled": "true"
+                                            },
+                                            {
+                                                "category": "AddonAzureBackupAlerts",
+                                                "enabled": "true"
+                                            },
+                                            {
+                                                "category": "AddonAzureBackupJobs",
+                                                "enabled": "true"
+                                            },
+                                            {
+                                                "category": "AddonAzureBackupPolicy",
+                                                "enabled": "true"
+                                            },
+                                            {
+                                                "category": "AddonAzureBackupProtectedInstance",
+                                                "enabled": "true"
+                                            },
+                                            {
+                                                "category": "AddonAzureBackupStorage",
+                                                "enabled": "true"
+                                            }
+                                        ],
+                                        "metrics": [],
+                                        "workspaceId": "[parameters('logAnalytics')]"
+                                    },
+                                    "type": "Microsoft.RecoveryServices/vaults/providers/diagnosticSettings"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allof": [
+                        {
+                            "Equals": 6,
+                            "count": {
+                                "field": "Microsoft.Insights/diagnosticSettings/logs[*]",
+                                "where": {
+                                    "allof": [
+                                        {
+                                            "field": "Microsoft.Insights/diagnosticSettings/logs[*].Category",
+                                            "in": [
+                                                "CoreAzureBackup",
+                                                "AddonAzureBackupJobs",
+                                                "AddonAzureBackupAlerts",
+                                                "AddonAzureBackupPolicy",
+                                                "AddonAzureBackupStorage",
+                                                "AddonAzureBackupProtectedInstance"
+                                            ]
+                                        },
+                                        {
+                                            "equals": "True",
+                                            "field": "Microsoft.Insights/diagnosticSettings/logs[*].Enabled"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "field": "Microsoft.Insights/diagnosticSettings/workspaceId",
+                            "notEquals": ""
+                        },
+                        {
+                            "equals": "Dedicated",
+                            "field": "Microsoft.Insights/diagnosticSettings/logAnalyticsDestinationType"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa",
+                    "/providers/microsoft.authorization/roleDefinitions/92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+                ],
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "deployIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

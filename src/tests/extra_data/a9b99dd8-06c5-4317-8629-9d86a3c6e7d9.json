@@ -1,0 +1,62 @@
+{
+    "description": "This policy creates a network watcher resource in regions with virtual networks. You need to ensure existence of a resource group named networkWatcherRG, which will be used to deploy network watcher instances.",
+    "displayName": "Deploy network watcher when virtual networks are created",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a9b99dd8-06c5-4317-8629-9d86a3c6e7d9",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "a9b99dd8-06c5-4317-8629-9d86a3c6e7d9",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Network/virtualNetworks",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2016-09-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat('networkWatcher_', parameters('location'))]",
+                                    "type": "Microsoft.Network/networkWatchers"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "[field('location')]",
+                    "field": "location"
+                },
+                "resourceGroupName": "networkWatcherRG",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+                ],
+                "type": "Microsoft.Network/networkWatchers"
+            },
+            "effect": "DeployIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

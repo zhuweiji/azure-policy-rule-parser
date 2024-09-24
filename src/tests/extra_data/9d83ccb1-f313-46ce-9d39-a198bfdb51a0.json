@@ -1,0 +1,92 @@
+{
+    "description": "Regenerate your keys in the specified time to keep your data more protected.",
+    "displayName": "Azure Cosmos DB accounts should not exceed the maximum number of days allowed since last account key regeneration.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9d83ccb1-f313-46ce-9d39-a198bfdb51a0",
+    "metadata": {
+        "category": "Cosmos DB",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "9d83ccb1-f313-46ce-9d39-a198bfdb51a0",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Policy Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "maxDaysSinceLastRegeneration": {
+            "allowedValues": null,
+            "defaultValue": "60",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Maximum number of days allowed since last account key regeneration.",
+                "displayName": "Maximum number of days allowed since last account key regeneration.",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DocumentDB/databaseAccounts",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/keysMetadata.primaryMasterKey.generationTime"
+                        },
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/keysMetadata.secondaryMasterKey.generationTime"
+                        },
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/keysMetadata.primaryReadonlyMasterKey.generationTime"
+                        },
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.DocumentDB/databaseAccounts/keysMetadata.secondaryReadonlyMasterKey.generationTime"
+                        },
+                        {
+                            "field": "Microsoft.DocumentDB/databaseAccounts/keysMetadata.primaryMasterKey.generationTime",
+                            "lessOrEquals": "[addDays(utcNow(), mul(int(parameters('maxDaysSinceLastRegeneration')), -1))]"
+                        },
+                        {
+                            "field": "Microsoft.DocumentDB/databaseAccounts/keysMetadata.secondaryMasterKey.generationTime",
+                            "lessOrEquals": "[addDays(utcNow(), mul(int(parameters('maxDaysSinceLastRegeneration')), -1))]"
+                        },
+                        {
+                            "field": "Microsoft.DocumentDB/databaseAccounts/keysMetadata.primaryReadonlyMasterKey.generationTime",
+                            "lessOrEquals": "[addDays(utcNow(), mul(int(parameters('maxDaysSinceLastRegeneration')), -1))]"
+                        },
+                        {
+                            "field": "Microsoft.DocumentDB/databaseAccounts/keysMetadata.secondaryReadonlyMasterKey.generationTime",
+                            "lessOrEquals": "[addDays(utcNow(), mul(int(parameters('maxDaysSinceLastRegeneration')), -1))]"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

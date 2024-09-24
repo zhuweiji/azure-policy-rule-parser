@@ -1,0 +1,52 @@
+{
+    "description": "Azure Bot Service automatically encrypts your resource to protect your data and meet organizational security and compliance commitments. By default, Microsoft-managed encryption keys are used. For greater flexibility in managing keys or controlling access to your subscription, select customer-managed keys, also known as bring your own key (BYOK). Learn more about Azure Bot Service encryption: https://docs.microsoft.com/azure/bot-service/bot-service-encryption.",
+    "displayName": "Bot Service should be encrypted with a customer-managed key",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/51522a96-0869-4791-82f3-981000c2c67f",
+    "metadata": {
+        "category": "Bot Service",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "51522a96-0869-4791-82f3-981000c2c67f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.BotService/botServices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.BotService/botServices/isCmekEnabled",
+                    "notEquals": "true"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

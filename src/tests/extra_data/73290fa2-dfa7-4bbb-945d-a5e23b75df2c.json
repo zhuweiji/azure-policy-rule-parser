@@ -1,0 +1,62 @@
+{
+    "description": "Disable public network access for App Configuration so that it isn't accessible over the public internet. This configuration helps protect them against data leakage risks. You can limit exposure of the your resources by creating private endpoints instead. Learn more at: https://aka.ms/appconfig/private-endpoint.",
+    "displayName": "Configure App Configuration to disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/73290fa2-dfa7-4bbb-945d-a5e23b75df2c",
+    "metadata": {
+        "category": "App Configuration",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "73290fa2-dfa7-4bbb-945d-a5e23b75df2c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.AppConfiguration/configurationStores",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.AppConfiguration/configurationStores/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greater(requestContext().apiVersion, '2019-10-01')]",
+                        "field": "Microsoft.AppConfiguration/configurationStores/publicNetworkAccess",
+                        "operation": "addOrReplace",
+                        "value": "Disabled"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

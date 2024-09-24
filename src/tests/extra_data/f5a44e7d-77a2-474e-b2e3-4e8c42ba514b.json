@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Program Management control",
+    "displayName": "Microsoft Managed Control 1729 - Information Security Program Plan",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f5a44e7d-77a2-474e-b2e3-4e8c42ba514b",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1729",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "f5a44e7d-77a2-474e-b2e3-4e8c42ba514b",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

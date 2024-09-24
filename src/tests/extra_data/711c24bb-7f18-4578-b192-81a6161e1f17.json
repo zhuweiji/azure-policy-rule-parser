@@ -1,0 +1,54 @@
+{
+    "description": "This policy is deprecated because Microsoft 365 App Compliance Program no longer requires Azure Firewall premium as the only network security control solution. Learn more details about the latest M365 APP Compliance requirements about network security controls at aka.ms/acat-cert2-seg-ops-nsc. Learn more about policy definition deprecation at aka.ms/policydefdeprecation.",
+    "displayName": "[Deprecated]: Azure Firewall Premium should configure a valid intermediate certificate to enable TLS inspection",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/711c24bb-7f18-4578-b192-81a6161e1f17",
+    "metadata": {
+        "category": "Network",
+        "deprecated": true,
+        "version": "1.1.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "711c24bb-7f18-4578-b192-81a6161e1f17",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/firewallPolicies",
+                    "field": "type"
+                },
+                {
+                    "equals": "Premium",
+                    "field": "Microsoft.Network/firewallPolicies/sku.tier"
+                },
+                {
+                    "exists": false,
+                    "field": "Microsoft.Network/firewallPolicies/transportSecurity.certificateAuthority"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,122 @@
+{
+    "description": "To access the private endpoint(s) for Storage Sync Service resource interfaces from a registered server, you need to configure your DNS to resolve the correct names to your private endpoint's private IP addresses. This policy creates the requisite Azure Private DNS Zone and A records for the interfaces of your Storage Sync Service private endpoint(s).",
+    "displayName": "Configure Azure File Sync to use private DNS zones",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/06695360-db88-47f6-b976-7500d4297475",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "06695360-db88-47f6-b976-7500d4297475",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "Private DNS Zone Identifier",
+                "displayName": "privateDnsZoneId",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/privateEndpoints",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]",
+                        "where": {
+                            "equals": "afs",
+                            "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]"
+                        }
+                    },
+                    "greaterOrEquals": 1
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[parameters('privateDnsZoneId')]"
+                            },
+                            "privateEndpointName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId": {
+                                    "type": "string"
+                                },
+                                "privateEndpointName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-03-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('privateEndpointName'), '/deployedByPolicy')]",
+                                    "properties": {
+                                        "privateDnsZoneConfigs": [
+                                            {
+                                                "name": "privatelink-afs",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/b12aa53e-6015-4669-85d0-8515ebb3ae7f",
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+                ],
+                "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

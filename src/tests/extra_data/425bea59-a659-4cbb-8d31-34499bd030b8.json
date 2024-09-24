@@ -1,0 +1,64 @@
+{
+    "description": "Mandates the use of 'Detection' or 'Prevention' mode to be active on all Web Application Firewall policies for Azure Front Door Service.",
+    "displayName": "Web Application Firewall (WAF) should use the specified mode for Azure Front Door Service",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/425bea59-a659-4cbb-8d31-34499bd030b8",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "425bea59-a659-4cbb-8d31-34499bd030b8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "modeRequirement": {
+            "allowedValues": [
+                "Prevention",
+                "Detection"
+            ],
+            "defaultValue": "Detection",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Mode required for all WAF policies",
+                "displayName": "Mode Requirement",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/policySettings.mode",
+                    "notEquals": "[parameters('modeRequirement')]"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,340 @@
+{
+    "description": "Windows machines should have the specified Group Policy settings in the category 'Security Options - Network Security' for including Local System behavior, PKU2U, LAN Manager, LDAP client, and NTLM SSP. This policy requires that the Guest Configuration prerequisites have been deployed to the policy assignment scope. For details, visit https://aka.ms/gcpol.",
+    "displayName": "Windows machines should meet requirements for 'Security Options - Network Security'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1221c620-d201-468c-81e7-2817e6107e84",
+    "metadata": {
+        "category": "Guest Configuration",
+        "guestConfiguration": {
+            "configurationParameter": {
+                "NetworkSecurityConfigureEncryptionTypesAllowedForKerberos": "Network Security: Configure encryption types allowed for Kerberos;ExpectedValue",
+                "NetworkSecurityLANManagerAuthenticationLevel": "Network security: LAN Manager authentication level;ExpectedValue",
+                "NetworkSecurityLDAPClientSigningRequirements": "Network security: LDAP client signing requirements;ExpectedValue",
+                "NetworkSecurityMinimumSessionSecurityForNTLMSSPBasedIncludingSecureRPCClients": "Network security: Minimum session security for NTLM SSP based (including secure RPC) clients;ExpectedValue",
+                "NetworkSecurityMinimumSessionSecurityForNTLMSSPBasedIncludingSecureRPCServers": "Network security: Minimum session security for NTLM SSP based (including secure RPC) servers;ExpectedValue"
+            },
+            "name": "AzureBaseline_SecurityOptionsNetworkSecurity",
+            "version": "1.*"
+        },
+        "requiredProviders": [
+            "Microsoft.GuestConfiguration"
+        ],
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "1221c620-d201-468c-81e7-2817e6107e84",
+    "parameters": {
+        "IncludeArcMachines": {
+            "allowedValues": [
+                "true",
+                "false"
+            ],
+            "defaultValue": "false",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "By selecting this option, you agree to be charged monthly per Arc connected machine.",
+                "displayName": "Include Arc connected servers",
+                "portalReview": "true",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "NetworkSecurityConfigureEncryptionTypesAllowedForKerberos": {
+            "allowedValues": null,
+            "defaultValue": "2147483644",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies the encryption types that Kerberos is allowed to use.",
+                "displayName": "Network Security: Configure encryption types allowed for Kerberos",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "NetworkSecurityLANManagerAuthenticationLevel": {
+            "allowedValues": null,
+            "defaultValue": "5",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specify which challenge-response authentication protocol is used for network logons. This choice affects the level of authentication protocol used by clients, the level of session security negotiated, and the level of authentication accepted by servers.",
+                "displayName": "Network security: LAN Manager authentication level",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "NetworkSecurityLDAPClientSigningRequirements": {
+            "allowedValues": null,
+            "defaultValue": "1",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specify the level of data signing that is requested on behalf of clients that issue LDAP BIND requests.",
+                "displayName": "Network security: LDAP client signing requirements",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "NetworkSecurityMinimumSessionSecurityForNTLMSSPBasedIncludingSecureRPCClients": {
+            "allowedValues": null,
+            "defaultValue": "537395200",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies which behaviors are allowed by clients for applications using the NTLM Security Support Provider (SSP). The SSP Interface (SSPI) is used by applications that need authentication services. See https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-minimum-session-security-for-ntlm-ssp-based-including-secure-rpc-servers for more information.",
+                "displayName": "Network security: Minimum session security for NTLM SSP based (including secure RPC) clients",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "NetworkSecurityMinimumSessionSecurityForNTLMSSPBasedIncludingSecureRPCServers": {
+            "allowedValues": null,
+            "defaultValue": "537395200",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies which behaviors are allowed by servers for applications using the NTLM Security Support Provider (SSP). The SSP Interface (SSPI) is used by applications that need authentication services.",
+                "displayName": "Network security: Minimum session security for NTLM SSP based (including secure RPC) servers",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of this policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/virtualMachines",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Compute/imagePublisher",
+                                    "in": [
+                                        "esri",
+                                        "incredibuild",
+                                        "MicrosoftDynamicsAX",
+                                        "MicrosoftSharepoint",
+                                        "MicrosoftVisualStudio",
+                                        "MicrosoftWindowsDesktop",
+                                        "MicrosoftWindowsServerHPCPack"
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftWindowsServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftSQLServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "notLike": "SQL2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-dsvm",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "dsvm-win*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-ads",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "in": [
+                                                "standard-data-science-vm",
+                                                "windows-data-science-vm"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "batch",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "equals": "rendering-windows2016",
+                                            "field": "Microsoft.Compute/imageOffer"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "center-for-internet-security-inc",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "cis-windows-server-201*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "pivotal",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "bosh-windows-server*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "cloud-infrastructure-services",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "ad*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "like": "Windows*"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/imageSKU"
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "notLike": "2008*"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "notLike": "SQL2008*"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "true",
+                            "value": "[parameters('IncludeArcMachines')]"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.HybridCompute/machines",
+                                            "field": "type"
+                                        },
+                                        {
+                                            "field": "Microsoft.HybridCompute/imageOffer",
+                                            "like": "windows*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.ConnectedVMwarevSphere/virtualMachines",
+                                            "field": "type"
+                                        },
+                                        {
+                                            "field": "Microsoft.ConnectedVMwarevSphere/virtualMachines/osProfile.osType",
+                                            "like": "windows*"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Compliant",
+                            "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/complianceStatus"
+                        },
+                        {
+                            "equals": "[base64(concat('Network Security: Configure encryption types allowed for Kerberos;ExpectedValue', '=', parameters('NetworkSecurityConfigureEncryptionTypesAllowedForKerberos'), ',', 'Network security: LAN Manager authentication level;ExpectedValue', '=', parameters('NetworkSecurityLANManagerAuthenticationLevel'), ',', 'Network security: LDAP client signing requirements;ExpectedValue', '=', parameters('NetworkSecurityLDAPClientSigningRequirements'), ',', 'Network security: Minimum session security for NTLM SSP based (including secure RPC) clients;ExpectedValue', '=', parameters('NetworkSecurityMinimumSessionSecurityForNTLMSSPBasedIncludingSecureRPCClients'), ',', 'Network security: Minimum session security for NTLM SSP based (including secure RPC) servers;ExpectedValue', '=', parameters('NetworkSecurityMinimumSessionSecurityForNTLMSSPBasedIncludingSecureRPCServers')))]",
+                            "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/parameterHash"
+                        }
+                    ]
+                },
+                "name": "AzureBaseline_SecurityOptionsNetworkSecurity",
+                "type": "Microsoft.GuestConfiguration/guestConfigurationAssignments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

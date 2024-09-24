@@ -1,0 +1,59 @@
+{
+    "description": "This policy is not required since Azure App Service automatically updates and maintains the .NET Framework versions installed on the platform.",
+    "displayName": "[Deprecated]: Ensure that '.NET Framework' version is the latest, if used as a part of the Web app",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/843664e0-7563-41ee-a9cb-7522c382d2c4",
+    "metadata": {
+        "category": "App Service",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "843664e0-7563-41ee-a9cb-7522c382d2c4",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "app*"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Web/sites/config/web.netFrameworkVersion",
+                    "in": [
+                        "v3.0",
+                        "v4.0"
+                    ]
+                },
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

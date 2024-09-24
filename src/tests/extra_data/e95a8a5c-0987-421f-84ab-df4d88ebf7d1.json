@@ -1,0 +1,175 @@
+{
+    "description": "Private endpoints connect your virtual network to Azure services without a public IP address at the source or destination. By mapping private endpoints to your site recovery resources of Recovery Services vaults, you can reduce data leakage risks. To use private links, managed service identity must be assigned to Recovery Services Vaults. Learn more about private links at: https://docs.microsoft.com/azure/site-recovery/azure-to-azure-how-to-enable-replication-private-endpoints.",
+    "displayName": "[Preview]: Configure private endpoints on Azure Recovery Services vaults",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e95a8a5c-0987-421f-84ab-df4d88ebf7d1",
+    "metadata": {
+        "category": "Site Recovery",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "e95a8a5c-0987-421f-84ab-df4d88ebf7d1",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateEndpointSubnetId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "A subnet with private endpoint network policies disabled",
+                "displayName": "Private endpoint subnet id",
+                "strongType": "Microsoft.Network/virtualNetworks/subnets"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.RecoveryServices/vaults",
+                    "field": "type"
+                },
+                {
+                    "contains": "Assigned",
+                    "field": "identity.type"
+                },
+                {
+                    "equals": "None",
+                    "field": "Microsoft.RecoveryServices/vaults/privateEndpointStateForSiteRecovery"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "name": {
+                                "value": "[field('name')]"
+                            },
+                            "privateEndpointSubnetId": {
+                                "value": "[parameters('privateEndpointSubnetId')]"
+                            },
+                            "serviceId": {
+                                "value": "[field('id')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "privateEndpointSubnetId": {
+                                    "type": "string"
+                                },
+                                "serviceId": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "name": "[variables('privateEndpointName')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "privateEndpointSubnetId": {
+                                                "value": "[parameters('privateEndpointSubnetId')]"
+                                            },
+                                            "serviceId": {
+                                                "value": "[parameters('serviceId')]"
+                                            },
+                                            "subnetLocation": {
+                                                "value": "[reference(first(take(split(parameters('privateEndpointSubnetId'),'/subnets'),1)),'2020-07-01','Full').location]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "privateEndpointSubnetId": {
+                                                    "type": "string"
+                                                },
+                                                "serviceId": {
+                                                    "type": "string"
+                                                },
+                                                "subnetLocation": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2020-07-01",
+                                                    "location": "[parameters('subnetLocation')]",
+                                                    "name": "[concat(variables('privateEndpointName'))]",
+                                                    "properties": {
+                                                        "manualPrivateLinkServiceConnections": [],
+                                                        "privateLinkServiceConnections": [
+                                                            {
+                                                                "name": "[concat(variables('privateEndpointName'))]",
+                                                                "properties": {
+                                                                    "groupIds": [
+                                                                        "AzureSiteRecovery"
+                                                                    ],
+                                                                    "privateLinkServiceId": "[parameters('serviceId')]",
+                                                                    "requestMessage": "autoapprove"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "subnet": {
+                                                            "id": "[parameters('privateEndpointSubnetId')]"
+                                                        }
+                                                    },
+                                                    "tags": {},
+                                                    "type": "Microsoft.Network/privateEndpoints"
+                                                }
+                                            ],
+                                            "variables": {
+                                                "privateEndpointName": "[deployment().name]"
+                                            }
+                                        }
+                                    },
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "privateEndpointName": "[concat('pe-',substring(parameters('name'),0,min(length(parameters('name')),50)),'-',uniquestring(deployment().name))]"
+                            }
+                        }
+                    }
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7",
+                    "/providers/Microsoft.Authorization/roleDefinitions/6670b86e-a3f7-4917-ac9b-5d6ab1be4567"
+                ],
+                "type": "Microsoft.RecoveryServices/vaults/privateEndpointConnections"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

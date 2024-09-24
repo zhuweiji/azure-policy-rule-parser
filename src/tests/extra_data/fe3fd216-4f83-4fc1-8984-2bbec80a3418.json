@@ -1,0 +1,57 @@
+{
+    "description": "Assigning a managed identity to your Cognitive Service account helps ensure secure authentication. This identity is used by this Cognitive service account to communicate with other Azure services, like Azure Key Vault, in a secure way without you having to manage any credentials.",
+    "displayName": "Cognitive Services accounts should use a managed identity",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fe3fd216-4f83-4fc1-8984-2bbec80a3418",
+    "metadata": {
+        "category": "Cognitive Services",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "fe3fd216-4f83-4fc1-8984-2bbec80a3418",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.CognitiveServices/accounts",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "identity.type"
+                        },
+                        {
+                            "equals": "None",
+                            "field": "identity.type"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

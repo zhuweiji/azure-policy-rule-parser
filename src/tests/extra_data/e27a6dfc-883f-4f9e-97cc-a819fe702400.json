@@ -1,0 +1,49 @@
+{
+    "description": "This policy is deprecated because it uses unsupported api. Instead of continuing to use this policy, we recommend you instead assign this replacement policy with policy ID b4dec045-250a-48c2-b5cc-e0c4eec8b5b4. Learn more about policy definition deprecation at aka.ms/policydefdeprecation",
+    "displayName": "[Deprecated]: Azure PostgreSQL flexible server should have Azure Active Directory Only Authentication enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e27a6dfc-883f-4f9e-97cc-a819fe702400",
+    "metadata": {
+        "category": "SQL",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "e27a6dfc-883f-4f9e-97cc-a819fe702400",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.DBforPostgreSQL/flexibleServers",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "ON",
+                    "field": "Microsoft.DBforPostgreSQL/flexibleServers/configurations/value"
+                },
+                "name": "aad_auth_only",
+                "type": "Microsoft.DBforPostgreSQL/flexibleServers/configurations"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

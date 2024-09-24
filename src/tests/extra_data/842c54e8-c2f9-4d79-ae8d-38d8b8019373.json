@@ -1,0 +1,68 @@
+{
+    "description": "This policy audits Linux Azure Arc machines if the Log Analytics extension is not installed.",
+    "displayName": "[Preview]: Log Analytics extension should be installed on your Linux Azure Arc machines",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/842c54e8-c2f9-4d79-ae8d-38d8b8019373",
+    "metadata": {
+        "category": "Monitoring",
+        "preview": true,
+        "version": "1.0.1-preview"
+    },
+    "mode": "Indexed",
+    "name": "842c54e8-c2f9-4d79-ae8d-38d8b8019373",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HybridCompute/imageOffer",
+                    "like": "linux*"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "OmsAgentForLinux",
+                            "field": "Microsoft.HybridCompute/machines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.EnterpriseCloud.Monitoring",
+                            "field": "Microsoft.HybridCompute/machines/extensions/publisher"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.HybridCompute/machines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,51 @@
+{
+    "description": "Secure your Cloud Services (extended support) role instances by ensuring the latest security and critical updates are installed on them.",
+    "displayName": "Cloud Services (extended support) role instances should have system updates installed",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/4df26ba8-026d-45b0-9521-bffa44d741d2",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "4df26ba8-026d-45b0-9521-bffa44d741d2",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Compute/cloudServices",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "bd20bd91-aaf1-7f14-b6e4-866de2f43146",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

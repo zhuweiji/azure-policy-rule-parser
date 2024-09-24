@@ -1,0 +1,101 @@
+{
+    "description": "Microsoft Defender for cloud offers vulnerability scanning for your machines at no extra cost. Enabling this policy will cause Defender for Cloud to automatically propagate the findings from the built-in Microsoft Defender vulnerability management solution to all supported machines.",
+    "displayName": "Setup subscriptions to transition to an alternative vulnerability assessment solution",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/766e621d-ba95-4e43-a6f2-e945db3d7888",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.0-preview"
+    },
+    "mode": "All",
+    "name": "766e621d-ba95-4e43-a6f2-e945db3d7888",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "selectedProvider": {
+            "allowedValues": [
+                "MdeTvm"
+            ],
+            "defaultValue": "MdeTvm",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Select the vulnerability assessment solution to provision to machines.",
+                "displayName": "Slected Vulnerability Assessment provider",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "eastus",
+                    "properties": {
+                        "mode": "Incremental",
+                        "parameters": {
+                            "selectedProvider": {
+                                "value": "[parameters('selectedProvider')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "selectedProvider": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2023-05-01",
+                                    "kind": "[variables('settingsKind')]",
+                                    "name": "[variables('settingsKind')]",
+                                    "properties": {
+                                        "selectedProvider": "[parameters('selectedProvider')]"
+                                    },
+                                    "type": "Microsoft.Security/serverVulnerabilityAssessmentsSettings"
+                                }
+                            ],
+                            "variables": {
+                                "settingsKind": "AzureServersSetting"
+                            }
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "equals": "MdeTvm",
+                    "field": "Microsoft.Security/serverVulnerabilityAssessmentsSettings/AzureServersSetting.selectedProvider"
+                },
+                "existenceScope": "subscription",
+                "name": "AzureServersSetting",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+                ],
+                "type": "Microsoft.Security/serverVulnerabilityAssessmentsSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

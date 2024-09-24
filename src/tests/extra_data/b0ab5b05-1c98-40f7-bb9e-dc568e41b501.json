@@ -1,0 +1,63 @@
+{
+    "description": "Injecting Azure HDInsight clusters in a virtual network unlocks advanced HDInsight networking and security features and provides you with control over your network security configuration.",
+    "displayName": "Azure HDInsight clusters should be injected into a virtual network",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b0ab5b05-1c98-40f7-bb9e-dc568e41b501",
+    "metadata": {
+        "category": "HDInsight",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "b0ab5b05-1c98-40f7-bb9e-dc568e41b501",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HDInsight/clusters",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.HDInsight/clusters/computeProfile.roles[*]",
+                        "where": {
+                            "anyOf": [
+                                {
+                                    "exists": false,
+                                    "field": "Microsoft.HDInsight/clusters/computeProfile.roles[*].virtualNetworkProfile.id"
+                                },
+                                {
+                                    "exists": false,
+                                    "field": "Microsoft.HDInsight/clusters/computeProfile.roles[*].virtualNetworkProfile.subnet"
+                                }
+                            ]
+                        }
+                    },
+                    "greater": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

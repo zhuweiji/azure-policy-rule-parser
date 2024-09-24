@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Planning control",
+    "displayName": "Microsoft Managed Control 1501 - Rules Of Behavior",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/88817b58-8472-4f6c-81fa-58ce42b67f51",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1501",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "88817b58-8472-4f6c-81fa-58ce42b67f51",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

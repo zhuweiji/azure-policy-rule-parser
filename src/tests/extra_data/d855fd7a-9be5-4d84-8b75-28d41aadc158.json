@@ -1,0 +1,50 @@
+{
+    "description": "Azure Load Testing engine instances should use virtual network injection for the following purposes: 1. Isolate Azure Load Testing engines to a virtual network. 2. Enable Azure Load Testing engines to interact with systems in either on premises data centers or Azure service in other virtual networks. 3. Empower customers to control inbound and outbound network communications for Azure Load Testing engines.",
+    "displayName": "[Preview]: Load tests using Azure Load Testing should be run only against private endpoints from within a virtual network.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d855fd7a-9be5-4d84-8b75-28d41aadc158",
+    "metadata": {
+        "category": "Azure Load Testing",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Microsoft.LoadTestService.Data",
+    "name": "d855fd7a-9be5-4d84-8b75-28d41aadc158",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.LoadTestService.Data/loadTests/testRuns",
+                    "field": "type"
+                },
+                {
+                    "equals": "",
+                    "field": "Microsoft.LoadTestService.Data/loadTests/testRuns/subnetId"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

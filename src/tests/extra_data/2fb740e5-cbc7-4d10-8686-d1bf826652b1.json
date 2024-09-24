@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Awareness and Training control",
+    "displayName": "Microsoft Managed Control 1090 - Security Awareness",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2fb740e5-cbc7-4d10-8686-d1bf826652b1",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1090",
+        "category": "Regulatory Compliance",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "2fb740e5-cbc7-4d10-8686-d1bf826652b1",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

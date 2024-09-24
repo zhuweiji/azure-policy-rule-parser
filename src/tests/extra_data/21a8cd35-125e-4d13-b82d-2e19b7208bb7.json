@@ -1,0 +1,49 @@
+{
+    "description": "Disabling the public endpoint allows you to restrict access to your Storage Sync Service resource to requests destined to approved private endpoints on your organization's network. There is nothing inherently insecure about allowing requests to the public endpoint, however, you may wish to disable it to meet regulatory, legal, or organizational policy requirements. You can disable the public endpoint for a Storage Sync Service by setting the incomingTrafficPolicy of the resource to AllowVirtualNetworksOnly.",
+    "displayName": "Public network access should be disabled for Azure File Sync",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/21a8cd35-125e-4d13-b82d-2e19b7208bb7",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "21a8cd35-125e-4d13-b82d-2e19b7208bb7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.StorageSync/storageSyncServices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.StorageSync/storageSyncServices/incomingTrafficPolicy",
+                    "notEquals": "AllowVirtualNetworksOnly"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

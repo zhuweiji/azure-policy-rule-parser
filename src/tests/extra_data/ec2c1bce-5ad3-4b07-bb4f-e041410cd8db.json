@@ -1,0 +1,64 @@
+{
+    "description": "Utilizes the Azure Policy Guest Configuration agent for auditing. This policy ensures that machines adhere to the Nexus compute security baseline, encompassing various recommendations designed to fortify machines against a range of vulnerabilities and unsafe configurations (Linux only).",
+    "displayName": "[Preview]: Nexus Compute Machines should meet Security Baseline",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ec2c1bce-5ad3-4b07-bb4f-e041410cd8db",
+    "metadata": {
+        "category": "Guest Configuration",
+        "guestConfiguration": {
+            "name": "NexusLinuxBaseline",
+            "version": "1.*"
+        },
+        "preview": true,
+        "requiredProviders": [
+            "Microsoft.GuestConfiguration"
+        ],
+        "version": "1.1.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "ec2c1bce-5ad3-4b07-bb4f-e041410cd8db",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of this policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HybridCompute/imageOffer",
+                    "like": "linux*"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "Compliant",
+                    "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/complianceStatus"
+                },
+                "name": "NexusLinuxBaseline",
+                "type": "Microsoft.GuestConfiguration/guestConfigurationAssignments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

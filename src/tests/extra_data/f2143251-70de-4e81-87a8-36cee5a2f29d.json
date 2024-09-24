@@ -1,0 +1,340 @@
+{
+    "description": "Windows machines should have the specified Group Policy settings in the category 'Security Settings - Account Policies' for password history, age, length, complexity, and storing passwords using reversible encryption. This policy requires that the Guest Configuration prerequisites have been deployed to the policy assignment scope. For details, visit https://aka.ms/gcpol.",
+    "displayName": "Windows machines should meet requirements for 'Security Settings - Account Policies'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f2143251-70de-4e81-87a8-36cee5a2f29d",
+    "metadata": {
+        "category": "Guest Configuration",
+        "guestConfiguration": {
+            "configurationParameter": {
+                "EnforcePasswordHistory": "Enforce password history;ExpectedValue",
+                "MaximumPasswordAge": "Maximum password age;ExpectedValue",
+                "MinimumPasswordAge": "Minimum password age;ExpectedValue",
+                "MinimumPasswordLength": "Minimum password length;ExpectedValue",
+                "PasswordMustMeetComplexityRequirements": "Password must meet complexity requirements;ExpectedValue"
+            },
+            "name": "AzureBaseline_SecuritySettingsAccountPolicies",
+            "version": "1.*"
+        },
+        "requiredProviders": [
+            "Microsoft.GuestConfiguration"
+        ],
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "f2143251-70de-4e81-87a8-36cee5a2f29d",
+    "parameters": {
+        "EnforcePasswordHistory": {
+            "allowedValues": null,
+            "defaultValue": "24",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies limits on password reuse - how many times a new password must be created for a user account before the password can be repeated.",
+                "displayName": "Enforce password history",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "IncludeArcMachines": {
+            "allowedValues": [
+                "true",
+                "false"
+            ],
+            "defaultValue": "false",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "By selecting this option, you agree to be charged monthly per Arc connected machine.",
+                "displayName": "Include Arc connected servers",
+                "portalReview": "true",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "MaximumPasswordAge": {
+            "allowedValues": null,
+            "defaultValue": "1,70",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies the maximum number of days that may elapse before a user account password must be changed. The format of the value is two integers separated by a comma, denoting an inclusive range.",
+                "displayName": "Maximum password age",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "MinimumPasswordAge": {
+            "allowedValues": null,
+            "defaultValue": "1",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies the minimum number of days that must elapse before a user account password can be changed.",
+                "displayName": "Minimum password age",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "MinimumPasswordLength": {
+            "allowedValues": null,
+            "defaultValue": "14",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies the minimum number of characters that a user account password may contain.",
+                "displayName": "Minimum password length",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "PasswordMustMeetComplexityRequirements": {
+            "allowedValues": null,
+            "defaultValue": "1",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies whether a user account password must be complex. If required, a complex password must not contain part of  user's account name or full name; be at least 6 characters long; contain a mix of uppercase, lowercase, number, and non-alphabetic characters.",
+                "displayName": "Password must meet complexity requirements",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of this policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/virtualMachines",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Compute/imagePublisher",
+                                    "in": [
+                                        "esri",
+                                        "incredibuild",
+                                        "MicrosoftDynamicsAX",
+                                        "MicrosoftSharepoint",
+                                        "MicrosoftVisualStudio",
+                                        "MicrosoftWindowsDesktop",
+                                        "MicrosoftWindowsServerHPCPack"
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftWindowsServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftSQLServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "notLike": "SQL2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-dsvm",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "dsvm-win*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-ads",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "in": [
+                                                "standard-data-science-vm",
+                                                "windows-data-science-vm"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "batch",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "equals": "rendering-windows2016",
+                                            "field": "Microsoft.Compute/imageOffer"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "center-for-internet-security-inc",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "cis-windows-server-201*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "pivotal",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "bosh-windows-server*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "cloud-infrastructure-services",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "ad*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "like": "Windows*"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/imageSKU"
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "notLike": "2008*"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "notLike": "SQL2008*"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "true",
+                            "value": "[parameters('IncludeArcMachines')]"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.HybridCompute/machines",
+                                            "field": "type"
+                                        },
+                                        {
+                                            "field": "Microsoft.HybridCompute/imageOffer",
+                                            "like": "windows*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.ConnectedVMwarevSphere/virtualMachines",
+                                            "field": "type"
+                                        },
+                                        {
+                                            "field": "Microsoft.ConnectedVMwarevSphere/virtualMachines/osProfile.osType",
+                                            "like": "windows*"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Compliant",
+                            "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/complianceStatus"
+                        },
+                        {
+                            "equals": "[base64(concat('Enforce password history;ExpectedValue', '=', parameters('EnforcePasswordHistory'), ',', 'Maximum password age;ExpectedValue', '=', parameters('MaximumPasswordAge'), ',', 'Minimum password age;ExpectedValue', '=', parameters('MinimumPasswordAge'), ',', 'Minimum password length;ExpectedValue', '=', parameters('MinimumPasswordLength'), ',', 'Password must meet complexity requirements;ExpectedValue', '=', parameters('PasswordMustMeetComplexityRequirements')))]",
+                            "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/parameterHash"
+                        }
+                    ]
+                },
+                "name": "AzureBaseline_SecuritySettingsAccountPolicies",
+                "type": "Microsoft.GuestConfiguration/guestConfigurationAssignments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

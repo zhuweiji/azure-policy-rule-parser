@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Planning control",
+    "displayName": "Microsoft Managed Control 1504 - Information Security Architecture",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9e7c35d0-12d4-4e0c-80a2-8a352537aefd",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1504",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "9e7c35d0-12d4-4e0c-80a2-8a352537aefd",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

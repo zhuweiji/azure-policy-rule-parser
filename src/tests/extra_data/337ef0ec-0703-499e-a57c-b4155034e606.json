@@ -1,0 +1,87 @@
+{
+    "description": "The resource providers and types specified via parameter list are not allowed to be created without explicit approval from the security team. If an exemption is granted to the policy assignment, the resource can be leveraged within the enclave. https://aka.ms/VirtualEnclaves",
+    "displayName": "Do not allow creation of specified resource types or types under specific providers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/337ef0ec-0703-499e-a57c-b4155034e606",
+    "metadata": {
+        "category": "VirtualEnclaves",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "337ef0ec-0703-499e-a57c-b4155034e606",
+    "parameters": {
+        "disallowedResourceProviders": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of disallowed resource providers or parent resource types as strings, such as microsoft.storage or microsoft.servicebus",
+                "displayName": "Denied resource providers",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "disallowedResourceTypes": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of disallowed resource types as strings, such as microsoft.storage/storageaccounts",
+                "displayName": "Denied resource types",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "count": {
+                        "name": "resourceType",
+                        "value": "[parameters('disallowedResourceTypes')]",
+                        "where": {
+                            "equals": "[current('resourceType')]",
+                            "field": "type"
+                        }
+                    },
+                    "greater": 0
+                },
+                {
+                    "count": {
+                        "name": "resourceProvider",
+                        "value": "[parameters('disallowedResourceProviders')]",
+                        "where": {
+                            "field": "type",
+                            "like": "[concat(current('resourceProvider'), '/*')]"
+                        }
+                    },
+                    "greater": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

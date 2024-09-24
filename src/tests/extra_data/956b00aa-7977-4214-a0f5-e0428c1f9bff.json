@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Accountability, Audit, and Risk Management control",
+    "displayName": "Microsoft Managed Control 1806 - Governance And Privacy Program ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/956b00aa-7977-4214-a0f5-e0428c1f9bff",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1806",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "956b00aa-7977-4214-a0f5-e0428c1f9bff",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,83 @@
+{
+    "description": "This is a test policy only for internal use by Policy team. To prevent data & token exfiltration, set the domains that Azure Data Factory should be allowed to communicate with. Note: While in public preview, the compliance for this policy is not reported, & for policy to be applied to Data Factory, please enable outbound rules functionality in the ADF studio. For more information, visit https://aka.ms/data-exfiltration-policy.",
+    "displayName": "[Deprecated]: Azure Data Factory pipelines should only communicate with allowed domains. Versioning Test BuiltIn",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f8d398ae-0441-4921-a341-40f3973d4647",
+    "metadata": {
+        "category": "BuiltInPolicyTest",
+        "deprecated": true,
+        "version": "2.2.0-deprecated"
+    },
+    "mode": "Microsoft.DataFactory.Data",
+    "name": "f8d398ae-0441-4921-a341-40f3973d4647",
+    "parameters": {
+        "allowedDomainNamesV2": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of allowed domain names.",
+                "displayName": "Allowed domain names",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "effect": {
+            "allowedValues": [
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "'Deny' blocks the communication with untrusted domains during execution of pipeline.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "testString": {
+            "allowedValues": null,
+            "defaultValue": "test",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "A string to be compared against 'test' in the policy rule to generate the desired compliance result.",
+                "displayName": "Test string",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "test",
+                    "value": "[parameters('testString')]"
+                },
+                {
+                    "equals": "Microsoft.DataFactory.Data/factories/outboundTraffic",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.DataFactory.Data/factories/outboundTraffic/properties.domainNames[*]",
+                        "where": {
+                            "field": "Microsoft.DataFactory.Data/factories/outboundTraffic/properties.domainNames[*]",
+                            "notIn": "[parameters('allowedDomainNamesV2')]"
+                        }
+                    },
+                    "greater": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

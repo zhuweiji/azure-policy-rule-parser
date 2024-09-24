@@ -1,0 +1,64 @@
+{
+    "description": "Enable TrustedLaunch on Virtual Machine for enhanced security, use VM SKU (Gen 2) that supports TrustedLaunch. To learn more about TrustedLaunch, visit https://learn.microsoft.com/en-us/azure/virtual-machines/trusted-launch",
+    "displayName": "Virtual Machine should have TrustedLaunch enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c95b54ad-0614-4633-ab29-104b01235cbf",
+    "metadata": {
+        "category": "Trusted Launch",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c95b54ad-0614-4633-ab29-104b01235cbf",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.Compute/virtualMachines/securityProfile"
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/securityProfile.securityType",
+                            "notEquals": "TrustedLaunch"
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.secureBootEnabled",
+                            "notEquals": "true"
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.vTpmEnabled",
+                            "notEquals": "true"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

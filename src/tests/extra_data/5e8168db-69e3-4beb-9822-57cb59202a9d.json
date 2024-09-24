@@ -1,0 +1,49 @@
+{
+    "description": "Bots should be set to 'isolated only' mode. This setting configures Bot Service channels that require traffic over the public internet to be disabled.",
+    "displayName": "Bot Service should have public network access disabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5e8168db-69e3-4beb-9822-57cb59202a9d",
+    "metadata": {
+        "category": "Bot Service",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "5e8168db-69e3-4beb-9822-57cb59202a9d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.BotService/botServices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.BotService/botServices/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

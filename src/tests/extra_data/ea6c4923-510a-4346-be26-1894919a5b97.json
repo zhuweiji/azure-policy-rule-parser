@@ -1,0 +1,218 @@
+{
+    "description": "Ensure that Stream Analytics jobs only connect to endpoints using managed identity authentication.",
+    "displayName": "Stream Analytics job should use managed identity to authenticate endpoints",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ea6c4923-510a-4346-be26-1894919a5b97",
+    "metadata": {
+        "category": "Stream Analytics",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "ea6c4923-510a-4346-be26-1894919a5b97",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Deny",
+                "Disabled",
+                "Audit"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.Storage/Blob",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.type"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.Microsoft-Storage-Blob.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.DataLake/Accounts",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.type"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.Microsoft-DataLake-Accounts.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "PowerBI",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.type"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.PowerBI.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.ServiceBus/Topic",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.type"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.Microsoft-ServiceBus-Topic.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.ServiceBus/Queue",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.type"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.Microsoft-ServiceBus-Queue.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.Sql/Server/Database",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.type"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.Microsoft-Sql-Server-Database.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.EventHub/EventHub",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.type"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.Microsoft-EventHub-EventHub.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "field": "Microsoft.StreamAnalytics/streamingjobs/outputs/datasource.type",
+                                    "notIn": [
+                                        "Microsoft.Storage/Blob",
+                                        "Microsoft.DataLake/Accounts",
+                                        "PowerBI",
+                                        "Microsoft.ServiceBus/Topic",
+                                        "Microsoft.ServiceBus/Queue",
+                                        "Microsoft.Sql/Server/Database",
+                                        "Microsoft.EventHub/EventHub"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.StreamAnalytics/streamingjobs/inputs",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.EventHub/EventHub",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/inputs/Stream.datasource.type"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/inputs/Stream.datasource.Microsoft-EventHub-EventHub.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "field": "Microsoft.StreamAnalytics/streamingjobs/inputs/Stream.datasource.type",
+                                    "notIn": [
+                                        "Microsoft.EventHub/EventHub"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.StreamAnalytics/streamingjobs/functions",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.StreamAnalytics/streamingjobs/functions[*].type",
+                            "notIn": [
+                                "Microsoft.StreamAnalytics/JavascriptUdf",
+                                "Microsoft.StreamAnalytics/CLRUdf"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.StreamAnalytics/streamingjobs",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "allOf": [
+                                        {
+                                            "exists": "true",
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/jobStorageAccount"
+                                        },
+                                        {
+                                            "field": "Microsoft.StreamAnalytics/streamingjobs/jobStorageAccount.authenticationMode",
+                                            "notEquals": "Msi"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

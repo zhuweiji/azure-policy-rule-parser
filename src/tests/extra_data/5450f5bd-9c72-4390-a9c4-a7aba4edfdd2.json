@@ -1,0 +1,58 @@
+{
+    "description": "Disabling local authentication methods improves security by ensuring that Cosmos DB database accounts exclusively require Azure Active Directory identities for authentication. Learn more at: https://docs.microsoft.com/azure/cosmos-db/how-to-setup-rbac#disable-local-auth.",
+    "displayName": "Cosmos DB database accounts should have local authentication methods disabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5450f5bd-9c72-4390-a9c4-a7aba4edfdd2",
+    "metadata": {
+        "category": "Cosmos DB",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "5450f5bd-9c72-4390-a9c4-a7aba4edfdd2",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DocumentDB/databaseAccounts",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.DocumentDB/databaseAccounts/disableLocalAuth",
+                    "notEquals": true
+                },
+                {
+                    "field": "Microsoft.DocumentDB/databaseAccounts/capabilities[*].name",
+                    "notin": [
+                        "EnableMongo",
+                        "EnableCassandra",
+                        "EnableTable",
+                        "EnableGremlin"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

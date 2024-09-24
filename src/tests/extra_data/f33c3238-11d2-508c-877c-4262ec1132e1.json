@@ -1,0 +1,44 @@
+{
+    "description": "CMA_C1295 - Recover and reconstitute resources after any disruption",
+    "displayName": "Recover and reconstitute resources after any disruption",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f33c3238-11d2-508c-877c-4262ec1132e1",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_C1295",
+        "category": "Regulatory Compliance",
+        "version": "1.1.1"
+    },
+    "mode": "All",
+    "name": "f33c3238-11d2-508c-877c-4262ec1132e1",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

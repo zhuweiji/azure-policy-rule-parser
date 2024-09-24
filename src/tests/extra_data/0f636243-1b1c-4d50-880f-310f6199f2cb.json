@@ -1,0 +1,60 @@
+{
+    "description": "This policy enforces containers to listen only on allowed ports in an Azure Kubernetes Service cluster. This policy is deprecated, please visit https://aka.ms/kubepolicydoc for instructions on using new Kubernetes policies.",
+    "displayName": "[Deprecated]: Ensure containers listen only on allowed ports in AKS",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0f636243-1b1c-4d50-880f-310f6199f2cb",
+    "metadata": {
+        "category": "Kubernetes service",
+        "deprecated": true,
+        "version": "1.0.1-deprecated"
+    },
+    "mode": "Microsoft.ContainerService.Data",
+    "name": "0f636243-1b1c-4d50-880f-310f6199f2cb",
+    "parameters": {
+        "allowedContainerPortsRegex": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Regex representing container ports allowed in Kubernetes cluster. E.g. Regex for allowing ports 443,446 is ^(443|446)$",
+                "displayName": "Allowed container ports regex",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "EnforceRegoPolicy",
+                "Disabled"
+            ],
+            "defaultValue": "EnforceRegoPolicy",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ContainerService/managedClusters",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "policy": "https://raw.githubusercontent.com/Azure/azure-policy/master/built-in-references/KubernetesService/container-allowed-ports/limited-preview/gatekeeperpolicy.rego",
+                "policyId": "ContainerAllowedPorts",
+                "policyParameters": {
+                    "allowedContainerPortsRegex": "[parameters('allowedContainerPortsRegex')]"
+                }
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

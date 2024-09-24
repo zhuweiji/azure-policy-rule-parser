@@ -1,0 +1,54 @@
+{
+    "description": "To ensure secure data encryption is enabled at the service level and the infrastructure level with two different encryption algorithms and two different keys, use an Azure Monitor dedicated cluster. This option is enabled by default when supported at the region, see https://docs.microsoft.com/azure/azure-monitor/platform/customer-managed-keys#customer-managed-key-overview.",
+    "displayName": "Azure Monitor Logs clusters should be created with infrastructure-encryption enabled (double encryption)",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ea0dfaed-95fb-448c-934e-d6e713ce393d",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "ea0dfaed-95fb-448c-934e-d6e713ce393d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.OperationalInsights/clusters",
+                    "field": "type"
+                },
+                {
+                    "not": {
+                        "equals": "true",
+                        "field": "Microsoft.OperationalInsights/clusters/isDoubleEncryptionEnabled"
+                    }
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

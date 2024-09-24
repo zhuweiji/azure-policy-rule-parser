@@ -1,0 +1,59 @@
+{
+    "description": "Enable Resource logs for Azure Front Door (plus WAF) and stream to a Log Analytics workspace. Get detailed visibility into inbound web traffic and actions taken to mitigate attacks.",
+    "displayName": "Azure Front Door should have Resource logs enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8a04f872-51e9-4313-97fb-fc1c35430fd8",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "8a04f872-51e9-4313-97fb-fc1c35430fd8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Network/frontdoors",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "true",
+                            "field": "Microsoft.Insights/diagnosticSettings/logs.enabled"
+                        },
+                        {
+                            "equals": "true",
+                            "field": "Microsoft.Insights/diagnosticSettings/metrics.enabled"
+                        },
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Insights/diagnosticSettings/workspaceId"
+                        }
+                    ]
+                },
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,460 @@
+{
+    "description": "Control the user, primary group, supplemental group and file system group IDs that pods and containers can use to run in a Kubernetes Cluster. This policy is generally available for Kubernetes Service (AKS), and preview for Azure Arc enabled Kubernetes. For more information, see https://aka.ms/kubepolicydoc.",
+    "displayName": "Kubernetes cluster pods and containers should only run with approved user and group IDs",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f06ddb64-5fa3-4b77-b166-acb36f7f6042",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "6.2.0"
+    },
+    "mode": "Microsoft.Kubernetes.Data",
+    "name": "f06ddb64-5fa3-4b77-b166-acb36f7f6042",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created or updated, but flags it as non-compliant. 'Deny' blocks the non-compliant resource creation or update. 'Disabled' turns off the policy.",
+                "displayName": "Effect",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "excludedContainers": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of InitContainers and Containers to exclude from policy evaluation. The identify is the name of container. Use an empty list to apply this policy to all containers in all namespaces.",
+                "displayName": "Containers exclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "excludedImages": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The list of InitContainers and Containers to exclude from policy evaluation. The identifier is the image of container. Prefix-matching can be signified with `*`. For example: `myregistry.azurecr.io/istio:*`. It is recommended that users use the fully-qualified Docker image name (e.g. start with a domain name) in order to avoid unexpectedly exempting images from an untrusted repository.",
+                "displayName": "Image exclusions",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "excludedNamespaces": {
+            "allowedValues": null,
+            "defaultValue": [
+                "kube-system",
+                "gatekeeper-system",
+                "azure-arc",
+                "azure-extensions-usage-system"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to exclude from policy evaluation. System namespaces \"kube-system\", \"gatekeeper-system\" and \"azure-arc\" are always excluded by design. \"azure-extensions-usage-system\" is optional to remove.",
+                "displayName": "Namespace exclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "fsGroupRanges": {
+            "allowedValues": null,
+            "defaultValue": {
+                "ranges": []
+            },
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The file system group ranges that are allowed for pods to use. Set 'max' as '-1' to skip max limit evaluation. Empty array blocks every defined value for 'MustRunAs' and 'MayRunAs'.",
+                "displayName": "Allowed file system group ID ranges",
+                "portalReview": true,
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "properties": {
+                    "ranges": {
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "max": {
+                                    "type": "integer"
+                                },
+                                "min": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "min",
+                                "max"
+                            ],
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "ranges"
+                ],
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "fsGroupRule": {
+            "allowedValues": [
+                "MustRunAs",
+                "MayRunAs",
+                "RunAsAny"
+            ],
+            "defaultValue": "RunAsAny",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The 'FSGroup' rule that containers are allowed to run with. MustRunAs requires at least one range to be specified. MayRunAs does not require that 'FSGroup' be specified. RunAsAny allows any",
+                "displayName": "File system group rule",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "labelSelector": {
+            "allowedValues": null,
+            "defaultValue": {},
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Label query to select Kubernetes resources for policy evaluation. An empty label selector matches all Kubernetes resources.",
+                "displayName": "Kubernetes label selector",
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "description": "A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all resources.",
+                "properties": {
+                    "matchExpressions": {
+                        "description": "matchExpressions is a list of values, a key, and an operator.",
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "key": {
+                                    "description": "key is the label key that the selector applies to.",
+                                    "type": "string"
+                                },
+                                "operator": {
+                                    "description": "operator represents a key's relationship to a set of values.",
+                                    "enum": [
+                                        "In",
+                                        "NotIn",
+                                        "Exists",
+                                        "DoesNotExist"
+                                    ],
+                                    "type": "string"
+                                },
+                                "values": {
+                                    "description": "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty.",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "required": [
+                                "key",
+                                "operator"
+                            ],
+                            "type": "object"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "matchLabels": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "matchLabels is a map of {key,value} pairs.",
+                        "minProperties": 1,
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "namespaces": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to only include in policy evaluation. An empty list means the policy is applied to all resources in all namespaces.",
+                "displayName": "Namespace inclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "runAsGroupRanges": {
+            "allowedValues": null,
+            "defaultValue": {
+                "ranges": []
+            },
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The group ID ranges that are allowed for containers to use. Set 'max' as '-1' to skip max limit evaluation. Empty array blocks every defined value for 'MustRunAs' and 'MayRunAs'.",
+                "displayName": "Allowed group ID ranges",
+                "portalReview": true,
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "properties": {
+                    "ranges": {
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "max": {
+                                    "type": "integer"
+                                },
+                                "min": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "min",
+                                "max"
+                            ],
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "ranges"
+                ],
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "runAsGroupRule": {
+            "allowedValues": [
+                "MustRunAs",
+                "MayRunAs",
+                "RunAsAny"
+            ],
+            "defaultValue": "RunAsAny",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The 'RunAsGroup' rule that containers are allowed to run with. MustRunAs requires at least one range to be specified. MayRunAs does not require that 'RunAsGroup' be specified. RunAsAny allows any",
+                "displayName": "Run as group rule",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "runAsUserRanges": {
+            "allowedValues": null,
+            "defaultValue": {
+                "ranges": []
+            },
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The user ID ranges that are allowed for containers to use. Set 'max' as '-1' to skip max limit evaluation. Empty array blocks every defined value for 'MustRunAs'.",
+                "displayName": "Allowed user ID ranges",
+                "portalReview": true,
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "properties": {
+                    "ranges": {
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "max": {
+                                    "type": "integer"
+                                },
+                                "min": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "min",
+                                "max"
+                            ],
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "ranges"
+                ],
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "runAsUserRule": {
+            "allowedValues": [
+                "MustRunAs",
+                "MustRunAsNonRoot",
+                "RunAsAny"
+            ],
+            "defaultValue": "MustRunAsNonRoot",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The 'RunAsUser' rule that containers are allowed to run with. MustRunAs requires at least one range to be specified. MustRunAsNonRoot requires the pod be submitted with non-zero runAsUser or have USER directive defined (using a numeric UID) in the image. RunAsAny allows any runAsUser to be specified",
+                "displayName": "Run as user rule",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "source": {
+            "allowedValues": [
+                "All",
+                "Generated",
+                "Original"
+            ],
+            "defaultValue": "Original",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The source k8s object for constraint evaluation. 'Original' means only evaluate against the specific GroupVersionKind specified in the policy definition. 'Generated' means only evaluate against k8s objects generated by Gatekeeper ExpansionTemplates. 'All' means evaluate against both the original object and any generated ones.",
+                "displayName": "Source",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "supplementalGroupsRanges": {
+            "allowedValues": null,
+            "defaultValue": {
+                "ranges": []
+            },
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The supplemental group ID ranges that are allowed for containers to use. Set 'max' as '-1' to skip max limit evaluation. Empty array blocks every defined value for 'MustRunAs' and 'MayRunAs'.",
+                "displayName": "Allowed supplemental group ID ranges",
+                "portalReview": true,
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "properties": {
+                    "ranges": {
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "max": {
+                                    "type": "integer"
+                                },
+                                "min": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "min",
+                                "max"
+                            ],
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "ranges"
+                ],
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "supplementalGroupsRule": {
+            "allowedValues": [
+                "MustRunAs",
+                "MayRunAs",
+                "RunAsAny"
+            ],
+            "defaultValue": "RunAsAny",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "The 'SupplementalGroups' rule that containers are allowed to run with. MustRunAs requires at least one range to be specified. MayRunAs does not require that 'SupplementalGroups' be specified. RunAsAny allows any",
+                "displayName": "Supplemental group rule",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "warn": {
+            "allowedValues": null,
+            "defaultValue": false,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Whether or not to return warnings back to the user in the kubectl cli",
+                "displayName": "Warn",
+                "strongType": null
+            },
+            "type": "Boolean"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.Kubernetes/connectedClusters",
+                "Microsoft.ContainerService/managedClusters"
+            ]
+        },
+        "then": {
+            "details": {
+                "apiGroups": [
+                    ""
+                ],
+                "excludedNamespaces": "[parameters('excludedNamespaces')]",
+                "kinds": [
+                    "Pod"
+                ],
+                "labelSelector": "[parameters('labelSelector')]",
+                "namespaces": "[parameters('namespaces')]",
+                "source": "[parameters('source')]",
+                "templateInfo": {
+                    "sourceType": "PublicURL",
+                    "url": "https://store.policy.core.windows.net/kubernetes/allowed-users-groups/v3/template.yaml"
+                },
+                "values": {
+                    "excludedContainers": "[parameters('excludedContainers')]",
+                    "excludedImages": "[parameters('excludedImages')]",
+                    "fsGroup": {
+                        "ranges": "[parameters('fsGroupRanges').ranges]",
+                        "rule": "[parameters('fsGroupRule')]"
+                    },
+                    "runAsGroup": {
+                        "ranges": "[parameters('runAsGroupRanges').ranges]",
+                        "rule": "[parameters('runAsGroupRule')]"
+                    },
+                    "runAsUser": {
+                        "ranges": "[parameters('runAsUserRanges').ranges]",
+                        "rule": "[parameters('runAsUserRule')]"
+                    },
+                    "supplementalGroups": {
+                        "ranges": "[parameters('supplementalGroupsRanges').ranges]",
+                        "rule": "[parameters('supplementalGroupsRule')]"
+                    }
+                },
+                "warn": "[parameters('warn')]"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

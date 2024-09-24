@@ -1,0 +1,62 @@
+{
+    "description": "Disable public network access for your Azure Managed Grafana workspace so that it's not accessible over the public internet. This can reduce data leakage risks.",
+    "displayName": "Configure Azure Managed Grafana workspaces to disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/67529aa1-5285-4b1c-8e6f-5ccd861ac98e",
+    "metadata": {
+        "category": "Managed Grafana",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "67529aa1-5285-4b1c-8e6f-5ccd861ac98e",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Dashboard/grafana",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Dashboard/grafana/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2022-10-01-preview')]",
+                        "field": "Microsoft.Dashboard/grafana/publicNetworkAccess",
+                        "operation": "addOrReplace",
+                        "value": "Disabled"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

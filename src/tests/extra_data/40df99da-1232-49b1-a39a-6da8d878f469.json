@@ -1,0 +1,57 @@
+{
+    "description": "Adds the specified tag with its value from the containing subscription when any resource missing this tag is created or updated. Existing resources can be remediated by triggering a remediation task. If the tag exists with a different value it will not be changed.",
+    "displayName": "Inherit a tag from the subscription if missing",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/40df99da-1232-49b1-a39a-6da8d878f469",
+    "metadata": {
+        "category": "Tags",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "40df99da-1232-49b1-a39a-6da8d878f469",
+    "parameters": {
+        "tagName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name of the tag, such as 'environment'",
+                "displayName": "Tag Name",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "exists": "false",
+                    "field": "[concat('tags[', parameters('tagName'), ']')]"
+                },
+                {
+                    "notEquals": "",
+                    "value": "[subscription().tags[parameters('tagName')]]"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "operations": [
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "operation": "add",
+                        "value": "[subscription().tags[parameters('tagName')]]"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "modify"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

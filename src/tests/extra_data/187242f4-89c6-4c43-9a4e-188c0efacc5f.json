@@ -1,0 +1,168 @@
+{
+    "description": "Resource logs should be enabled to track activities and events that take place on your resources and give you visibility and insights into any changes that occur. The existence of a diagnostic setting for category group Audit on the selected resource types ensures that these logs are enabled and captured. Applicable resource types are those that support the \"Audit\" category group.",
+    "displayName": "Resource logs should be enabled for Audit on supported resources",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/187242f4-89c6-4c43-9a4e-188c0efacc5f",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "187242f4-89c6-4c43-9a4e-188c0efacc5f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "requiredLogLevel": {
+            "allowedValues": [
+                "Audit",
+                "Any"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Granularity of logging required to be enabled on a resource to meet compliance. Audit will check that the resource has a diagnostic setting enabled for categoryGroup audit or allLogs. Any will only check that a diagnostic setting exists for the resource.",
+                "displayName": "Required Log Level",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "resourceTypeList": {
+            "allowedValues": [
+                "microsoft.agfoodplatform/farmbeats",
+                "microsoft.apimanagement/service",
+                "microsoft.appconfiguration/configurationstores",
+                "microsoft.attestation/attestationproviders",
+                "microsoft.automation/automationaccounts",
+                "microsoft.avs/privateclouds",
+                "microsoft.cache/redis",
+                "microsoft.cdn/profiles",
+                "microsoft.cognitiveservices/accounts",
+                "microsoft.containerregistry/registries",
+                "microsoft.devices/iothubs",
+                "microsoft.eventgrid/topics",
+                "microsoft.eventgrid/domains",
+                "microsoft.eventgrid/partnernamespaces",
+                "microsoft.eventhub/namespaces",
+                "microsoft.keyvault/vaults",
+                "microsoft.keyvault/managedhsms",
+                "microsoft.machinelearningservices/workspaces",
+                "microsoft.media/mediaservices",
+                "microsoft.media/videoanalyzers",
+                "microsoft.netapp/netappaccounts/capacitypools/volumes",
+                "microsoft.network/publicipaddresses",
+                "microsoft.network/virtualnetworkgateways",
+                "microsoft.network/p2svpngateways",
+                "microsoft.network/frontdoors",
+                "microsoft.network/bastionhosts",
+                "microsoft.operationalinsights/workspaces",
+                "microsoft.purview/accounts",
+                "microsoft.servicebus/namespaces",
+                "microsoft.signalrservice/signalr",
+                "microsoft.signalrservice/webpubsub",
+                "microsoft.sql/servers/databases",
+                "microsoft.sql/managedinstances"
+            ],
+            "defaultValue": [
+                "microsoft.agfoodplatform/farmbeats",
+                "microsoft.apimanagement/service",
+                "microsoft.appconfiguration/configurationstores",
+                "microsoft.attestation/attestationproviders",
+                "microsoft.automation/automationaccounts",
+                "microsoft.avs/privateclouds",
+                "microsoft.cache/redis",
+                "microsoft.cdn/profiles",
+                "microsoft.cognitiveservices/accounts",
+                "microsoft.containerregistry/registries",
+                "microsoft.devices/iothubs",
+                "microsoft.eventgrid/topics",
+                "microsoft.eventgrid/domains",
+                "microsoft.eventgrid/partnernamespaces",
+                "microsoft.eventhub/namespaces",
+                "microsoft.keyvault/vaults",
+                "microsoft.keyvault/managedhsms",
+                "microsoft.machinelearningservices/workspaces",
+                "microsoft.media/mediaservices",
+                "microsoft.media/videoanalyzers",
+                "microsoft.netapp/netappaccounts/capacitypools/volumes",
+                "microsoft.network/publicipaddresses",
+                "microsoft.network/virtualnetworkgateways",
+                "microsoft.network/p2svpngateways",
+                "microsoft.network/frontdoors",
+                "microsoft.network/bastionhosts",
+                "microsoft.operationalinsights/workspaces",
+                "microsoft.purview/accounts",
+                "microsoft.servicebus/namespaces",
+                "microsoft.signalrservice/signalr",
+                "microsoft.signalrservice/webpubsub",
+                "microsoft.sql/servers/databases",
+                "microsoft.sql/managedinstances"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Resource Types to be evaluated for diagnostic setting existence.",
+                "displayName": "Resource Types",
+                "strongType": null
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": "[parameters('resourceTypeList')]"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "count": {
+                        "field": "Microsoft.Insights/diagnosticSettings/logs[*]",
+                        "where": {
+                            "allOf": [
+                                {
+                                    "equals": "true",
+                                    "field": "Microsoft.Insights/diagnosticSettings/logs[*].enabled"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "equals": "any",
+                                            "value": "[parameters('requiredLogLevel')]"
+                                        },
+                                        {
+                                            "equals": "audit",
+                                            "field": "microsoft.insights/diagnosticSettings/logs[*].categoryGroup"
+                                        },
+                                        {
+                                            "equals": "allLogs",
+                                            "field": "microsoft.insights/diagnosticSettings/logs[*].categoryGroup"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "greater": 0
+                },
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

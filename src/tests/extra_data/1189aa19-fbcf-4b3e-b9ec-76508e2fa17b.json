@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Individual Participation and Redress control",
+    "displayName": "Microsoft Managed Control 1850 - Redress ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1189aa19-fbcf-4b3e-b9ec-76508e2fa17b",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1850",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "1189aa19-fbcf-4b3e-b9ec-76508e2fa17b",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

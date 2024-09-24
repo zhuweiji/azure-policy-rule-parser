@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Media Protection control",
+    "displayName": "Microsoft Managed Control 1427 - Media Protection Policy And Procedures",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/bc90e44f-d83f-4bdf-900f-3d5eb4111b31",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1427",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "bc90e44f-d83f-4bdf-900f-3d5eb4111b31",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

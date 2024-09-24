@@ -1,0 +1,109 @@
+{
+    "description": "Azure Defender for Resource Manager automatically monitors the resource management operations in your organization. Azure Defender detects threats and alerts you about suspicious activity. Learn more about the capabilities of Azure Defender for Resource Manager at https://aka.ms/defender-for-resource-manager . Enabling this Azure Defender plan results in charges. Learn about the pricing details per region on Security Center's pricing page: https://aka.ms/pricing-security-center .",
+    "displayName": "Configure Azure Defender for Resource Manager to be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b7021b2b-08fd-4dc0-9de7-3c6ece09faf9",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "b7021b2b-08fd-4dc0-9de7-3c6ece09faf9",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "subPlan": {
+            "allowedValues": [
+                "PerSubscription",
+                "PerApiCall"
+            ],
+            "defaultValue": "PerApiCall",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Select a Defender for Resource Manager plan",
+                "displayName": "Defender for Resource Manager plans",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "westeurope",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "subPlan": {
+                                "value": "[parameters('subPlan')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {},
+                            "parameters": {
+                                "subPlan": {
+                                    "type": "String"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2023-01-01",
+                                    "name": "Arm",
+                                    "properties": {
+                                        "pricingTier": "Standard",
+                                        "subPlan": "[parameters('subPlan')]"
+                                    },
+                                    "type": "Microsoft.Security/pricings"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Standard",
+                            "field": "Microsoft.Security/pricings/pricingTier"
+                        },
+                        {
+                            "equals": "[parameters('subPlan')]",
+                            "field": "Microsoft.Security/pricings/subPlan"
+                        }
+                    ]
+                },
+                "existenceScope": "subscription",
+                "name": "Arm",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+                ],
+                "type": "Microsoft.Security/pricings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

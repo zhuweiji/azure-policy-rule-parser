@@ -1,0 +1,57 @@
+{
+    "description": "Enabling encryption at host helps protect and safeguard your data to meet your organizational security and compliance commitments. When you enable encryption at host, data stored on the VM host is encrypted at rest and flows encrypted to the Storage service.",
+    "displayName": "Azure HDInsight clusters should use encryption at host to encrypt data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1fd32ebd-e4c3-4e13-a54a-d7422d4d95f6",
+    "metadata": {
+        "category": "HDInsight",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "1fd32ebd-e4c3-4e13-a54a-d7422d4d95f6",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HDInsight/clusters",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.HDInsight/clusters/diskEncryptionProperties.encryptionAtHost"
+                        },
+                        {
+                            "equals": false,
+                            "field": "Microsoft.HDInsight/clusters/diskEncryptionProperties.encryptionAtHost"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

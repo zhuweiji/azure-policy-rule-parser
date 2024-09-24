@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Data Minimization and Retention control",
+    "displayName": "Microsoft Managed Control 1834 - Data Retention And Disposal",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/12a4a4dd-6c65-4900-9d7e-63fed5da791e",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1834",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "12a4a4dd-6c65-4900-9d7e-63fed5da791e",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

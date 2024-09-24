@@ -1,0 +1,56 @@
+{
+    "description": "Periodically, newer versions are released for HTTP either due to security flaws or to include additional functionality. Using the latest HTTP version for web apps to take advantage of security fixes, if any, and/or new functionalities of the newer version.",
+    "displayName": "App Service app slots should use latest 'HTTP Version'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/4dcfb8b5-05cd-4090-a931-2ec29057e1fc",
+    "metadata": {
+        "category": "App Service",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "4dcfb8b5-05cd-4090-a931-2ec29057e1fc",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites/slots",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "functionapp"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "Equals": "true",
+                    "field": "Microsoft.Web/sites/slots/config/web.http20Enabled"
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/slots/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,49 @@
+{
+    "description": "Deploying Logic Apps into Integration Service Environment in a virtual network unlocks advanced Logic Apps networking and security features and provides you with greater control over your network configuration. Learn more at: https://aka.ms/integration-service-environment. Deploying into Integration Service Environment also allows encryption with customer-managed keys which provides enhanced data protection by allowing you to manage your encryption keys. This is often to meet compliance requirements.",
+    "displayName": "Logic Apps should be deployed into Integration Service Environment",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/dc595cb1-1cde-45f6-8faf-f88874e1c0e1",
+    "metadata": {
+        "category": "Logic Apps",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "dc595cb1-1cde-45f6-8faf-f88874e1c0e1",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Logic/workflows",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.Logic/workflows/integrationServiceEnvironment"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

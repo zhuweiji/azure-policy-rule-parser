@@ -1,0 +1,56 @@
+{
+    "description": "Use a customer-managed key to control the encryption at rest of the data stored in Azure Health Data Services FHIR Service when this is a regulatory or compliance requirement. Customer-managed keys also deliver double encryption by adding a second layer of encryption on top of the default one done with service-managed keys.",
+    "displayName": "FHIR Service should use a customer-managed key to encrypt data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c42dee8c-0202-4a12-bd8e-3e171cbf64dd",
+    "metadata": {
+        "category": "Healthcare APIs",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c42dee8c-0202-4a12-bd8e-3e171cbf64dd",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HealthcareApis/workspaces/fhirservices",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.HealthcareApis/workspaces/fhirservices/encryption.customerManagedKeyEncryption.keyEncryptionKeyUrl"
+                        },
+                        {
+                            "equals": "",
+                            "field": "Microsoft.HealthcareApis/workspaces/fhirservices/encryption.customerManagedKeyEncryption.keyEncryptionKeyUrl"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

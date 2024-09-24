@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Data Quality and Integrity control",
+    "displayName": "Microsoft Managed Control 1827 - Data Integrity And Data Integrity Board",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/86cd0591-5076-4447-aeff-2557def90353",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1827",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "86cd0591-5076-4447-aeff-2557def90353",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

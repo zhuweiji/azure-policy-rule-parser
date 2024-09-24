@@ -1,0 +1,35 @@
+{
+    "description": "Allows resource creation in the following locations only: East Asia, Southeast Asia, West India, South India, Central India, Japan East, Japan West",
+    "displayName": "[Deprecated]: Allow resource creation only in Asia data centers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c1b9cbed-08e3-427d-b9ce-7c535b1e9b94",
+    "metadata": {
+        "category": "General",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "c1b9cbed-08e3-427d-b9ce-7c535b1e9b94",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "not": {
+                "field": "location",
+                "in": [
+                    "eastasia",
+                    "southeastasia",
+                    "westindia",
+                    "southindia",
+                    "centralindia",
+                    "japaneast",
+                    "japanwest"
+                ]
+            }
+        },
+        "then": {
+            "effect": "Deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

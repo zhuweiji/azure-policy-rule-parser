@@ -1,0 +1,81 @@
+{
+    "description": "Use customer-managed keys to manage the encryption at rest of your backup data. By default, customer data is encrypted with service-managed keys, but customer-managed keys are commonly required to meet regulatory compliance standards. Customer-managed keys enable the data to be encrypted with an Azure Key Vault key created and owned by you. You have full control and responsibility for the key lifecycle, including rotation and management. Learn more at https://aka.ms/AB-CmkEncryption.",
+    "displayName": "[Preview]: Azure Recovery Services vaults should use customer-managed keys for encrypting backup data",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2e94d99a-8a36-4563-bc77-810d8893b671",
+    "metadata": {
+        "category": "Backup",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "2e94d99a-8a36-4563-bc77-810d8893b671",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "enableDoubleEncryption": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": false,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Check if double encryption is enabled on Recovery Services vaults for Backup.  For more details refer to https://aka.ms/AB-InfraEncryption.",
+                "displayName": "Double encryption should be enabled on Recovery Services vaults for Backup",
+                "strongType": null
+            },
+            "type": "Boolean"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.RecoveryServices/vaults",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.RecoveryServices/vaults/encryption.keyVaultProperties.keyUri"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": true,
+                                    "value": "[parameters('enableDoubleEncryption')]"
+                                },
+                                {
+                                    "field": "Microsoft.RecoveryServices/vaults/encryption.infrastructureEncryption",
+                                    "notEquals": "Enabled"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,86 @@
+{
+    "description": "Appends the specified log analytics workspaceId and workspaceKey when any container group which is missing these fields is created or updated. Does not modify the fields of container groups created before this policy was applied until those resource groups are changed.",
+    "displayName": "Configure diagnostics for container group to log analytics workspace",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/21c469fa-a887-4363-88a9-60bfd6911a15",
+    "metadata": {
+        "category": "Container Instances",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "21c469fa-a887-4363-88a9-60bfd6911a15",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Append",
+                "Disabled"
+            ],
+            "defaultValue": "Append",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "workspaceId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Log Analytics workspace GUID",
+                "displayName": "Workspace ID",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "workspaceKey": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Log Analytics workspace key",
+                "displayName": "Workspace Key",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerInstance/containerGroups",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.ContainerInstance/containerGroups/diagnostics.logAnalytics.workspaceId"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.ContainerInstance/containerGroups/diagnostics.logAnalytics.workspaceKey"
+                }
+            ]
+        },
+        "then": {
+            "details": [
+                {
+                    "field": "Microsoft.ContainerInstance/containerGroups/diagnostics.logAnalytics.workspaceId",
+                    "value": "[parameters('workspaceId')]"
+                },
+                {
+                    "field": "Microsoft.ContainerInstance/containerGroups/diagnostics.logAnalytics.workspaceKey",
+                    "value": "[parameters('workspaceKey')]"
+                }
+            ],
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

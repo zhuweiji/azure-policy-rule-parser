@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Planning control",
+    "displayName": "Microsoft Managed Control 1502 - Rules Of Behavior | Social Media And Networking Restrictions",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e901375c-8f01-4ac8-9183-d5312f47fe63",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1502",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "e901375c-8f01-4ac8-9183-d5312f47fe63",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

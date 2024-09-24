@@ -1,0 +1,49 @@
+{
+    "description": "Disabling public network access improves security by ensuring that Azure Web PubSub service isn't exposed on the public internet. Creating private endpoints can limit exposure of Azure Web PubSub service. Learn more at: https://aka.ms/awps/networkacls.",
+    "displayName": "Azure Web PubSub Service should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/bf45113f-264e-4a87-88f9-29ac8a0aca6a",
+    "metadata": {
+        "category": "Web PubSub",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "bf45113f-264e-4a87-88f9-29ac8a0aca6a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.SignalRService/webPubSub",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.SignalRService/webPubSub/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,80 @@
+{
+    "description": "Periodically, newer versions are released for Java software either due to security flaws or to include additional functionality. Using the latest Java version for App Service apps is recommended in order to take advantage of security fixes, if any, and/or new functionalities of the latest version. This policy only applies to Linux apps. This policy requires you to specify a Java version that meets your requirements.",
+    "displayName": "App Service app slots that use Java should use a specified 'Java version'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/46dad49f-8945-44d7-9bb1-2e1542f627d3",
+    "metadata": {
+        "category": "App Service",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "46dad49f-8945-44d7-9bb1-2e1542f627d3",
+    "parameters": {
+        "LinuxJavaVersion": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specify a supported Java version for App Service",
+                "displayName": "Linux Java version",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites/slots",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "functionapp"
+                },
+                {
+                    "contains": "linux",
+                    "field": "kind"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Web/sites/slots/config/web.linuxFxVersion",
+                            "notContains": "JAVA"
+                        },
+                        {
+                            "equals": "[concat('JAVA|', parameters('LinuxJavaVersion'))]",
+                            "field": "Microsoft.Web/sites/slots/config/web.linuxFxVersion"
+                        }
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/slots/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

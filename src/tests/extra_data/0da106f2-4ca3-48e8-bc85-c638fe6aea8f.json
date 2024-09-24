@@ -1,0 +1,68 @@
+{
+    "description": "Use a managed identity for enhanced authentication security",
+    "displayName": "Function apps should use managed identity",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0da106f2-4ca3-48e8-bc85-c638fe6aea8f",
+    "metadata": {
+        "category": "App Service",
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "0da106f2-4ca3-48e8-bc85-c638fe6aea8f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "contains": "functionapp",
+                    "field": "kind"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "workflowapp"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Web/sites/config/managedServiceIdentityId"
+                        },
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Web/sites/config/xmanagedServiceIdentityId"
+                        }
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

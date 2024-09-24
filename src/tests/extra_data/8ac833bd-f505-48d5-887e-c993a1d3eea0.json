@@ -1,0 +1,51 @@
+{
+    "description": "API endpoints published within Azure API Management should enforce authentication to help minimize security risk. Authentication mechanisms are sometimes implemented incorrectly or are missing. This allows attackers to exploit implementation flaws and to access data. Learn More about the OWASP API Threat for Broken User Authentication here: https://learn.microsoft.com/azure/api-management/mitigate-owasp-api-threats#broken-user-authentication",
+    "displayName": "API endpoints in Azure API Management should be authenticated",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8ac833bd-f505-48d5-887e-c993a1d3eea0",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.1"
+    },
+    "mode": "All",
+    "name": "8ac833bd-f505-48d5-887e-c993a1d3eea0",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ApiManagement/service/apis/operations",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "91af2040-7874-4659-abf0-578e1f8d07dc",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

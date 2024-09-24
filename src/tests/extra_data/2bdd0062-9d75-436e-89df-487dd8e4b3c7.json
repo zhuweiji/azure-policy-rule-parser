@@ -1,0 +1,54 @@
+{
+    "description": "This policy is deprecated. Cognitive Services have data encryption enforced.",
+    "displayName": "[Deprecated]: Cognitive Services accounts should enable data encryption",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2bdd0062-9d75-436e-89df-487dd8e4b3c7",
+    "metadata": {
+        "category": "Cognitive Services",
+        "deprecated": true,
+        "version": "2.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "2bdd0062-9d75-436e-89df-487dd8e4b3c7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.CognitiveServices/accounts",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.CognitiveServices/accounts/encryption.keySource"
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.CognitiveServices/accounts/encryption"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

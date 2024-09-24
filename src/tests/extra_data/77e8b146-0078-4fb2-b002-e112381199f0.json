@@ -1,0 +1,44 @@
+{
+    "description": "Virtual network based firewall rules are used to enable traffic from a specific subnet to Azure SQL Database while ensuring the traffic stays within the Azure boundary.",
+    "displayName": "Virtual network firewall rule on Azure SQL Database should be enabled to allow traffic from the specified subnet",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/77e8b146-0078-4fb2-b002-e112381199f0",
+    "metadata": {
+        "category": "SQL",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "77e8b146-0078-4fb2-b002-e112381199f0",
+    "parameters": {
+        "subnetId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The resource ID of the virtual network subnet that should have a rule enabled. Example: /subscriptions/00000000-1111-2222-3333-444444444444/resourceGroups/Default/providers/Microsoft.Network/virtualNetworks/testvnet/subnets/testsubnet",
+                "displayName": "Subnet ID",
+                "strongType": "Microsoft.Network/virtualNetworks/subnets"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Sql/servers",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "[parameters('subnetId')]",
+                    "field": "Microsoft.Sql/servers/virtualNetworkRules/virtualNetworkSubnetId"
+                },
+                "type": "Microsoft.Sql/servers/virtualNetworkRules"
+            },
+            "effect": "AuditIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

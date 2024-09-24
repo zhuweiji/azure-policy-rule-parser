@@ -1,0 +1,49 @@
+{
+    "description": "This policy audits if Multi-User Authorization (MUA) is enabled for Recovery Services Vaults. MUA helps in securing your Recovery Services Vaults by adding an additional layer of protection to critical operations. To learn more, visit https://aka.ms/MUAforRSV.",
+    "displayName": "[Preview]: Multi-User Authorization (MUA) must be enabled for Recovery Services Vaults.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c7031eab-0fc0-4cd9-acd0-4497bd66d91a",
+    "metadata": {
+        "category": "Backup",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "c7031eab-0fc0-4cd9-acd0-4497bd66d91a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.RecoveryServices/vaults",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.RecoveryServices/vaults/securitySettings.multiUserAuthorization",
+                    "notEquals": "Enabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

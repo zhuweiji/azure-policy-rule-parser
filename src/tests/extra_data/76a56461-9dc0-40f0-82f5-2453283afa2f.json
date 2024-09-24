@@ -1,0 +1,57 @@
+{
+    "description": "Enabling encryption at rest using a customer-managed key on your Azure Cognitive Search services provides additional control over the key used to encrypt data at rest. This feature is often applicable to customers with special compliance requirements to manage data encryption keys using a key vault.",
+    "displayName": "Azure Cognitive Search services should use customer-managed keys to encrypt data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/76a56461-9dc0-40f0-82f5-2453283afa2f",
+    "metadata": {
+        "category": "Search",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "76a56461-9dc0-40f0-82f5-2453283afa2f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Search/searchServices",
+                    "field": "type"
+                },
+                {
+                    "anyof": [
+                        {
+                            "field": "Microsoft.Search/searchServices/encryptionWithCmk.enforcement",
+                            "notEquals": "Enabled"
+                        },
+                        {
+                            "field": "Microsoft.Search/searchServices/encryptionWithCmk.encryptionComplianceStatus",
+                            "notEquals": "Compliant"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

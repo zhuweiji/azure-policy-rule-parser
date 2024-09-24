@@ -1,0 +1,56 @@
+{
+    "description": "This policy audits VMs that do not use managed disks",
+    "displayName": "Audit VMs that do not use managed disks",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d",
+    "metadata": {
+        "category": "Compute",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "06a78e20-9358-41c9-923c-fb736d382a4d",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/virtualMachines",
+                            "field": "type"
+                        },
+                        {
+                            "exists": "True",
+                            "field": "Microsoft.Compute/virtualMachines/osDisk.uri"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/VirtualMachineScaleSets",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "exists": "True",
+                                    "field": "Microsoft.Compute/VirtualMachineScaleSets/osDisk.vhdContainers"
+                                },
+                                {
+                                    "exists": "True",
+                                    "field": "Microsoft.Compute/VirtualMachineScaleSets/osdisk.imageUrl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

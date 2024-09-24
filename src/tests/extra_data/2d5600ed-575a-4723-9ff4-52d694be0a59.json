@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Security control",
+    "displayName": "Microsoft Managed Control 1856 - Privacy Incident Response ",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2d5600ed-575a-4723-9ff4-52d694be0a59",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1856",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "2d5600ed-575a-4723-9ff4-52d694be0a59",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

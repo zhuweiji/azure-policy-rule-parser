@@ -1,0 +1,54 @@
+{
+    "description": "Azure Private Link lets you connect your virtual network to Azure services without a public IP address at the source or destination. The Private Link platform handles the connectivity between the consumer and services over the Azure backbone network. By mapping private endpoints to Azure Machine Learning workspaces, data leakage risks are reduced. Learn more about private links at: https://docs.microsoft.com/azure/machine-learning/how-to-configure-private-link.",
+    "displayName": "Azure Machine Learning workspaces should use private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/45e05259-1eb5-4f70-9574-baf73e9d219b",
+    "metadata": {
+        "category": "Machine Learning",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "45e05259-1eb5-4f70-9574-baf73e9d219b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.MachineLearningServices/workspaces",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.MachineLearningServices/workspaces/privateEndpointConnections[*]",
+                        "where": {
+                            "equals": "Approved",
+                            "field": "Microsoft.MachineLearningServices/workspaces/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

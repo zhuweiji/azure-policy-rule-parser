@@ -1,0 +1,54 @@
+{
+    "description": "Azure Health Data Services de-identification service should have at least one approved private endpoint connection. Clients in a virtual network can securely access resources that have private endpoint connections through private links.",
+    "displayName": "Azure Health Data Services de-identification service should use private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d9b2d63d-a233-4123-847a-7f7e5f5d7e7a",
+    "metadata": {
+        "category": "Health Deidentification Service",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d9b2d63d-a233-4123-847a-7f7e5f5d7e7a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HealthDataAIServices/deidServices",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.HealthDataAIServices/deidServices/privateEndpointConnections[*]",
+                        "where": {
+                            "equals": "Approved",
+                            "field": "Microsoft.HealthDataAIServices/deidServices/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

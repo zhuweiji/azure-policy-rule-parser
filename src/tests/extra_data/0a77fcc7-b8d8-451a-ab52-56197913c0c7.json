@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Media Protection control",
+    "displayName": "Microsoft Managed Control 1428 - Media Access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0a77fcc7-b8d8-451a-ab52-56197913c0c7",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1428",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "0a77fcc7-b8d8-451a-ab52-56197913c0c7",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

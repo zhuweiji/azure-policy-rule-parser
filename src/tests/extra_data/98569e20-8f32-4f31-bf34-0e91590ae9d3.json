@@ -1,0 +1,491 @@
+{
+    "description": "Automate the deployment of Azure Monitor Agent extension on your Windows virtual machine scale sets for collecting telemetry data from the guest OS. This policy will install the extension and configure it to use the specified user-assigned managed identity if the OS and region are supported, and skip install otherwise. Learn more: https://aka.ms/AMAOverview.",
+    "displayName": "Configure Windows virtual machine scale sets to run Azure Monitor Agent with user-assigned managed identity-based authentication",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/98569e20-8f32-4f31-bf34-0e91590ae9d3",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.6.0"
+    },
+    "mode": "Indexed",
+    "name": "98569e20-8f32-4f31-bf34-0e91590ae9d3",
+    "parameters": {
+        "bringYourOwnUserAssignedManagedIdentity": {
+            "allowedValues": [
+                false,
+                true
+            ],
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "If set to true, Azure Monitor Agent will use the user-assigned managed identity specified via the 'User-Assigned Managed Identity ...' parameters for authentication. Otherwise, Azure Monitor Agent will use the user-assigned managed identity /subscriptions/<subscription-id>/resourceGroups/built-in-identity-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/built-in-identity-<location> for authentication.",
+                "displayName": "Bring Your Own User-Assigned Managed Identity",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "listOfWindowsImageIdToInclude": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of virtual machine images that have supported Windows OS to add to scope. Example values: '/subscriptions/<subscriptionId>/resourceGroups/YourResourceGroup/providers/Microsoft.Compute/images/ContosoStdImage'",
+                "displayName": "Additional Virtual Machine Images",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "restrictBringYourOwnUserAssignedIdentityToSubscription": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable this to enforce the user assigned identity must exist in the same subscription as the virtual machine. When true, must provide User-Assigned Managed Identity Name and User-Assigned Managed Identity Resource Group Name parameters. When false, the parameter User Assigned Managed Identity Resource Id will be used instead.",
+                "displayName": "Restrict Bring Your Own User-Assigned Identity to Subscription",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "scopeToSupportedImages": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "If set to true, the policy will apply only to virtual machine scale sets with supported operating systems. Otherwise, the policy will apply to all virtual machine scale set resources in the assignment scope. For supported operating systems, see https://aka.ms/AMAOverview.",
+                "displayName": "Scope Policy to Azure Monitor Agent-Supported Operating Systems",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "userAssignedIdentityResourceId": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The resource ID of the pre-created user-assigned managed identity. This parameter is only used when the restrict Bring Your Own User-Assigned Identity To Subscription parameter is false.",
+                "displayName": "User-Assigned Managed Identity Resource ID",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "userAssignedManagedIdentityName": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The name of the user-assigned managed identity which Azure Monitor Agent will use for authentication when 'Bring Your Own User-Assigned Managed Identity' is set to true.",
+                "displayName": "User-Assigned Managed Identity Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "userAssignedManagedIdentityResourceGroup": {
+            "allowedValues": null,
+            "defaultValue": "",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The resource group of the user-assigned managed identity which Azure Monitor Agent will use for authentication when 'Bring Your Own User-Assigned Managed Identity' is set to true.",
+                "displayName": "User-Assigned Managed Identity Resource Group",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachineScaleSets",
+                    "field": "type"
+                },
+                {
+                    "field": "location",
+                    "in": [
+                        "australiacentral",
+                        "australiacentral2",
+                        "australiaeast",
+                        "australiasoutheast",
+                        "brazilsouth",
+                        "brazilsoutheast",
+                        "canadacentral",
+                        "canadaeast",
+                        "centralindia",
+                        "centralus",
+                        "centraluseuap",
+                        "eastasia",
+                        "eastus2euap",
+                        "eastus",
+                        "eastus2",
+                        "francecentral",
+                        "francesouth",
+                        "germanynorth",
+                        "germanywestcentral",
+                        "israelcentral",
+                        "italynorth",
+                        "japaneast",
+                        "japanwest",
+                        "jioindiacentral",
+                        "jioindiawest",
+                        "koreacentral",
+                        "koreasouth",
+                        "malaysiasouth",
+                        "mexicocentral",
+                        "northcentralus",
+                        "northeurope",
+                        "norwayeast",
+                        "norwaywest",
+                        "polandcentral",
+                        "qatarcentral",
+                        "southafricanorth",
+                        "southafricawest",
+                        "southcentralus",
+                        "southeastasia",
+                        "southindia",
+                        "spaincentral",
+                        "swedencentral",
+                        "swedensouth",
+                        "switzerlandnorth",
+                        "switzerlandwest",
+                        "taiwannorth",
+                        "taiwannorthwest",
+                        "uaecentral",
+                        "uaenorth",
+                        "uksouth",
+                        "ukwest",
+                        "westcentralus",
+                        "westeurope",
+                        "westindia",
+                        "westus",
+                        "westus2",
+                        "westus3",
+                        "chinaeast",
+                        "chinaeast2",
+                        "chinaeast3",
+                        "chinanorth",
+                        "chinanorth2",
+                        "chinanorth3",
+                        "usgovarizona",
+                        "usgovtexas",
+                        "usgovvirginia",
+                        "usdodeast",
+                        "usdodcentral"
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "equals": false,
+                                    "value": "[parameters('scopeToSupportedImages')]"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.storageProfile.osDisk.osType",
+                                    "like": "Windows*"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.Compute/imageId",
+                            "in": "[parameters('listOfWindowsImageIdToInclude')]"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServer",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2008-R2-SP1*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2012-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2016-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2019-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2022-*"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServerSemiAnnual",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "in": [
+                                        "Datacenter-Core-1709-smalldisk",
+                                        "Datacenter-Core-1709-with-Containers-smalldisk",
+                                        "Datacenter-Core-1803-with-Containers-smalldisk"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServerHPCPack",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServerHPCPack",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftSQLServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2022"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2022-BYOL"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2019"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2019-BYOL"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2016"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2016-BYOL"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2012R2"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2012R2-BYOL"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftRServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "MLServer-WS2016",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftVisualStudio",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "in": [
+                                        "VisualStudio",
+                                        "Windows"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftDynamicsAX",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "Dynamics",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "Pre-Req-AX7-Onebox-U8",
+                                    "field": "Microsoft.Compute/imageSKU"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoft-ads",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "windows-data-science-vm",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsDesktop",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "like": "Windows-1*"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "userAssignedManagedIdentity": {
+                                "value": "[if(parameters('bringYourOwnUserAssignedManagedIdentity'), if(parameters('restrictBringYourOwnUserAssignedIdentityToSubscription'), concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('userAssignedManagedIdentityResourceGroup'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('userAssignedManagedIdentityName')), parameters('userAssignedIdentityResourceId')), concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/built-in-identity-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/built-in-identity-', field('location')))]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "userAssignedManagedIdentity": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2019-07-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'), '/', variables('extensionName'))]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "enableAutomaticUpgrade": true,
+                                        "publisher": "[variables('extensionPublisher')]",
+                                        "settings": {
+                                            "authentication": {
+                                                "managedIdentity": {
+                                                    "identifier-name": "mi_res_id",
+                                                    "identifier-value": "[parameters('userAssignedManagedIdentity')]"
+                                                }
+                                            }
+                                        },
+                                        "type": "[variables('extensionType')]",
+                                        "typeHandlerVersion": "[variables('extensionTypeHandlerVersion')]"
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachineScaleSets/extensions"
+                                }
+                            ],
+                            "variables": {
+                                "extensionName": "AzureMonitorWindowsAgent",
+                                "extensionPublisher": "Microsoft.Azure.Monitor",
+                                "extensionType": "AzureMonitorWindowsAgent",
+                                "extensionTypeHandlerVersion": "1.2"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "AzureMonitorWindowsAgent",
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Monitor",
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/publisher"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                ],
+                "type": "Microsoft.Compute/virtualMachineScaleSets/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

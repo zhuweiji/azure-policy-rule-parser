@@ -1,0 +1,143 @@
+{
+    "description": "Enable VM insights on servers and machines connected to Azure through Arc enabled servers by installing the Dependency agent virtual machine extension with Azure Monitoring Agent settings. VM insights uses the Dependency agent to collect network metrics and discovered data about processes running on the machine and external process dependencies. See more - https://aka.ms/vminsightsdocs.",
+    "displayName": "Configure Dependency agent on Azure Arc enabled Windows servers with Azure Monitoring Agent settings",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/84cfed75-dfd4-421b-93df-725b479d356a",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.2.0"
+    },
+    "mode": "Indexed",
+    "name": "84cfed75-dfd4-421b-93df-725b479d356a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "enableProcessesAndDependencies": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "This is the flag for enabling processes and dependencies data collection in VMInsights. If you are using this standalone policy and what to install Dependency Agent, keep this value as true.",
+                "displayName": "Enable Processes and Dependencies",
+                "strongType": null
+            },
+            "type": "Boolean"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "equals": true,
+                    "value": "[parameters('enableProcessesAndDependencies')]"
+                },
+                {
+                    "equals": "windows",
+                    "field": "Microsoft.HybridCompute/machines/osName"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {
+                                "policy": {
+                                    "type": "string",
+                                    "value": "[concat('Enabled DA extension for VM', ': ', parameters('vmName'))]"
+                                }
+                            },
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-03-11-preview",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'), '/', variables('DaExtensionName'))]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "enableAutomaticUpgrade": true,
+                                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                                        "settings": {
+                                            "enableAMA": "true"
+                                        },
+                                        "type": "[variables('DaExtensionType')]",
+                                        "typeHandlerVersion": "[variables('DaExtensionTypeHandlerVersion')]"
+                                    },
+                                    "type": "Microsoft.HybridCompute/machines/extensions"
+                                }
+                            ],
+                            "variables": {
+                                "DaExtensionName": "DependencyAgentWindows",
+                                "DaExtensionType": "DependencyAgentWindows",
+                                "DaExtensionTypeHandlerVersion": "9.10"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "DependencyAgentWindows",
+                            "field": "Microsoft.HybridCompute/machines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Monitoring.DependencyAgent",
+                            "field": "Microsoft.HybridCompute/machines/extensions/publisher"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.HybridCompute/machines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+                ],
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

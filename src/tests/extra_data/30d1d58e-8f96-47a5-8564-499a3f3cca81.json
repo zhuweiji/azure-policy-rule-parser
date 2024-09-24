@@ -1,0 +1,62 @@
+{
+    "description": "Disable local authentication methods so that your Azure Automation accounts exclusively require Azure Active Directory identities for authentication.",
+    "displayName": "Configure Azure Automation account to disable local authentication",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/30d1d58e-8f96-47a5-8564-499a3f3cca81",
+    "metadata": {
+        "category": "Automation",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "30d1d58e-8f96-47a5-8564-499a3f3cca81",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Automation/automationAccounts",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Automation/automationAccounts/disableLocalAuth",
+                    "notEquals": true
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2021-06-22')]",
+                        "field": "Microsoft.Automation/automationAccounts/disableLocalAuth",
+                        "operation": "addOrReplace",
+                        "value": true
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

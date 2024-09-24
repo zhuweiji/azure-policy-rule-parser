@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Audit and Accountability control",
+    "displayName": "Microsoft Managed Control 1130 - Time Stamps | Synchronization With Authoritative Time Source",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fd7c4c1d-51ee-4349-9dab-89a7f8c8d102",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1130",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "fd7c4c1d-51ee-4349-9dab-89a7f8c8d102",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,49 @@
+{
+    "description": "Azure API Management stv1 compute platform version will be retired effective 31 August 2024, and these instances should be migrated to stv2 compute platform for continued support. Learn more at https://learn.microsoft.com/azure/api-management/breaking-changes/stv1-platform-retirement-august-2024",
+    "displayName": "Azure API Management platform version should be stv2",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1dc2fc00-2245-4143-99f4-874c937f13ef",
+    "metadata": {
+        "category": "API Management",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "1dc2fc00-2245-4143-99f4-874c937f13ef",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ApiManagement/service",
+                    "field": "type"
+                },
+                {
+                    "equals": "stv1",
+                    "field": "Microsoft.ApiManagement/service/platformVersion"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

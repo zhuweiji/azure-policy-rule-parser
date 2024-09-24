@@ -1,0 +1,49 @@
+{
+    "description": "Disable all database admin role to restrict granting highly privileged/administrative user role.",
+    "displayName": "All Database Admin on Azure Data Explorer should be disabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8945ba5e-918e-4a57-8117-fe615d12e3ba",
+    "metadata": {
+        "category": "Azure Data Explorer",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "8945ba5e-918e-4a57-8117-fe615d12e3ba",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Kusto/Clusters/principalAssignments",
+                    "field": "type"
+                },
+                {
+                    "equals": "AllDatabasesAdmin",
+                    "field": "Microsoft.Kusto/Clusters/principalAssignments/role"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

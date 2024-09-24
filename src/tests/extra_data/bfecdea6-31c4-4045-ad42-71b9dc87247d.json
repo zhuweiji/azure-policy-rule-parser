@@ -1,0 +1,49 @@
+{
+    "description": "Enable infrastructure encryption for encryption at rest of your storage account encryption scopes for added security. Infrastructure encryption ensures that your data is encrypted twice.",
+    "displayName": "Storage account encryption scopes should use double encryption for data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/bfecdea6-31c4-4045-ad42-71b9dc87247d",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "bfecdea6-31c4-4045-ad42-71b9dc87247d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the audit policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Storage/storageAccounts/encryptionScopes",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Storage/storageAccounts/encryptionScopes/requireInfrastructureEncryption",
+                    "notEquals": "true"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

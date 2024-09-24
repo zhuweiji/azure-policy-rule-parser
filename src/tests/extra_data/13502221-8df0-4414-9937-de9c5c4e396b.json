@@ -1,0 +1,78 @@
+{
+    "description": "Anonymous public read access to containers and blobs in Azure Storage is a convenient way to share data but might present security risks. To prevent data breaches caused by undesired anonymous access, Microsoft recommends preventing public access to a storage account unless your scenario requires it.",
+    "displayName": "Configure your Storage account public access to be disallowed",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/13502221-8df0-4414-9937-de9c5c4e396b",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "13502221-8df0-4414-9937-de9c5c4e396b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Storage/storageAccounts",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "less": "2019-04-01",
+                                    "value": "[requestContext().apiVersion]"
+                                },
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess"
+                                }
+                            ]
+                        },
+                        {
+                            "equals": "true",
+                            "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2019-04-01')]",
+                        "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess",
+                        "operation": "addOrReplace",
+                        "value": false
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

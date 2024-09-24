@@ -1,0 +1,59 @@
+{
+    "description": "Creating a private endpoint for the indicated Storage Sync Service resource allows you to address your Storage Sync Service resource from within the private IP address space of your organization's network, rather than through the internet-accessible public endpoint. Creating a private endpoint by itself does not disable the public endpoint.",
+    "displayName": "Azure File Sync should use private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1d320205-c6a1-4ac6-873d-46224024e8e2",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "1d320205-c6a1-4ac6-873d-46224024e8e2",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.StorageSync/storageSyncServices",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.StorageSync/storageSyncServices/privateEndpointConnections/privateEndpoint"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.StorageSync/storageSyncServices/privateEndpointConnections/provisioningState"
+                        },
+                        {
+                            "equals": "Approved",
+                            "field": "Microsoft.StorageSync/storageSyncServices/privateEndpointConnections/privateLinkServiceConnectionState.status"
+                        }
+                    ]
+                },
+                "type": "Microsoft.StorageSync/storageSyncServices/privateEndpointConnections"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

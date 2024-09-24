@@ -1,0 +1,48 @@
+{
+    "description": "Azure Database for PostgreSQL supports connecting your Azure Database for PostgreSQL flexible server to client applications using Secure Sockets Layer (SSL). Enforcing SSL connections between your database flexible server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. This configuration enforces that SSL is always enabled for accessing your PostgreSQL flexible server.",
+    "displayName": "Enforce SSL connection should be enabled for PostgreSQL flexible servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c29c38cb-74a7-4505-9a06-e588ab86620a",
+    "metadata": {
+        "category": "PostgreSQL",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c29c38cb-74a7-4505-9a06-e588ab86620a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.DBforPostgreSQL/flexibleServers",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "ON",
+                    "field": "Microsoft.DBforPostgreSQL/flexibleServers/configurations/value"
+                },
+                "name": "require_secure_transport",
+                "type": "Microsoft.DBforPostgreSQL/flexibleServers/configurations"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

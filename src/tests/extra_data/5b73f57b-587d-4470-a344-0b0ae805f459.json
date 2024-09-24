@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Audit and Accountability control",
+    "displayName": "Microsoft Managed Control 1105 - Audit Events",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5b73f57b-587d-4470-a344-0b0ae805f459",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1105",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "5b73f57b-587d-4470-a344-0b0ae805f459",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

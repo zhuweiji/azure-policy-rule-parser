@@ -1,0 +1,72 @@
+{
+    "description": "Audit configuration of metric alert rules on Batch account to enable the required metric",
+    "displayName": "Metric alert rules should be configured on Batch accounts",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/26ee67a2-f81a-4ba8-b9ce-8550bd5ee1a7",
+    "metadata": {
+        "category": "Batch",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "26ee67a2-f81a-4ba8-b9ce-8550bd5ee1a7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "metricName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The metric name that an alert rule must be enabled on",
+                "displayName": "Metric name",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Batch/batchAccounts",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "true",
+                            "field": "Microsoft.Insights/alertRules/isEnabled"
+                        },
+                        {
+                            "equals": "[parameters('metricName')]",
+                            "field": "Microsoft.Insights/alertRules/condition.dataSource.metricName"
+                        },
+                        {
+                            "equals": "[concat('/subscriptions/', subscription().subscriptionId, '/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Batch/batchAccounts/', field('name'))]",
+                            "field": "Microsoft.Insights/alertRules/condition.dataSource.resourceUri"
+                        }
+                    ]
+                },
+                "existenceScope": "Subscription",
+                "type": "Microsoft.Insights/alertRules"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,49 @@
+{
+    "description": "Encryption of data at rest in Azure Device Update with customer-managed key adds a second layer of encryption on top of the default service-managed keys, enables customer control of keys, custom rotation policies, and ability to manage access to data through key access control. Learn more at:https://learn.microsoft.com/azure/iot-hub-device-update/device-update-data-encryption. ",
+    "displayName": "Azure Device Update accounts should use customer-managed key to encrypt data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/43c323f6-0329-4f7c-a19a-6e5a5690d042",
+    "metadata": {
+        "category": "Internet of Things",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "43c323f6-0329-4f7c-a19a-6e5a5690d042",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DeviceUpdate/accounts",
+                    "field": "type"
+                },
+                {
+                    "exists": false,
+                    "field": "Microsoft.DeviceUpdate/accounts/encryption.keyVaultKeyUri"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

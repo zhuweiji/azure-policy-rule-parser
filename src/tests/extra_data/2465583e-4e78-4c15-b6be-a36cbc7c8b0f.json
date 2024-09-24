@@ -1,0 +1,161 @@
+{
+    "description": "Deploys the diagnostic settings for Azure Activity to stream subscriptions audit logs to a Log Analytics workspace to monitor subscription-level events",
+    "displayName": "Configure Azure Activity logs to stream to specified Log Analytics workspace",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2465583e-4e78-4c15-b6be-a36cbc7c8b0f",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "2465583e-4e78-4c15-b6be-a36cbc7c8b0f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "logAnalytics": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "If this workspace is outside of the scope of the assignment you must manually grant 'Log Analytics Contributor' permissions (or similar) to the policy assignment's principal ID.",
+                "displayName": "Primary Log Analytics workspace",
+                "strongType": "omsWorkspace"
+            },
+            "type": "String"
+        },
+        "logsEnabled": {
+            "allowedValues": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "True",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Whether to enable logs stream to the Log Analytics workspace - True or False",
+                "displayName": "Enable logs",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "northeurope",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "logAnalytics": {
+                                "value": "[parameters('logAnalytics')]"
+                            },
+                            "logsEnabled": {
+                                "value": "[parameters('logsEnabled')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {},
+                            "parameters": {
+                                "logAnalytics": {
+                                    "type": "string"
+                                },
+                                "logsEnabled": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2017-05-01-preview",
+                                    "location": "Global",
+                                    "name": "subscriptionToLa",
+                                    "properties": {
+                                        "logs": [
+                                            {
+                                                "category": "Administrative",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Security",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "ServiceHealth",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Alert",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Recommendation",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Policy",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Autoscale",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "ResourceHealth",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            }
+                                        ],
+                                        "workspaceId": "[parameters('logAnalytics')]"
+                                    },
+                                    "type": "Microsoft.Insights/diagnosticSettings"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "deploymentScope": "Subscription",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "[parameters('logsEnabled')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/logs.enabled"
+                        },
+                        {
+                            "equals": "[parameters('logAnalytics')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/workspaceId"
+                        }
+                    ]
+                },
+                "existenceScope": "Subscription",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa",
+                    "/providers/microsoft.authorization/roleDefinitions/92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+                ],
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

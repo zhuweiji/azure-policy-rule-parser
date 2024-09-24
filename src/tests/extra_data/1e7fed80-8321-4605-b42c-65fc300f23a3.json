@@ -1,0 +1,83 @@
+{
+    "description": "Machines are non-compliant if Log Analytics agent is not installed on Azure Arc enabled Linux server.",
+    "displayName": "[Deprecated]: Linux machines should have Log Analytics agent installed on Azure Arc",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1e7fed80-8321-4605-b42c-65fc300f23a3",
+    "metadata": {
+        "category": "Guest Configuration",
+        "deprecated": true,
+        "guestConfiguration": {
+            "name": "LinuxLogAnalyticsAgentInstalled",
+            "version": "1.*"
+        },
+        "requiredProviders": [
+            "Microsoft.GuestConfiguration"
+        ],
+        "version": "1.2.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "1e7fed80-8321-4605-b42c-65fc300f23a3",
+    "parameters": {
+        "IncludeArcMachines": {
+            "allowedValues": [
+                "true",
+                "false"
+            ],
+            "defaultValue": "false",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "By selecting this option, you agree to be charged monthly per Arc connected machine.",
+                "displayName": "Include Arc connected servers",
+                "portalReview": "true",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of this policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "true",
+                    "value": "[parameters('IncludeArcMachines')]"
+                },
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HybridCompute/imageOffer",
+                    "like": "linux*"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "Compliant",
+                    "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/complianceStatus"
+                },
+                "name": "LinuxLogAnalyticsAgentInstalled",
+                "type": "Microsoft.GuestConfiguration/guestConfigurationAssignments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

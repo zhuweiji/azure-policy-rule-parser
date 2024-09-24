@@ -1,0 +1,202 @@
+{
+    "description": "Deploys the diagnostic settings for Blob Services to stream resource logs to a Log Analytics workspace when any blob Service which is missing this diagnostic settings is created or updated.",
+    "displayName": "Configure diagnostic settings for Blob Services to Log Analytics workspace",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b4fe1a3b-0715-4c6c-a5ea-ffc33cf823cb",
+    "metadata": {
+        "category": "Storage",
+        "version": "4.0.0"
+    },
+    "mode": "All",
+    "name": "b4fe1a3b-0715-4c6c-a5ea-ffc33cf823cb",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "logAnalytics": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "Select Log Analytics workspace from dropdown list. If this workspace is outside of the scope of the assignment you must manually grant 'Log Analytics Contributor' permissions (or similar) to the policy assignment's principal ID.",
+                "displayName": "Log Analytics workspace",
+                "strongType": "omsWorkspace"
+            },
+            "type": "String"
+        },
+        "logsEnabled": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Whether to enable logs stream to the Log Analytics workspace - True or False",
+                "displayName": "Enable logs",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "metricsEnabled": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Whether to enable metrics stream to the Log Analytics workspace - True or False",
+                "displayName": "Enable metrics",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "profileName": {
+            "allowedValues": null,
+            "defaultValue": "blobServicesDiagnosticsLogsToWorkspace",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The diagnostic settings profile name",
+                "displayName": "Profile name",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Storage/storageAccounts/blobServices",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "logAnalytics": {
+                                "value": "[parameters('logAnalytics')]"
+                            },
+                            "logsEnabled": {
+                                "value": "[parameters('logsEnabled')]"
+                            },
+                            "metricsEnabled": {
+                                "value": "[parameters('metricsEnabled')]"
+                            },
+                            "profileName": {
+                                "value": "[parameters('profileName')]"
+                            },
+                            "resourceName": {
+                                "value": "[field('fullName')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {},
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "logAnalytics": {
+                                    "type": "string"
+                                },
+                                "logsEnabled": {
+                                    "type": "bool"
+                                },
+                                "metricsEnabled": {
+                                    "type": "bool"
+                                },
+                                "profileName": {
+                                    "type": "string"
+                                },
+                                "resourceName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-05-01-preview",
+                                    "dependsOn": [],
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('resourceName'), '/', 'Microsoft.Insights/', parameters('profileName'))]",
+                                    "properties": {
+                                        "logs": [
+                                            {
+                                                "category": "StorageRead",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "StorageWrite",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "StorageDelete",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            }
+                                        ],
+                                        "metrics": [
+                                            {
+                                                "category": "AllMetrics",
+                                                "enabled": "[parameters('metricsEnabled')]"
+                                            }
+                                        ],
+                                        "workspaceId": "[parameters('logAnalytics')]"
+                                    },
+                                    "type": "Microsoft.Storage/storageAccounts/blobServices/providers/diagnosticSettings"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "[parameters('logsEnabled')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/logs.enabled"
+                        },
+                        {
+                            "equals": "[parameters('metricsEnabled')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/metrics.enabled"
+                        },
+                        {
+                            "equals": "[parameters('logAnalytics')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/workspaceId"
+                        }
+                    ]
+                },
+                "name": "[parameters('profileName')]",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa",
+                    "/providers/microsoft.authorization/roleDefinitions/92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+                ],
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

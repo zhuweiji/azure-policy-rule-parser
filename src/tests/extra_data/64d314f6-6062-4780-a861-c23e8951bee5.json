@@ -1,0 +1,49 @@
+{
+    "description": "Use customer-managed keys to manage the encryption at rest of your Azure HDInsight clusters. By default, customer data is encrypted with service-managed keys, but customer-managed keys are commonly required to meet regulatory compliance standards. Customer-managed keys enable the data to be encrypted with an Azure Key Vault key created and owned by you. You have full control and responsibility for the key lifecycle, including rotation and management. Learn more at https://aka.ms/hdi.cmk.",
+    "displayName": "Azure HDInsight clusters should use customer-managed keys to encrypt data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/64d314f6-6062-4780-a861-c23e8951bee5",
+    "metadata": {
+        "category": "HDInsight",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "64d314f6-6062-4780-a861-c23e8951bee5",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HDInsight/clusters",
+                    "field": "type"
+                },
+                {
+                    "exists": false,
+                    "field": "Microsoft.HDInsight/clusters/diskEncryptionProperties.keyName"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,55 @@
+{
+    "description": "Azure Private Link lets you connect your virtual network to Azure services without a public IP address at the source or destination. The private link platform handles the connectivity between the consumer and services over the Azure backbone network. By mapping private endpoints to your IoT Central application instead of the entire service, you'll reduce your data leakage risks. Learn more about private links at: https://aka.ms/iotcentral-network-security-using-pe.",
+    "displayName": "IoT Central should use private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9ace2dbc-4b71-48b6-b2a7-428b0b2e3944",
+    "metadata": {
+        "category": "Internet of Things",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "9ace2dbc-4b71-48b6-b2a7-428b0b2e3944",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.IoTCentral/iotApps",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.IoTCentral/iotApps/privateEndpointConnections[*]",
+                        "where": {
+                            "equals": "Approved",
+                            "field": "Microsoft.IoTCentral/iotApps/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

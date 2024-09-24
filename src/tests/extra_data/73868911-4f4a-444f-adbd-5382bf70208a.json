@@ -1,0 +1,172 @@
+{
+    "description": "Open Service Mesh extension provides all standard service mesh capabilities for security, traffic management and observability of application services. Learn more here: https://aka.ms/arc-osm-doc",
+    "displayName": "Azure Arc-enabled Kubernetes clusters should have the Open Service Mesh extension installed",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/73868911-4f4a-444f-adbd-5382bf70208a",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "73868911-4f4a-444f-adbd-5382bf70208a",
+    "parameters": {
+        "ExtensionVersion": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Provide the version of Arc enabled Open Service Mesh (v1.0.0-1 and above). Refer to https://github.com/Azure/osm-azure/releases for available versions.",
+                "displayName": "Extension Version",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Kubernetes/connectedClusters",
+                    "field": "type"
+                },
+                {
+                    "equals": "connected",
+                    "field": "Microsoft.Kubernetes/connectedClusters/connectivityStatus"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "ExtensionVersion": {
+                                "value": "[parameters('ExtensionVersion')]"
+                            },
+                            "clusterRegion": {
+                                "value": "[field('location')]"
+                            },
+                            "clusterResourceId": {
+                                "value": "[field('id')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "ExtensionVersion": {
+                                    "type": "string"
+                                },
+                                "clusterRegion": {
+                                    "type": "string"
+                                },
+                                "clusterResourceId": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-10-01",
+                                    "name": "[Concat('osm-arc-extension', '-',  uniqueString(parameters('clusterResourceId')))]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "ExtensionVersion": {
+                                                "value": "[parameters('ExtensionVersion')]"
+                                            },
+                                            "clusterRegion": {
+                                                "value": "[parameters('clusterRegion')]"
+                                            },
+                                            "clusterResourceId": {
+                                                "value": "[parameters('clusterResourceId')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "ExtensionVersion": {
+                                                    "type": "string"
+                                                },
+                                                "clusterRegion": {
+                                                    "type": "string"
+                                                },
+                                                "clusterResourceId": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2020-07-01-preview",
+                                                    "location": "[parameters('clusterRegion')]",
+                                                    "name": "osm",
+                                                    "properties": {
+                                                        "autoUpgradeMinorVersion": true,
+                                                        "extensionType": "microsoft.openservicemesh",
+                                                        "scope": {
+                                                            "Cluster": {
+                                                                "releaseNamespace": "arc-osm-system"
+                                                            }
+                                                        }
+                                                    },
+                                                    "scope": "[concat('Microsoft.Kubernetes/connectedClusters/', split(parameters('clusterResourceId'),'/')[8])]",
+                                                    "type": "Microsoft.KubernetesConfiguration/extensions"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "resourceGroup": "[split(parameters('clusterResourceId'),'/')[4]]",
+                                    "subscriptionId": "[variables('subscriptionId')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "subscriptionId": "[subscription().subscriptionId]"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.openservicemesh",
+                            "field": "Microsoft.KubernetesConfiguration/extensions/extensionType"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.KubernetesConfiguration/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+                ],
+                "type": "Microsoft.KubernetesConfiguration/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,49 @@
+{
+    "description": "Block creation of M365 resources.",
+    "displayName": "Do Not Allow M365 resources",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/176b7c36-ac64-4f15-a296-50bd7fafab12",
+    "metadata": {
+        "category": "General",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "176b7c36-ac64-4f15-a296-50bd7fafab12",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "like": "Microsoft.SaaSHub/*"
+                },
+                {
+                    "exists": true,
+                    "value": "[field('type')]"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

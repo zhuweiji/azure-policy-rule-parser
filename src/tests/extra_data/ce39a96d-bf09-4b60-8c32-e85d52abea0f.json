@@ -1,0 +1,43 @@
+{
+    "description": "Audit provisioning of a Microsoft Entra administrator for your PostgreSQL flexible server to enable Microsoft Entra authentication. Microsoft Entra authentication enables simplified permission management and centralized identity management of database users and other Microsoft services",
+    "displayName": "A Microsoft Entra administrator should be provisioned for PostgreSQL flexible servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ce39a96d-bf09-4b60-8c32-e85d52abea0f",
+    "metadata": {
+        "category": "PostgreSQL",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ce39a96d-bf09-4b60-8c32-e85d52abea0f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.DBforPostgreSQL/flexibleServers",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "type": "Microsoft.DBforPostgreSQL/flexibleServers/administrators"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

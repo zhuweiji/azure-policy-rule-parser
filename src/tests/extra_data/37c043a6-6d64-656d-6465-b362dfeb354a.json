@@ -1,0 +1,158 @@
+{
+    "description": "Deploys Microsoft Defender for Endpoint on Windows Azure Arc machines.",
+    "displayName": "[Preview]: Deploy Microsoft Defender for Endpoint agent on Windows Azure Arc machines",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/37c043a6-6d64-656d-6465-b362dfeb354a",
+    "metadata": {
+        "category": "Security Center",
+        "preview": true,
+        "version": "2.0.1-preview"
+    },
+    "mode": "Indexed",
+    "name": "37c043a6-6d64-656d-6465-b362dfeb354a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HybridCompute/machines/osName",
+                    "like": "windows*"
+                },
+                {
+                    "field": "tags['MDFCSecurityConnector']",
+                    "notEquals": "true"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "contains": "2012",
+                            "field": "Microsoft.HybridCompute/machines/osSku"
+                        },
+                        {
+                            "contains": "2016",
+                            "field": "Microsoft.HybridCompute/machines/osSku"
+                        },
+                        {
+                            "contains": "2019",
+                            "field": "Microsoft.HybridCompute/machines/osSku"
+                        },
+                        {
+                            "contains": "2022",
+                            "field": "Microsoft.HybridCompute/machines/osSku"
+                        },
+                        {
+                            "equals": "Windows 10 Enterprise multi-session",
+                            "field": "Microsoft.HybridCompute/machines/osSku"
+                        },
+                        {
+                            "equals": "Windows 10 Enterprise for Virtual Desktops",
+                            "field": "Microsoft.HybridCompute/machines/osSku"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "azureResourceId": {
+                                "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.HybridCompute/machines/',field('name'))]"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "azureResourceId": {
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2019-12-12",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'), '/MDE.Windows')]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "protectedSettings": {
+                                            "defenderForEndpointOnboardingScript": "[reference(subscriptionResourceId('Microsoft.Security/mdeOnboardings', 'Windows'), '2021-10-01-preview', 'full').properties.onboardingPackageWindows]"
+                                        },
+                                        "publisher": "Microsoft.Azure.AzureDefenderForServers",
+                                        "settings": {
+                                            "azureResourceId": "[parameters('azureResourceId')]",
+                                            "installedBy": "Policy",
+                                            "vNextEnabled": "true"
+                                        },
+                                        "type": "MDE.Windows",
+                                        "typeHandlerVersion": "1.0"
+                                    },
+                                    "type": "Microsoft.HybridCompute/machines/extensions"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Azure.AzureDefenderForServers",
+                            "field": "Microsoft.HybridCompute/machines/extensions/publisher"
+                        },
+                        {
+                            "equals": "MDE.Windows",
+                            "field": "Microsoft.HybridCompute/machines/extensions/type"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.HybridCompute/machines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "name": "MDE.Windows",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

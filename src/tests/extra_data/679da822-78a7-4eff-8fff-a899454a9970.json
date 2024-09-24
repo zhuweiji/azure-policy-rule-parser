@@ -1,0 +1,49 @@
+{
+    "description": "Setting minimal TLS version to 1.2 improves security by ensuring your custom domains are accessed from clients using TLS 1.2 or newer. Using versions of TLS less than 1.2 is not recommended since they are weak and do not support modern cryptographic algorithms.",
+    "displayName": "Azure Front Door Standard and Premium should be running minimum TLS version of 1.2",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/679da822-78a7-4eff-8fff-a899454a9970",
+    "metadata": {
+        "category": "CDN",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "679da822-78a7-4eff-8fff-a899454a9970",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Cdn/profiles/customDomains",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Cdn/profiles/customDomains/tlsSettings.minimumTlsVersion",
+                    "notEquals": "TLS12"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

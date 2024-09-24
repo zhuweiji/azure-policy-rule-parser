@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Individual Participation and Redress control",
+    "displayName": "Microsoft Managed Control 1843 - Consent",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8e903bb7-00e9-4255-a881-500742a2dbaa",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1843",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "8e903bb7-00e9-4255-a881-500742a2dbaa",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

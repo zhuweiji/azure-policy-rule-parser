@@ -1,0 +1,63 @@
+{
+    "description": "Private link provides a way to connect Azure Key Vault Managed HSM to your Azure resources without sending traffic over the public internet. Private link provides defense in depth protection against data exfiltration. Learn more at: https://docs.microsoft.com/azure/key-vault/managed-hsm/private-link",
+    "displayName": "[Preview]: Azure Key Vault Managed HSM should use private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/59fee2f4-d439-4f1b-9b9a-982e1474bfd8",
+    "metadata": {
+        "category": "Key Vault",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "59fee2f4-d439-4f1b-9b9a-982e1474bfd8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.KeyVault/managedHSMs",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.KeyVault/managedHSMs/privateEndpointConnections"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.KeyVault/managedHSMs/privateEndpointConnections[*]",
+                                "where": {
+                                    "equals": "Approved",
+                                    "field": "Microsoft.KeyVault/managedHSMs/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                                }
+                            },
+                            "equals": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

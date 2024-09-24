@@ -1,0 +1,98 @@
+{
+    "description": "Install Guest Attestation extension on supported virtual machines to allow Azure Security Center to proactively attest and monitor the boot integrity. Once installed, boot integrity will be attested via Remote Attestation. This assessment applies to Trusted Launch and Confidential Windows virtual machines.",
+    "displayName": "[Preview]: Guest Attestation extension should be installed on supported Windows virtual machines",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1cb4d9c2-f88f-4069-bee0-dba239a57b09",
+    "metadata": {
+        "category": "Security Center",
+        "preview": true,
+        "version": "4.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "1cb4d9c2-f88f-4069-bee0-dba239a57b09",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/storageProfile.imageReference.offer",
+                            "like": "windows*"
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                            "like": "Windows*"
+                        }
+                    ]
+                },
+                {
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.securityType",
+                    "in": [
+                        "TrustedLaunch",
+                        "ConfidentialVM"
+                    ]
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings"
+                },
+                {
+                    "equals": "true",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.secureBootEnabled"
+                },
+                {
+                    "equals": "true",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.vTpmEnabled"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Azure.Security.WindowsAttestation",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/publisher"
+                        },
+                        {
+                            "equals": "GuestAttestation",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/type"
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/extensions/provisioningState",
+                            "in": [
+                                "Succeeded",
+                                "Provisioning succeeded"
+                            ]
+                        }
+                    ]
+                },
+                "type": "Microsoft.Compute/virtualMachines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

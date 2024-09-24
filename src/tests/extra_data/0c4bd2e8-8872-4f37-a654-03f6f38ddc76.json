@@ -1,0 +1,49 @@
+{
+    "description": "To support private link and customer-managed key policies, create your own storage account for profiler and debugger. Learn more in https://docs.microsoft.com/azure/azure-monitor/app/profiler-bring-your-own-storage",
+    "displayName": "Application Insights components with Private Link enabled should use Bring Your Own Storage accounts for profiler and debugger.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0c4bd2e8-8872-4f37-a654-03f6f38ddc76",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "0c4bd2e8-8872-4f37-a654-03f6f38ddc76",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Deny",
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Insights/components",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Insights/components/ForceCustomerStorageForProfiler",
+                    "notEquals": "true"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

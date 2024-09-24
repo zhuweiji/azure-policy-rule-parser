@@ -1,0 +1,49 @@
+{
+    "description": "Disabling the public network access property improves security by ensuring Azure Data Explorer can only be accessed from a private endpoint. This configuration denies all logins that match IP or virtual network based firewall rules.",
+    "displayName": "Public network access on Azure Data Explorer should be disabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/43bc7be6-5e69-4b0d-a2bb-e815557ca673",
+    "metadata": {
+        "category": "Azure Data Explorer",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "43bc7be6-5e69-4b0d-a2bb-e815557ca673",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Kusto/clusters",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Kusto/clusters/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

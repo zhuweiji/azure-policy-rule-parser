@@ -1,0 +1,51 @@
+{
+    "description": "As a security best practice, API endpoints that haven't received traffic for 30 days are considered unused and should be removed from the Azure API Management service. Keeping unused API endpoints may pose a security risk to your organization. These may be APIs that should have been deprecated from the Azure API Management service but may have been accidentally left active. Such APIs typically do not receive the most up to date security coverage.",
+    "displayName": "API endpoints that are unused should be disabled and removed from the Azure API Management service",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c8acafaf-3d23-44d1-9624-978ef0f8652c",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.1"
+    },
+    "mode": "All",
+    "name": "c8acafaf-3d23-44d1-9624-978ef0f8652c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ApiManagement/service/apis/operations",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existencecondition": {
+                    "field": "microsoft.security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "4e8c00a2-e8bc-42a8-9e12-99584a51ad10",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

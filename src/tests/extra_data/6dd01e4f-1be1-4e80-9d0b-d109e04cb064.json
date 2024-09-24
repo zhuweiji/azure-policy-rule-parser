@@ -1,0 +1,139 @@
+{
+    "description": "Use private DNS zones to override the DNS resolution for a private endpoint. You need private DNS zone properly configured to connect to Azure Automation account via Azure Private Link. Learn more at: https://aka.ms/privatednszone.",
+    "displayName": "Configure Azure Automation accounts with private DNS zones",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6dd01e4f-1be1-4e80-9d0b-d109e04cb064",
+    "metadata": {
+        "category": "Automation",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "6dd01e4f-1be1-4e80-9d0b-d109e04cb064",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies the private DNS zone to use to configure private endpoint",
+                "displayName": "Private DNS zone ID",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        },
+        "privateEndpointGroupId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "A group Id for the private endpoint",
+                "displayName": "Private endpoint group id",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/privateEndpoints",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]",
+                        "where": {
+                            "equals": "[parameters('privateEndpointGroupId')]",
+                            "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]"
+                        }
+                    },
+                    "greaterOrEquals": 1
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[parameters('privateDnsZoneId')]"
+                            },
+                            "privateEndpointGroupId": {
+                                "value": "[parameters('privateEndpointGroupId')]"
+                            },
+                            "privateEndpointName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId": {
+                                    "type": "string"
+                                },
+                                "privateEndpointGroupId": {
+                                    "type": "string"
+                                },
+                                "privateEndpointName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-03-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('privateEndpointName'), '/deployedByPolicy')]",
+                                    "properties": {
+                                        "privateDnsZoneConfigs": [
+                                            {
+                                                "name": "automationAccounts-privateDnsZone",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+                ],
+                "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

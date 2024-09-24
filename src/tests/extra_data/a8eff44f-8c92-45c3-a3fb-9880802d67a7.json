@@ -1,0 +1,167 @@
+{
+    "description": "Use Azure Policy Add-on to manage and report on the compliance state of your Azure Kubernetes Service (AKS) clusters. For more information, see https://aka.ms/akspolicydoc.",
+    "displayName": "Deploy Azure Policy Add-on to Azure Kubernetes Service clusters",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a8eff44f-8c92-45c3-a3fb-9880802d67a7",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "4.1.0"
+    },
+    "mode": "Indexed",
+    "name": "a8eff44f-8c92-45c3-a3fb-9880802d67a7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ContainerService/managedClusters",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "clusterName": {
+                                "value": "[field('name')]"
+                            },
+                            "clusterResourceGroupName": {
+                                "value": "[resourceGroup().name]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "clusterName": {
+                                    "type": "string"
+                                },
+                                "clusterResourceGroupName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "name": "[variables('clusterGetDeploymentName')]",
+                                    "properties": {
+                                        "mode": "Incremental",
+                                        "template": {
+                                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "outputs": {
+                                                "aksCluster": {
+                                                    "type": "object",
+                                                    "value": "[reference(resourceId(parameters('clusterResourceGroupName'), 'Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2021-07-01', 'Full')]"
+                                                }
+                                            },
+                                            "resources": []
+                                        }
+                                    },
+                                    "type": "Microsoft.Resources/deployments"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "name": "[variables('clusterUpdateDeploymentName')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "aksClusterContent": {
+                                                "value": "[reference(variables('clusterGetDeploymentName')).outputs.aksCluster.value]"
+                                            },
+                                            "aksClusterName": {
+                                                "value": "[parameters('clusterName')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "outputs": {},
+                                            "parameters": {
+                                                "aksClusterContent": {
+                                                    "type": "object"
+                                                },
+                                                "aksClusterName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2021-07-01",
+                                                    "location": "[parameters('aksClusterContent').location]",
+                                                    "name": "[parameters('aksClusterName')]",
+                                                    "properties": {
+                                                        "aadProfile": "[if(contains(parameters('aksClusterContent').properties, 'aadProfile'), parameters('aksClusterContent').properties.aadProfile, json('null'))]",
+                                                        "addonProfiles": {
+                                                            "azurepolicy": {
+                                                                "enabled": true
+                                                            }
+                                                        },
+                                                        "agentPoolProfiles": "[if(contains(parameters('aksClusterContent').properties, 'agentPoolProfiles'), parameters('aksClusterContent').properties.agentPoolProfiles, json('null'))]",
+                                                        "apiServerAccessProfile": "[if(contains(parameters('aksClusterContent').properties, 'apiServerAccessProfile'), parameters('aksClusterContent').properties.apiServerAccessProfile, json('null'))]",
+                                                        "autoScalerProfile": "[if(contains(parameters('aksClusterContent').properties, 'autoScalerProfile'), parameters('aksClusterContent').properties.autoScalerProfile, json('null'))]",
+                                                        "disableLocalAccounts": "[if(contains(parameters('aksClusterContent').properties, 'disableLocalAccounts'), parameters('aksClusterContent').properties.disableLocalAccounts, json('null'))]",
+                                                        "diskEncryptionSetID": "[if(contains(parameters('aksClusterContent').properties, 'diskEncryptionSetID'), parameters('aksClusterContent').properties.diskEncryptionSetID, json('null'))]",
+                                                        "dnsPrefix": "[parameters('aksClusterContent').properties.dnsPrefix]",
+                                                        "enablePodSecurityPolicy": "[if(contains(parameters('aksClusterContent').properties, 'enablePodSecurityPolicy'), parameters('aksClusterContent').properties.enablePodSecurityPolicy, json('null'))]",
+                                                        "enableRBAC": "[if(contains(parameters('aksClusterContent').properties, 'enableRBAC'), parameters('aksClusterContent').properties.enableRBAC, json('null'))]",
+                                                        "identityProfile": "[if(contains(parameters('aksClusterContent').properties, 'identityProfile'), parameters('aksClusterContent').properties.identityProfile, json('null'))]",
+                                                        "kubernetesVersion": "[parameters('aksClusterContent').properties.kubernetesVersion]",
+                                                        "linuxProfile": "[if(contains(parameters('aksClusterContent').properties, 'linuxProfile'), parameters('aksClusterContent').properties.linuxProfile, json('null'))]",
+                                                        "networkProfile": "[if(contains(parameters('aksClusterContent').properties, 'networkProfile'), parameters('aksClusterContent').properties.networkProfile, json('null'))]",
+                                                        "nodeResourceGroup": "[parameters('aksClusterContent').properties.nodeResourceGroup]",
+                                                        "servicePrincipalProfile": "[if(contains(parameters('aksClusterContent').properties, 'servicePrincipalProfile'), parameters('aksClusterContent').properties.servicePrincipalProfile, json('null'))]",
+                                                        "windowsProfile": "[if(contains(parameters('aksClusterContent').properties, 'windowsProfile'), parameters('aksClusterContent').properties.windowsProfile, json('null'))]"
+                                                    },
+                                                    "sku": "[parameters('aksClusterContent').sku]",
+                                                    "tags": "[if(contains(parameters('aksClusterContent'), 'tags'), parameters('aksClusterContent').tags, json('null'))]",
+                                                    "type": "Microsoft.ContainerService/managedClusters"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "clusterGetDeploymentName": "[take(concat('Policy-Get-', parameters('clusterName')), 64)]",
+                                "clusterUpdateDeploymentName": "[take(concat('Policy-Update-', parameters('clusterName')), 64)]"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "true",
+                    "field": "Microsoft.ContainerService/managedClusters/addonProfiles.azurePolicy.enabled"
+                },
+                "name": "[field('name')]",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/ed7f3fbd-7b88-4dd4-9017-9adb7ce333f8",
+                    "/providers/Microsoft.Authorization/roleDefinitions/18ed5180-3e48-46fd-8541-4ea054d57064"
+                ],
+                "type": "Microsoft.ContainerService/managedClusters"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

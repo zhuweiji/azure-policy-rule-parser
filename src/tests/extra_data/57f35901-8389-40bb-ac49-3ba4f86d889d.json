@@ -1,0 +1,62 @@
+{
+    "description": "Disable local authentication methods so that your Azure Event Hub namespaces exclusively require Microsoft Entra ID identities for authentication. Learn more at: https://aka.ms/disablelocalauth-eh.",
+    "displayName": "Configure Azure Event Hub namespaces to disable local authentication",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/57f35901-8389-40bb-ac49-3ba4f86d889d",
+    "metadata": {
+        "category": "Event Hub",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "57f35901-8389-40bb-ac49-3ba4f86d889d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.EventHub/namespaces",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.EventHub/namespaces/disableLocalAuth",
+                    "notEquals": true
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2021-06-01-preview')]",
+                        "field": "Microsoft.EventHub/namespaces/disableLocalAuth",
+                        "operation": "addOrReplace",
+                        "value": true
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/f526a384-b230-433a-b45c-95f59c4a2dec"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,81 @@
+{
+    "description": "Mandates detect or prevent mode to be active on all Web Application Firewall policies for Azure Front Door and Application Gateway. Web Application Firewall policies can have a consistent mode configuration across a resource group.",
+    "displayName": "[Deprecated]: Web Application Firewall should be a set mode for Application Gateway and Azure Front Door Service",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f6b68e5a-7207-4638-a1fb-47d90404209e",
+    "metadata": {
+        "category": "Network",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "f6b68e5a-7207-4638-a1fb-47d90404209e",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "modeRequirement": {
+            "allowedValues": [
+                "Prevention",
+                "Detection"
+            ],
+            "defaultValue": "Detection",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Mode required for all WAF policies",
+                "displayName": "Mode Requirement",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/policySettings.mode",
+                            "notEquals": "[parameters('modeRequirement')]"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/policySettings.mode",
+                            "notEquals": "[parameters('modeRequirement')]"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

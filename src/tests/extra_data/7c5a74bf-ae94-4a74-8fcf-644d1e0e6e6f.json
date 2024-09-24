@@ -1,0 +1,33 @@
+{
+    "description": "This policy ensures blob encryption for storage accounts is turned on. It only applies to Microsoft.Storage resource types, not other storage providers. This policy is deprecated because storage blob encryption is now enabled by default, and can no longer be disabled.",
+    "displayName": "[Deprecated]: Require blob encryption for storage accounts",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7c5a74bf-ae94-4a74-8fcf-644d1e0e6e6f",
+    "metadata": {
+        "category": "Storage",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "7c5a74bf-ae94-4a74-8fcf-644d1e0e6e6f",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Storage/storageAccounts",
+                    "field": "type"
+                },
+                {
+                    "equals": "false",
+                    "field": "Microsoft.Storage/storageAccounts/enableBlobEncryption"
+                }
+            ]
+        },
+        "then": {
+            "effect": "deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

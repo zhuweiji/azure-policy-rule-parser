@@ -1,0 +1,44 @@
+{
+    "description": "CMA_C1558 - Correlate Vulnerability scan information",
+    "displayName": "Correlate Vulnerability scan information",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e3905a3c-97e7-0b4f-15fb-465c0927536f",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_C1558",
+        "category": "Regulatory Compliance",
+        "version": "1.1.1"
+    },
+    "mode": "All",
+    "name": "e3905a3c-97e7-0b4f-15fb-465c0927536f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

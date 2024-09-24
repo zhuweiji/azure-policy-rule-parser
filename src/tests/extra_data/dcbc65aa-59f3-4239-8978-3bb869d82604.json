@@ -1,0 +1,52 @@
+{
+    "description": "The content directory of an app should be located on an Azure file share. The storage account information for the file share must be provided before any publishing activity. To learn more about using Azure Files for hosting app service content refer to https://go.microsoft.com/fwlink/?linkid=2151594.",
+    "displayName": "App Service apps should use an Azure file share for its content directory",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/dcbc65aa-59f3-4239-8978-3bb869d82604",
+    "metadata": {
+        "category": "App Service",
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "dcbc65aa-59f3-4239-8978-3bb869d82604",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "functionapp"
+                },
+                {
+                    "equals": "true",
+                    "field": "Microsoft.Web/sites/storageAccountRequired"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

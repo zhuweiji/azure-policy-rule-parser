@@ -1,0 +1,48 @@
+{
+    "description": "Removing all IP firewall rules improves security by ensuring your Azure Synapse workspace can only be accessed from a private endpoint. This configuration audits creation of firewall rules that allow public network access on the workspace.",
+    "displayName": "IP firewall rules on Azure Synapse workspaces should be removed",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/56fd377d-098c-4f02-8406-81eb055902b8",
+    "metadata": {
+        "category": "Synapse",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "56fd377d-098c-4f02-8406-81eb055902b8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Synapse/workspaces/firewallrules",
+                    "field": "type"
+                },
+                {
+                    "exists": "true",
+                    "field": "name"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

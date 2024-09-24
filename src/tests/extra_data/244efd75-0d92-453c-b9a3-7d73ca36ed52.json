@@ -1,0 +1,429 @@
+{
+    "description": "Deploy Association to link Windows virtual machines to the specified Data Collection Rule or the specified Data Collection Endpoint. The list of locations and OS images are updated over time as support is increased.",
+    "displayName": "Configure Windows Virtual Machines to be associated with a Data Collection Rule or a Data Collection Endpoint",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/244efd75-0d92-453c-b9a3-7d73ca36ed52",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "3.3.1"
+    },
+    "mode": "Indexed",
+    "name": "244efd75-0d92-453c-b9a3-7d73ca36ed52",
+    "parameters": {
+        "dcrResourceId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "assignPermissions": true,
+                "description": "Resource Id of the Data Collection Rule or the Data Collection Endpoint to be applied on the Linux machines in scope.",
+                "displayName": "Data Collection Rule Resource Id or Data Collection Endpoint Resource Id",
+                "portalReview": "true",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "listOfWindowsImageIdToInclude": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Example values: '/subscriptions/<subscriptionId>/resourceGroups/YourResourceGroup/providers/Microsoft.Compute/images/ContosoStdImage'",
+                "displayName": "Optional: List of virtual machine images that have supported Windows OS to add to scope",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "resourceType": {
+            "allowedValues": [
+                "Microsoft.Insights/dataCollectionRules",
+                "Microsoft.Insights/dataCollectionEndpoints"
+            ],
+            "defaultValue": "Microsoft.Insights/dataCollectionRules",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "Either a Data Collection Rule (DCR) or a Data Collection Endpoint (DCE)",
+                "displayName": "Resource Type",
+                "portalReview": "true",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "scopeToSupportedImages": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": true,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "If set to true, the policy will apply only to virtual machines with AMA-supported operating systems. Otherwise, the policy will apply to all virtual machine resources in the assignment scope. For supported operating systems, see https://aka.ms/AMAOverview.",
+                "displayName": "Scope Policy to Azure Monitor Agent-Supported Operating Systems",
+                "strongType": null
+            },
+            "type": "Boolean"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "field": "location",
+                    "in": [
+                        "australiacentral",
+                        "australiacentral2",
+                        "australiaeast",
+                        "australiasoutheast",
+                        "brazilsouth",
+                        "brazilsoutheast",
+                        "canadacentral",
+                        "canadaeast",
+                        "centralindia",
+                        "centralus",
+                        "centraluseuap",
+                        "eastasia",
+                        "eastus",
+                        "eastus2",
+                        "eastus2euap",
+                        "francecentral",
+                        "francesouth",
+                        "germanynorth",
+                        "germanywestcentral",
+                        "israelcentral",
+                        "italynorth",
+                        "japaneast",
+                        "japanwest",
+                        "jioindiacentral",
+                        "jioindiawest",
+                        "koreacentral",
+                        "koreasouth",
+                        "malaysiasouth",
+                        "mexicocentral",
+                        "northcentralus",
+                        "northeurope",
+                        "norwayeast",
+                        "norwaywest",
+                        "polandcentral",
+                        "qatarcentral",
+                        "southafricanorth",
+                        "southafricawest",
+                        "southcentralus",
+                        "southeastasia",
+                        "southindia",
+                        "spaincentral",
+                        "swedencentral",
+                        "swedensouth",
+                        "switzerlandnorth",
+                        "switzerlandwest",
+                        "taiwannorth",
+                        "taiwannorthwest",
+                        "uaecentral",
+                        "uaenorth",
+                        "uksouth",
+                        "ukwest",
+                        "westcentralus",
+                        "westeurope",
+                        "westindia",
+                        "westus",
+                        "westus2",
+                        "westus3"
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "equals": false,
+                                    "value": "[parameters('scopeToSupportedImages')]"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                    "like": "Windows*"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.Compute/imageId",
+                            "in": "[parameters('listOfWindowsImageIdToInclude')]"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServer",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2008-R2-SP1*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2012-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2016-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2019-*"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSku",
+                                            "like": "2022-*"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServerSemiAnnual",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSKU",
+                                    "in": [
+                                        "Datacenter-Core-1709-smalldisk",
+                                        "Datacenter-Core-1709-with-Containers-smalldisk",
+                                        "Datacenter-Core-1803-with-Containers-smalldisk",
+                                        "Datacenter-Core-1809-with-Containers-smalldisk"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsServerHPCPack",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "WindowsServerHPCPack",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftSQLServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2016"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2016-BYOL"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2012R2"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "*-WS2012R2-BYOL"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftRServer",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "MLServer-WS2016",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftVisualStudio",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "in": [
+                                        "VisualStudio",
+                                        "Windows"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftDynamicsAX",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "Dynamics",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "Pre-Req-AX7-Onebox-U8",
+                                    "field": "Microsoft.Compute/imageSKU"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoft-ads",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "windows-data-science-vm",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "MicrosoftWindowsDesktop",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageOffer",
+                                    "like": "Windows-1*"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "dcrResourceId": {
+                                "value": "[parameters('dcrResourceId')]"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "resourceName": {
+                                "value": "[field('name')]"
+                            },
+                            "resourceType": {
+                                "value": "[parameters('resourceType')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "dcrResourceId": {
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "resourceName": {
+                                    "type": "string"
+                                },
+                                "resourceType": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-04-01",
+                                    "condition": "[equals(parameters('resourceType'), variables('dcrResourceType'))]",
+                                    "name": "[variables('dcrAssociationName')]",
+                                    "properties": {
+                                        "dataCollectionRuleId": "[parameters('dcrResourceId')]"
+                                    },
+                                    "scope": "[concat('Microsoft.Compute/virtualMachines/', parameters('resourceName'))]",
+                                    "type": "Microsoft.Insights/dataCollectionRuleAssociations"
+                                },
+                                {
+                                    "apiVersion": "2021-04-01",
+                                    "condition": "[equals(parameters('resourceType'), variables('dceResourceType'))]",
+                                    "name": "[variables('dceAssociationName')]",
+                                    "properties": {
+                                        "dataCollectionEndpointId": "[parameters('dcrResourceId')]"
+                                    },
+                                    "scope": "[concat('Microsoft.Compute/virtualMachines/', parameters('resourceName'))]",
+                                    "type": "Microsoft.Insights/dataCollectionRuleAssociations"
+                                }
+                            ],
+                            "variables": {
+                                "dceAssociationName": "configurationAccessEndpoint",
+                                "dceResourceType": "Microsoft.Insights/dataCollectionEndpoints",
+                                "dcrAssociationName": "[concat('assoc-', uniqueString(concat(parameters('resourceName'), parameters('dcrResourceId'))))]",
+                                "dcrResourceType": "Microsoft.Insights/dataCollectionRules"
+                            }
+                        }
+                    }
+                },
+                "evaluationDelay": "AfterProvisioning",
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "equals": "[parameters('dcrResourceId')]",
+                            "field": "Microsoft.Insights/dataCollectionRuleAssociations/dataCollectionRuleId"
+                        },
+                        {
+                            "equals": "[parameters('dcrResourceId')]",
+                            "field": "Microsoft.Insights/dataCollectionRuleAssociations/dataCollectionEndpointId"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa",
+                    "/providers/microsoft.authorization/roleDefinitions/92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+                ],
+                "type": "Microsoft.Insights/dataCollectionRuleAssociations"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

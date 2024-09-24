@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Services Acquisition control",
+    "displayName": "Microsoft Managed Control 1612 - Developer Security Architecture And Design",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a2037b3d-8b04-4171-8610-e6d4f1d08db5",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1612",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "a2037b3d-8b04-4171-8610-e6d4f1d08db5",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

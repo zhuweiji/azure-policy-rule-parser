@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Data Minimization and Retention control",
+    "displayName": "Microsoft Managed Control 1840 - Minimization of PII Used in Testing, Training, And Research | Risk Minimization Techniques",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3a02bf7a-8fb7-4c97-bd55-4a8592764cc8",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1840",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "3a02bf7a-8fb7-4c97-bd55-4a8592764cc8",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

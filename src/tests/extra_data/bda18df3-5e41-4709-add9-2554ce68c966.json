@@ -1,0 +1,49 @@
+{
+    "description": "It's recommended to enable all Advanced Threat Protection types on your SQL Managed Instance. Enabling all types protects against SQL injection, database vulnerabilities, and any other anomalous activities.",
+    "displayName": "[Deprecated]: Advanced Threat Protection types should be set to 'All' in SQL Managed Instance advanced data security settings",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/bda18df3-5e41-4709-add9-2554ce68c966",
+    "metadata": {
+        "category": "SQL",
+        "deprecated": true,
+        "version": "1.0.1-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "bda18df3-5e41-4709-add9-2554ce68c966",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Sql/managedInstances",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "",
+                    "field": "Microsoft.Sql/managedInstances/securityAlertPolicies/disabledAlerts[*]"
+                },
+                "name": "default",
+                "type": "Microsoft.Sql/managedInstances/securityAlertPolicies"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

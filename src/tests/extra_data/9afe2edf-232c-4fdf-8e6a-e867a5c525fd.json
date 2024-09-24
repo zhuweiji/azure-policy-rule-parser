@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this System and Services Acquisition control",
+    "displayName": "Microsoft Managed Control 1563 - Allocation Of Resources",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9afe2edf-232c-4fdf-8e6a-e867a5c525fd",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1563",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "9afe2edf-232c-4fdf-8e6a-e867a5c525fd",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

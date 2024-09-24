@@ -1,0 +1,68 @@
+{
+    "description": "Use of custom domains protects a API app from common attacks such as phishing and other DNS-related attacks.",
+    "displayName": "[Deprecated]: Audit API Apps that are not using custom domains",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/224da9fe-0d38-4e79-adb3-0a6e2af942ac",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "All",
+    "name": "224da9fe-0d38-4e79-adb3-0a6e2af942ac",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allof": [
+                {
+                    "equals": "microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "anyof": [
+                        {
+                            "equals": "api",
+                            "field": "kind"
+                        },
+                        {
+                            "equals": "apiApp",
+                            "field": "kind"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/complianceResults/resourceStatus",
+                    "in": [
+                        "OffByPolicy",
+                        "Healthy"
+                    ]
+                },
+                "name": "UsedCustomDomains",
+                "type": "Microsoft.Security/complianceResults"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

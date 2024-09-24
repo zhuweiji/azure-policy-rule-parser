@@ -1,0 +1,65 @@
+{
+    "description": "Enabling encryption at rest using a customer-managed key on your Azure Data Explorer cluster provides additional control over the key being used by the encryption at rest. This feature is oftentimes applicable to customers with special compliance requirements and requires a Key Vault to managing the keys.",
+    "displayName": "Azure Data Explorer encryption at rest should use a customer-managed key",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/81e74cea-30fd-40d5-802f-d72103c2aaaa",
+    "metadata": {
+        "category": "Azure Data Explorer",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "81e74cea-30fd-40d5-802f-d72103c2aaaa",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Kusto/Clusters",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Kusto/clusters/keyVaultProperties"
+                        },
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Kusto/clusters/keyVaultProperties.keyName"
+                        },
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Kusto/clusters/keyVaultProperties.keyVersion"
+                        },
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Kusto/clusters/keyVaultProperties.keyVaultUri"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

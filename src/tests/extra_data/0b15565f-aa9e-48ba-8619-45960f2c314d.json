@@ -1,0 +1,80 @@
+{
+    "description": "To ensure your subscription owners are notified when there is a potential security breach in their subscription, set email notifications to subscription owners for high severity alerts in Security Center.",
+    "displayName": "Email notification to subscription owner for high severity alerts should be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0b15565f-aa9e-48ba-8619-45960f2c314d",
+    "metadata": {
+        "category": "Security Center",
+        "version": "2.1.0"
+    },
+    "mode": "All",
+    "name": "0b15565f-aa9e-48ba-8619-45960f2c314d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "not": {
+                        "allOf": [
+                            {
+                                "equals": "Off",
+                                "field": "Microsoft.Security/securityContacts/alertsToAdmins"
+                            },
+                            {
+                                "anyOf": [
+                                    {
+                                        "equals": "High",
+                                        "field": "Microsoft.Security/securityContacts/alertNotifications.minimalSeverity"
+                                    },
+                                    {
+                                        "count": {
+                                            "field": "Microsoft.Security/securityContacts/notificationsSources[*]",
+                                            "where": {
+                                                "allOf": [
+                                                    {
+                                                        "equals": "Alert",
+                                                        "field": "Microsoft.Security/securityContacts/notificationsSources[*].sourceType"
+                                                    },
+                                                    {
+                                                        "equals": "High",
+                                                        "field": "Microsoft.Security/securityContacts/notificationsSources[*].Alert.minimalSeverity"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "equals": 1
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "existenceScope": "subscription",
+                "type": "Microsoft.Security/securityContacts"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

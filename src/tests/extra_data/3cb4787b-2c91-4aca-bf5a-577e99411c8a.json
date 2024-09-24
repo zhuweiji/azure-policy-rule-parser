@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Data Quality and Integrity control",
+    "displayName": "Microsoft Managed Control 1825 - Data Quality | Validate PII",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3cb4787b-2c91-4aca-bf5a-577e99411c8a",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1825",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "3cb4787b-2c91-4aca-bf5a-577e99411c8a",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

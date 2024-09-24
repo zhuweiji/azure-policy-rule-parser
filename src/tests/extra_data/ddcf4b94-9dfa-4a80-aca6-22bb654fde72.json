@@ -1,0 +1,67 @@
+{
+    "description": "Disallow the creation of SMB Volumes without SMB3 encryption to ensure data integrity and data privacy.",
+    "displayName": "Azure NetApp Files SMB Volumes should use SMB3 encryption",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ddcf4b94-9dfa-4a80-aca6-22bb654fde72",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "ddcf4b94-9dfa-4a80-aca6-22bb654fde72",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/protocolTypes[*]",
+                        "where": {
+                            "equals": "CIFS",
+                            "field": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/protocolTypes[*]"
+                        }
+                    },
+                    "greater": 0
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/smbEncryption"
+                        },
+                        {
+                            "equals": "false",
+                            "field": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/smbEncryption"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

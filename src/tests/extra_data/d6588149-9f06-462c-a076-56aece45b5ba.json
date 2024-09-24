@@ -1,0 +1,81 @@
+{
+    "description": "This policy follows the 'effect' if Encryption Settings are enabled for Backup vaults in the scope. Additionally, option to check if Backup Vault also has Infrastructure Encryption enabled. Learn more at https://aka.ms/az-backup-vault-encryption-at-rest-with-cmk. Please note that when 'Deny' effect is used, it would need you to enable Encryption Settings on the existing Backup Vaults in order to allow other update operations on the vault go through.",
+    "displayName": "[Preview]: Azure Backup Vaults should use customer-managed keys for encrypting backup data. Also an option to enforce Infra Encryption.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d6588149-9f06-462c-a076-56aece45b5ba",
+    "metadata": {
+        "category": "Backup",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "d6588149-9f06-462c-a076-56aece45b5ba",
+    "parameters": {
+        "checkInfrastructureEncryption": {
+            "allowedValues": [
+                true,
+                false
+            ],
+            "defaultValue": false,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Check if Infrastructure Encryption is enabled on Backup Vaults. For more details refer to https://aka.ms/az-backup-vault-infra-encryption-at-rest-with-cmk.",
+                "displayName": "Check if Infrastructure Encryption is enabled on Backup vaults.",
+                "strongType": null
+            },
+            "type": "Boolean"
+        },
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DataProtection/backupvaults",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.DataProtection/backupVaults/securitySettings.encryptionSettings.state",
+                            "notEquals": "Enabled"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": true,
+                                    "value": "[parameters('checkInfrastructureEncryption')]"
+                                },
+                                {
+                                    "field": "Microsoft.DataProtection/backupVaults/securitySettings.encryptionSettings.infrastructureEncryption",
+                                    "notEquals": "Enabled"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

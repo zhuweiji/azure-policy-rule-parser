@@ -1,0 +1,54 @@
+{
+    "description": "Private endpoints lets administrator connect virtual networks to Azure services without a public IP address at the source or destination. By mapping private endpoints to volume group, administrator can reduce data leakage risks",
+    "displayName": "ElasticSan Volume Group should use private endpoints",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1abc5157-29f8-4dbd-b28e-ff99526cb8b7",
+    "metadata": {
+        "category": "ElasticSan",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "1abc5157-29f8-4dbd-b28e-ff99526cb8b7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ElasticSan/elasticSans/volumeGroups",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.ElasticSan/elasticSans/volumeGroups/privateEndpointConnections[*]",
+                        "where": {
+                            "equals": "Approved",
+                            "field": "Microsoft.ElasticSan/elasticSans/volumeGroups/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

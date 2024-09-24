@@ -1,0 +1,129 @@
+{
+    "description": "Linux Arc-enabled machines should be monitored and secured through the deployed Azure Monitor Agent. The Azure Monitor Agent collects telemetry data from the guest OS. This policy will audit Arc-enabled machines in supported regions. Learn more: https://aka.ms/AMAOverview.",
+    "displayName": "Linux Arc-enabled machines should have Azure Monitor Agent installed",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f17d891d-ff20-46f2-bad3-9e0a5403a4d3",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.2.0"
+    },
+    "mode": "Indexed",
+    "name": "f17d891d-ff20-46f2-bad3-9e0a5403a4d3",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "equals": "linux",
+                    "field": "Microsoft.HybridCompute/machines/osName"
+                },
+                {
+                    "field": "location",
+                    "in": [
+                        "australiacentral",
+                        "australiacentral2",
+                        "australiaeast",
+                        "australiasoutheast",
+                        "brazilsouth",
+                        "brazilsoutheast",
+                        "canadacentral",
+                        "canadaeast",
+                        "centralindia",
+                        "centralus",
+                        "centraluseuap",
+                        "eastasia",
+                        "eastus",
+                        "eastus2",
+                        "eastus2euap",
+                        "francecentral",
+                        "francesouth",
+                        "germanynorth",
+                        "germanywestcentral",
+                        "israelcentral",
+                        "italynorth",
+                        "japaneast",
+                        "japanwest",
+                        "jioindiacentral",
+                        "jioindiawest",
+                        "koreacentral",
+                        "koreasouth",
+                        "malaysiasouth",
+                        "mexicocentral",
+                        "northcentralus",
+                        "northeurope",
+                        "norwayeast",
+                        "norwaywest",
+                        "polandcentral",
+                        "qatarcentral",
+                        "southafricanorth",
+                        "southafricawest",
+                        "southcentralus",
+                        "southeastasia",
+                        "southindia",
+                        "spaincentral",
+                        "swedencentral",
+                        "swedensouth",
+                        "switzerlandnorth",
+                        "switzerlandwest",
+                        "taiwannorth",
+                        "taiwannorthwest",
+                        "uaecentral",
+                        "uaenorth",
+                        "uksouth",
+                        "ukwest",
+                        "westcentralus",
+                        "westeurope",
+                        "westindia",
+                        "westus",
+                        "westus2",
+                        "westus3"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "AzureMonitorLinuxAgent",
+                            "field": "Microsoft.HybridCompute/machines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Monitor",
+                            "field": "Microsoft.HybridCompute/machines/extensions/publisher"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.HybridCompute/machines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

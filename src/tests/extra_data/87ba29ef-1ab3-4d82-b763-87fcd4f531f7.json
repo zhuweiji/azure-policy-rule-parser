@@ -1,0 +1,52 @@
+{
+    "description": "Use customer-managed keys when you want to securely store any metadata and private data assets of your Stream Analytics jobs in your storage account. This gives you total control over how your Stream Analytics data is encrypted.",
+    "displayName": "Azure Stream Analytics jobs should use customer-managed keys to encrypt data",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/87ba29ef-1ab3-4d82-b763-87fcd4f531f7",
+    "metadata": {
+        "category": "Stream Analytics",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "87ba29ef-1ab3-4d82-b763-87fcd4f531f7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "SystemAccount",
+                    "field": "Microsoft.StreamAnalytics/streamingJobs/contentStoragePolicy"
+                },
+                {
+                    "equals": "Microsoft.StreamAnalytics/streamingJobs",
+                    "field": "type"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

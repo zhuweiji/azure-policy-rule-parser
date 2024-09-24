@@ -1,0 +1,105 @@
+{
+    "description": "PHP cannot be used with Function apps.",
+    "displayName": "[Deprecated]: Ensure that 'PHP version' is the latest, if used as a part of the Function app",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ab965db2-d2bf-4b64-8b39-c38ec8179461",
+    "metadata": {
+        "category": "App Service",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "ab965db2-d2bf-4b64-8b39-c38ec8179461",
+    "parameters": {
+        "PHPLatestVersion": {
+            "allowedValues": null,
+            "defaultValue": "7.3",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Latest supported PHP version for App Services",
+                "displayName": "Latest PHP version",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "functionapp*"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "field": "Microsoft.Web/sites/config/web.linuxFxVersion",
+                                    "notContains": "PHP"
+                                },
+                                {
+                                    "equals": "",
+                                    "field": "Microsoft.Web/sites/config/web.phpVersion"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "[concat('PHP|', parameters('PHPLatestVersion'))]",
+                                    "field": "Microsoft.Web/sites/config/web.linuxFxVersion"
+                                },
+                                {
+                                    "equals": "",
+                                    "field": "Microsoft.Web/sites/config/web.phpVersion"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "",
+                                    "field": "Microsoft.Web/sites/config/web.linuxFxVersion"
+                                },
+                                {
+                                    "equals": "[parameters('PHPLatestVersion')]",
+                                    "field": "Microsoft.Web/sites/config/web.phpVersion"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

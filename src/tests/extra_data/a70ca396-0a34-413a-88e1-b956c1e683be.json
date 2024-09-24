@@ -1,0 +1,66 @@
+{
+    "description": "This policy audits any Windows/Linux virtual machines if the Log Analytics extension is not installed.",
+    "displayName": "Virtual machines should have the Log Analytics extension installed",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a70ca396-0a34-413a-88e1-b956c1e683be",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "a70ca396-0a34-413a-88e1-b956c1e683be",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Compute/virtualMachines",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.EnterpriseCloud.Monitoring",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/publisher"
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/extensions/type",
+                            "in": [
+                                "MicrosoftMonitoringAgent",
+                                "OmsAgentForLinux"
+                            ]
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/provisioningState"
+                        },
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/settings.workspaceId"
+                        }
+                    ]
+                },
+                "type": "Microsoft.Compute/virtualMachines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,57 @@
+{
+    "description": "Ensure that an email address is provided for the 'Send alerts to' field in the advanced data security settings. This email address receives alert notifications when anomalous activities are detected on SQL Managed Instance.",
+    "displayName": "[Deprecated]: Advanced data security settings for SQL Managed Instance should contain an email address for security alerts",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3965c43d-b5f4-482e-b74a-d89ee0e0b3a8",
+    "metadata": {
+        "category": "SQL",
+        "deprecated": true,
+        "version": "1.0.1-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "3965c43d-b5f4-482e-b74a-d89ee0e0b3a8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Sql/managedInstances",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "field": "Microsoft.Sql/managedInstances/securityAlertPolicies/emailAddresses[*]",
+                            "notEquals": ""
+                        },
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Sql/managedInstances/securityAlertPolicies/emailAddresses[*]"
+                        }
+                    ]
+                },
+                "name": "default",
+                "type": "Microsoft.Sql/managedInstances/securityAlertPolicies"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

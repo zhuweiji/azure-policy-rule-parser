@@ -1,0 +1,57 @@
+{
+    "description": "To improve the API security, API Management should validate the backend server certificate for all API calls. Enable SSL certificate thumbprint and name validation.",
+    "displayName": "API Management calls to API backends should not bypass certificate thumbprint or name validation",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/92bb331d-ac71-416a-8c91-02f2cb734ce4",
+    "metadata": {
+        "category": "API Management",
+        "version": "1.0.2"
+    },
+    "mode": "All",
+    "name": "92bb331d-ac71-416a-8c91-02f2cb734ce4",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ApiManagement/service/backends",
+                    "field": "type"
+                },
+                {
+                    "anyof": [
+                        {
+                            "equals": false,
+                            "field": "Microsoft.ApiManagement/service/backends/tls.validateCertificateChain"
+                        },
+                        {
+                            "equals": false,
+                            "field": "Microsoft.ApiManagement/service/backends/tls.validateCertificateName"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

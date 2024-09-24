@@ -1,0 +1,60 @@
+{
+    "description": "Enable FTPS enforcement for enhanced security. We recommend all customers who are still using API Apps to implement the built-in policy called 'App Service apps should require FTPS only', which is scoped to include API apps in addition to Web Apps.",
+    "displayName": "[Deprecated]: FTPS only should be required in your API App",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9a1b8c48-453a-4044-86c3-d8bfd823e4f5",
+    "metadata": {
+        "category": "App Service",
+        "deprecated": true,
+        "version": "2.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "9a1b8c48-453a-4044-86c3-d8bfd823e4f5",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "*api"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Web/sites/config/ftpsState",
+                    "in": [
+                        "FtpsOnly",
+                        "Disabled"
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

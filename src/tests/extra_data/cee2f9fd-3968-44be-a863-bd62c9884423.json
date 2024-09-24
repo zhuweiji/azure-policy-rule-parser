@@ -1,0 +1,48 @@
+{
+    "description": "Azure Database for PostgreSQL flexible servers allows you to choose the redundancy option for your database server. It can be set to a geo-redundant backup storage in which the data is not only stored within the region in which your server is hosted, but is also replicated to a paired region to provide recovery option in case of a region failure. Configuring geo-redundant storage for backup is only allowed during server create.",
+    "displayName": "Geo-redundant backup should be enabled for Azure Database for PostgreSQL flexible servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/cee2f9fd-3968-44be-a863-bd62c9884423",
+    "metadata": {
+        "category": "PostgreSQL",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "cee2f9fd-3968-44be-a863-bd62c9884423",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DBforPostgreSQL/flexibleServers",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.DBforPostgreSQL/flexibleServers/backup.geoRedundantBackup",
+                    "notEquals": "Enabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

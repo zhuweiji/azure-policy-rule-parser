@@ -1,0 +1,53 @@
+{
+    "description": "Audit enabling of diagnostic logs. This enables you to recreate activity trails to use for investigation purposes; when a security incident occurs or when your network is compromised",
+    "displayName": "Azure Web PubSub Service should enable diagnostic logs",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ee8a7be2-e9b5-47b9-9d37-d9b141ea78a4",
+    "metadata": {
+        "category": "Web PubSub",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ee8a7be2-e9b5-47b9-9d37-d9b141ea78a4",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.SignalRService/webPubSub",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "count": {
+                        "field": "Microsoft.Insights/diagnosticSettings/logs[*]",
+                        "where": {
+                            "equals": "true",
+                            "field": "Microsoft.Insights/diagnosticSettings/logs.enabled"
+                        }
+                    },
+                    "greaterOrEquals": 1
+                },
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

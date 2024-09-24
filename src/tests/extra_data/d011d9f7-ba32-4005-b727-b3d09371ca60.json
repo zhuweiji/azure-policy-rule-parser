@@ -1,0 +1,45 @@
+{
+    "description": "This policy enforces unique ingress hostnames across namespaces in an Azure Kubernetes Service cluster. This policy is deprecated, please visit https://aka.ms/kubepolicydoc for instructions on using new Kubernetes policies.",
+    "displayName": "[Deprecated]: Enforce unique ingress hostnames across namespaces in AKS",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d011d9f7-ba32-4005-b727-b3d09371ca60",
+    "metadata": {
+        "category": "Kubernetes service",
+        "deprecated": true,
+        "version": "1.0.1-deprecated"
+    },
+    "mode": "Microsoft.ContainerService.Data",
+    "name": "d011d9f7-ba32-4005-b727-b3d09371ca60",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "EnforceRegoPolicy",
+                "Disabled"
+            ],
+            "defaultValue": "EnforceRegoPolicy",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ContainerService/managedClusters",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "policy": "https://raw.githubusercontent.com/Azure/azure-policy/master/built-in-references/KubernetesService/ingress-hostnames-conflict/limited-preview/gatekeeperpolicy.rego",
+                "policyId": "UniqueIngressHostnames"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

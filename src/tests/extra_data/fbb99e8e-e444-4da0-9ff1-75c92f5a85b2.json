@@ -1,0 +1,68 @@
+{
+    "description": "This policy audits if the Storage account containing the container with activity logs is encrypted with BYOK. The policy works only if the storage account lies on the same subscription as activity logs by design. More information on Azure Storage encryption at rest can be found here https://aka.ms/azurestoragebyok. ",
+    "displayName": "Storage account containing the container with activity logs must be encrypted with BYOK",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fbb99e8e-e444-4da0-9ff1-75c92f5a85b2",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "fbb99e8e-e444-4da0-9ff1-75c92f5a85b2",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Insights/logProfiles",
+                    "field": "type"
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.Insights/logProfiles/storageAccountId"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "true",
+                            "value": "[contains(field('Microsoft.Insights/logProfiles/storageAccountId'), subscription().Id)]"
+                        },
+                        {
+                            "equals": "[last(split(field('Microsoft.Insights/logProfiles/storageAccountId'),'/'))]",
+                            "field": "name"
+                        },
+                        {
+                            "equals": "Microsoft.Keyvault",
+                            "field": "Microsoft.Storage/storageAccounts/encryption.keySource"
+                        }
+                    ]
+                },
+                "existenceScope": "subscription",
+                "type": "Microsoft.Storage/storageAccounts"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

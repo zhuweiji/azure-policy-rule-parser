@@ -1,0 +1,135 @@
+{
+    "description": "This policy deploys the Log Analytics Extension on Ubuntu VMs, and connects to the selected Log Analytics workspace",
+    "displayName": "[Deprecated]: Deploy default Log Analytics Extension for Ubuntu VMs",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3d8640fc-63f6-4734-8dcb-cfd3d8c78f38",
+    "metadata": {
+        "category": "Compute",
+        "deprecated": true,
+        "version": "1.0.1-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "3d8640fc-63f6-4734-8dcb-cfd3d8c78f38",
+    "parameters": {
+        "logAnalytics": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Select Log Analytics workspace from dropdown list. If this workspace is outside of the scope of the assignment you must manually grant 'Log Analytics Contributor' permissions (or similar) to the policy assignment's principal ID.",
+                "displayName": "Log Analytics workspace",
+                "strongType": "omsWorkspace"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "equals": "Canonical",
+                    "field": "Microsoft.Compute/imagePublisher"
+                },
+                {
+                    "equals": "UbuntuServer",
+                    "field": "Microsoft.Compute/imageOffer"
+                },
+                {
+                    "field": "Microsoft.Compute/imageSKU",
+                    "in": [
+                        "18.04-LTS",
+                        "16.04-LTS",
+                        "16.04.0-LTS",
+                        "14.04.2-LTS",
+                        "12.04.5-LTS"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "logAnalytics": {
+                                "value": "[parameters('logAnalytics')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {
+                                "policy": {
+                                    "type": "string",
+                                    "value": "[concat('Enabled monitoring for Linux VM', ': ', parameters('vmName'))]"
+                                }
+                            },
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "logAnalytics": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2017-12-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'),'/omsPolicy')]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "protectedSettings": {
+                                            "workspaceKey": "[listKeys(parameters('logAnalytics'), '2015-03-20').primarySharedKey]"
+                                        },
+                                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                                        "settings": {
+                                            "workspaceId": "[reference(parameters('logAnalytics'), '2015-03-20').customerId]"
+                                        },
+                                        "type": "OmsAgentForLinux",
+                                        "typeHandlerVersion": "1.4"
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachines/extensions"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "OmsAgentForLinux",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.EnterpriseCloud.Monitoring",
+                            "field": "Microsoft.Compute/virtualMachines/extensions/publisher"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+                ],
+                "type": "Microsoft.Compute/virtualMachines/extensions"
+            },
+            "effect": "deployIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

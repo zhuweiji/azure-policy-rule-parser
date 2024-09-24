@@ -1,0 +1,300 @@
+{
+    "description": "Protect your Azure Arc-enabled Windows machines with Microsoft Defender for Cloud capabilities, by installing Log Analytics agents that send data to a default Log Analytics workspace created by Microsoft Defender for Cloud.",
+    "displayName": "[Preview]: Configure Azure Arc-enabled Windows machines with Log Analytics agents connected to default Log Analytics workspace",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/594c1276-f44f-482d-9910-71fac2ce5ae0",
+    "metadata": {
+        "category": "Monitoring",
+        "preview": true,
+        "version": "1.1.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "594c1276-f44f-482d-9910-71fac2ce5ae0",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "equals": "windows",
+                    "field": "Microsoft.HybridCompute/machines/osName"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "eastus",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            },
+                            "vmResourceGroup": {
+                                "value": "[resourceGroup().name]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                },
+                                "vmResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "location": "[variables('defaultRGLocation')]",
+                                    "name": "[variables('defaultRGName')]",
+                                    "type": "Microsoft.Resources/resourceGroups"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Resources/resourceGroups', variables('defaultRGName'))]"
+                                    ],
+                                    "name": "[variables('deployDefaultAscResourceGroup')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "defaultRGLocation": {
+                                                "value": "[variables('defaultRGLocation')]"
+                                            },
+                                            "workspaceName": {
+                                                "value": "[variables('workspaceName')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "defaultRGLocation": {
+                                                    "type": "string"
+                                                },
+                                                "workspaceName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2015-11-01-preview",
+                                                    "location": "[parameters('defaultRGLocation')]",
+                                                    "name": "[parameters('workspaceName')]",
+                                                    "properties": {
+                                                        "features": {
+                                                            "searchVersion": 1
+                                                        },
+                                                        "retentionInDays": 30,
+                                                        "sku": {
+                                                            "name": "pernode"
+                                                        }
+                                                    },
+                                                    "type": "Microsoft.OperationalInsights/workspaces"
+                                                },
+                                                {
+                                                    "apiVersion": "2015-11-01-preview",
+                                                    "dependsOn": [
+                                                        "[parameters('workspaceName')]"
+                                                    ],
+                                                    "location": "[parameters('defaultRGLocation')]",
+                                                    "name": "[variables('securityCenterFreeSolution').Name]",
+                                                    "plan": {
+                                                        "name": "[variables('securityCenterFreeSolution').Name]",
+                                                        "product": "[Concat('OMSGallery/', variables('securityCenterFreeSolution').GalleryName)]",
+                                                        "promotionCode": "",
+                                                        "publisher": "Microsoft"
+                                                    },
+                                                    "properties": {
+                                                        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                                                    },
+                                                    "type": "Microsoft.OperationsManagement/solutions"
+                                                }
+                                            ],
+                                            "variables": {
+                                                "securityCenterFreeSolution": {
+                                                    "GalleryName": "SecurityCenterFree",
+                                                    "Name": "[Concat('SecurityCenterFree', '(', parameters('workspaceName'), ')')]"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "resourceGroup": "[variables('defaultRGName')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "dependsOn": [
+                                        "[variables('deployDefaultAscResourceGroup')]"
+                                    ],
+                                    "name": "[variables('deployExtension')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "location": {
+                                                "value": "[parameters('location')]"
+                                            },
+                                            "vmName": {
+                                                "value": "[parameters('vmName')]"
+                                            },
+                                            "workspaceId": {
+                                                "value": "[concat(subscription().id,'/resourceGroups/', variables('defaultRGName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "vmName": {
+                                                    "type": "string"
+                                                },
+                                                "workspaceId": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2019-12-12",
+                                                    "location": "[parameters('location')]",
+                                                    "name": "[concat(parameters('vmName'), '/', variables('vmExtensionName'))]",
+                                                    "properties": {
+                                                        "autoUpgradeMinorVersion": true,
+                                                        "protectedSettings": {
+                                                            "workspaceKey": "[listKeys(parameters('workspaceId'), '2015-03-20').primarySharedKey]"
+                                                        },
+                                                        "publisher": "[variables('vmExtensionPublisher')]",
+                                                        "settings": {
+                                                            "stopOnMultipleConnections": "true",
+                                                            "workspaceId": "[reference(parameters('workspaceId'), '2015-03-20').customerId]"
+                                                        },
+                                                        "type": "[variables('vmExtensionType')]",
+                                                        "typeHandlerVersion": "[variables('vmExtensionTypeHandlerVersion')]"
+                                                    },
+                                                    "type": "Microsoft.HybridCompute/machines/extensions"
+                                                }
+                                            ],
+                                            "variables": {
+                                                "vmExtensionName": "MicrosoftMonitoringAgent",
+                                                "vmExtensionPublisher": "Microsoft.EnterpriseCloud.Monitoring",
+                                                "vmExtensionType": "MicrosoftMonitoringAgent",
+                                                "vmExtensionTypeHandlerVersion": "1.0"
+                                            }
+                                        }
+                                    },
+                                    "resourceGroup": "[parameters('vmResourceGroup')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "defaultRGLocation": "[parameters('location')]",
+                                "defaultRGName": "[concat('DefaultResourceGroup-', variables('locationCode'))]",
+                                "deployDefaultAscResourceGroup": "[concat('deployDefaultAscResourceGroup-', uniqueString(deployment().name))]",
+                                "deployExtension": "[concat('deployExtension-', uniqueString(deployment().name))]",
+                                "isContainLocation": "[contains(variables('locationLongNameToShortMap'),parameters('location'))]",
+                                "locationCode": "[if(lessOrEquals(length(variables('selectedLocation')),8),variables('selectedLocation'),concat(substring(variables('selectedLocation'),0,6),substring(variables('selectedLocation'),sub(length(variables('selectedLocation')),2),2)))]",
+                                "locationLongNameToShortMap": {
+                                    "australiacentral": "CAU",
+                                    "australiaeast": "EAU",
+                                    "australiasoutheast": "SEAU",
+                                    "brazilsouth": "CQ",
+                                    "canadacentral": "CCA",
+                                    "centralindia": "CIN",
+                                    "centralus": "CUS",
+                                    "eastasia": "EA",
+                                    "eastus": "EUS",
+                                    "eastus2": "EUS2",
+                                    "eastus2euap": "eus2p",
+                                    "francecentral": "PAR",
+                                    "germanywestcentral": "DEWC",
+                                    "japaneast": "EJP",
+                                    "koreacentral": "SE",
+                                    "northcentralus": "NCUS",
+                                    "northeurope": "NEU",
+                                    "norwayeast": "NOE",
+                                    "southafricanorth": "JNB",
+                                    "southcentralus": "SCUS",
+                                    "southeastasia": "SEA",
+                                    "swedencentral": "SEC",
+                                    "switzerlandnorth": "CHN",
+                                    "switzerlandwest": "CHW",
+                                    "uaenorth": "DXB",
+                                    "uksouth": "SUK",
+                                    "ukwest": "WUK",
+                                    "westcentralus": "WCUS",
+                                    "westeurope": "WEU",
+                                    "westus": "WUS",
+                                    "westus2": "WUS2"
+                                },
+                                "selectedLocation": "[if(variables('isContainLocation'),variables('locationLongNameToShortMap')[parameters('location')],parameters('location'))]",
+                                "subscriptionId": "[subscription().subscriptionId]",
+                                "workspaceName": "[concat('DefaultWorkspace-', variables('subscriptionId'),'-', variables('locationCode'))]"
+                            }
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "MicrosoftMonitoringAgent",
+                            "field": "Microsoft.HybridCompute/machines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.EnterpriseCloud.Monitoring",
+                            "field": "Microsoft.HybridCompute/machines/extensions/publisher"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.HybridCompute/machines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

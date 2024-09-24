@@ -1,0 +1,49 @@
+{
+    "description": "Disabling public network access improves security by ensuring that the resource isn't exposed on the public internet. You can limit exposure of your Automation account resources by creating private endpoints instead. Learn more at: https://docs.microsoft.com/azure/automation/how-to/private-link-security.",
+    "displayName": "Automation accounts should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/955a914f-bf86-4f0e-acd5-e0766b0efcb6",
+    "metadata": {
+        "category": "Automation",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "955a914f-bf86-4f0e-acd5-e0766b0efcb6",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Automation/automationAccounts",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Automation/automationAccounts/publicNetworkAccess",
+                    "notEquals": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

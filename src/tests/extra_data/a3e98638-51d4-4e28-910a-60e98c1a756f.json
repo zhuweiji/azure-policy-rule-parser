@@ -1,0 +1,44 @@
+{
+    "description": "CMA_C1108 - Configure Azure Audit capabilities",
+    "displayName": "Configure Azure Audit capabilities",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a3e98638-51d4-4e28-910a-60e98c1a756f",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_C1108",
+        "category": "Regulatory Compliance",
+        "version": "1.1.1"
+    },
+    "mode": "All",
+    "name": "a3e98638-51d4-4e28-910a-60e98c1a756f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

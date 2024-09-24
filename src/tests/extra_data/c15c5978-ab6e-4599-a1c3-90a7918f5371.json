@@ -1,0 +1,429 @@
+{
+    "description": "This policy is deprecated as part of Microsoft Defender for Cloud updated strategy. As part of this strategy, Azure Monitor agent is no longer required to receive Defender for Servers security features, but is required for Defender for SQL Server on machines. For more information visit: https://aka.ms/MdcAgentStrategy. Configure machines to create the Microsoft Defender for Cloud user-defined pipeline using Azure Monitor Agent.",
+    "displayName": "[Deprecated]: Configure machines to create the Microsoft Defender for Cloud user-defined pipeline using Azure Monitor Agent",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c15c5978-ab6e-4599-a1c3-90a7918f5371",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "1.2.1-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "c15c5978-ab6e-4599-a1c3-90a7918f5371",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "userWorkspaceResourceId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Select the Log Analytics workspace to which the virtual machines in scope will send their logs. If this workspace is outside of the scope of the assignment you must manually grant 'Log Analytics Contributor' permissions (or similar) to the policy assignment's principal ID.",
+                "displayName": "Workspace Resource Id",
+                "strongType": "omsWorkspace"
+            },
+            "type": "String"
+        },
+        "workspaceRegion": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Region of the Workspace to which the virtual machines in scope will send their logs. Needed to create the Data Collection Rule in the same region",
+                "displayName": "Workspace region",
+                "strongType": "location"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "field": "location",
+                    "in": [
+                        "australiacentral",
+                        "australiaeast",
+                        "australiasoutheast",
+                        "brazilsouth",
+                        "canadacentral",
+                        "canadaeast",
+                        "centralindia",
+                        "centralus",
+                        "eastasia",
+                        "eastus2euap",
+                        "eastus",
+                        "eastus2",
+                        "francecentral",
+                        "germanywestcentral",
+                        "japaneast",
+                        "japanwest",
+                        "jioindiawest",
+                        "koreacentral",
+                        "koreasouth",
+                        "northcentralus",
+                        "northeurope",
+                        "norwayeast",
+                        "southafricanorth",
+                        "southcentralus",
+                        "southeastasia",
+                        "southindia",
+                        "switzerlandnorth",
+                        "uaenorth",
+                        "uksouth",
+                        "ukwest",
+                        "westcentralus",
+                        "westeurope",
+                        "westindia",
+                        "westus",
+                        "westus2"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "eastus",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "resourceGroup": {
+                                "value": "[resourceGroup().name]"
+                            },
+                            "userWorkspaceResourceId": {
+                                "value": "[parameters('userWorkspaceResourceId')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            },
+                            "workspaceRegion": {
+                                "value": "[parameters('workspaceRegion')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "resourceGroup": {
+                                    "type": "string"
+                                },
+                                "userWorkspaceResourceId": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                },
+                                "workspaceRegion": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2019-05-01",
+                                    "location": "[variables('defaultRGLocation')]",
+                                    "name": "[variables('defaultRGName')]",
+                                    "type": "Microsoft.Resources/resourceGroups"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Resources/resourceGroups', variables('defaultRGName'))]"
+                                    ],
+                                    "name": "[variables('deployDefaultAscResourceGroup')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "dcrId": {
+                                                "value": "[variables('dcrId')]"
+                                            },
+                                            "dcrName": {
+                                                "value": "[variables('dcrName')]"
+                                            },
+                                            "defaultRGLocation": {
+                                                "value": "[variables('defaultRGLocation')]"
+                                            },
+                                            "workspaceResourceId": {
+                                                "value": "[variables('workspaceResourceId')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "dcrId": {
+                                                    "type": "string"
+                                                },
+                                                "dcrName": {
+                                                    "type": "string"
+                                                },
+                                                "defaultRGLocation": {
+                                                    "type": "string"
+                                                },
+                                                "workspaceResourceId": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2021-04-01",
+                                                    "location": "[parameters('defaultRGLocation')]",
+                                                    "name": "[parameters('dcrName')]",
+                                                    "properties": {
+                                                        "dataFlows": [
+                                                            {
+                                                                "destinations": [
+                                                                    "LogAnalyticsDest"
+                                                                ],
+                                                                "streams": [
+                                                                    "Microsoft-OperationLog",
+                                                                    "Microsoft-ProtectionStatus"
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "dataSources": {
+                                                            "extensions": [
+                                                                {
+                                                                    "extensionName": "AzureSecurityLinuxAgent",
+                                                                    "extensionSettings": {
+                                                                        "scanners": [
+                                                                            {
+                                                                                "frequency": "PT1H",
+                                                                                "name": "heartbeat"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "PT8H",
+                                                                                "name": "time"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "PT8H",
+                                                                                "name": "antimalware"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "P1D",
+                                                                                "name": "codeintegrity"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "PT1H",
+                                                                                "name": "processinvestigator"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "P1D",
+                                                                                "name": "baseline"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "P1D",
+                                                                                "name": "docker"
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    "name": "AscLinuxDataSource",
+                                                                    "streams": [
+                                                                        "Microsoft-OperationLog",
+                                                                        "Microsoft-ProtectionStatus"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "extensionName": "AzureSecurityWindowsAgent",
+                                                                    "extensionSettings": {
+                                                                        "scanners": [
+                                                                            {
+                                                                                "frequency": "PT1H",
+                                                                                "name": "heartbeat"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "P1D",
+                                                                                "name": "baseline"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "P1D",
+                                                                                "name": "antimalware"
+                                                                            },
+                                                                            {
+                                                                                "frequency": "PT1H",
+                                                                                "name": "processinvestigator"
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    "name": "AsaWindowsDataSource",
+                                                                    "streams": [
+                                                                        "Microsoft-OperationLog",
+                                                                        "Microsoft-ProtectionStatus"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        "description": "Data collection rule for Microsoft Defender for Cloud. Deleting this rule will break the detection of security vulnerabilities.",
+                                                        "destinations": {
+                                                            "logAnalytics": [
+                                                                {
+                                                                    "name": "LogAnalyticsDest",
+                                                                    "workspaceResourceId": "[parameters('workspaceResourceId')]"
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    "type": "Microsoft.Insights/dataCollectionRules"
+                                                }
+                                            ],
+                                            "variables": {}
+                                        }
+                                    },
+                                    "resourceGroup": "[variables('defaultRGName')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                },
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "dependsOn": [
+                                        "[variables('deployDefaultAscResourceGroup')]"
+                                    ],
+                                    "name": "[variables('deployDataCollectionRulesAssociation')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "dcrId": {
+                                                "value": "[variables('dcrId')]"
+                                            },
+                                            "dcraName": {
+                                                "value": "[variables('dcraName')]"
+                                            },
+                                            "vmName": {
+                                                "value": "[parameters('vmName')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "dcrId": {
+                                                    "type": "string"
+                                                },
+                                                "dcraName": {
+                                                    "type": "string"
+                                                },
+                                                "vmName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2021-04-01",
+                                                    "name": "[parameters('dcraName')]",
+                                                    "properties": {
+                                                        "dataCollectionRuleId": "[parameters('dcrId')]",
+                                                        "description": "Association of data collection rule for Microsoft Defender for Cloud. Deleting this association will break the detection of security vulnerabilities for this virtual machine."
+                                                    },
+                                                    "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations"
+                                                }
+                                            ],
+                                            "variables": {}
+                                        }
+                                    },
+                                    "resourceGroup": "[parameters('resourceGroup')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "dcrId": "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('defaultRGName'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dcrName'))]",
+                                "dcrName": "[concat('Microsoft-Security-', parameters('workspaceRegion'), '-dcr')]",
+                                "dcraName": "[concat(parameters('vmName'),'/Microsoft.Insights/Security-RulesAssociation')]",
+                                "defaultRGLocation": "[parameters('workspaceRegion')]",
+                                "defaultRGName": "[concat('DefaultResourceGroup-', variables('locationCode'))]",
+                                "deployDataCollectionRulesAssociation": "[concat('deployDataCollectionRulesAssociation-', uniqueString(deployment().name))]",
+                                "deployDefaultAscResourceGroup": "[concat('deployDefaultAscResourceGroup-', uniqueString(deployment().name))]",
+                                "locationCode": "[variables('locationLongNameToShortMap')[parameters('workspaceRegion')]]",
+                                "locationLongNameToShortMap": {
+                                    "australiacentral": "CAU",
+                                    "australiaeast": "EAU",
+                                    "australiasoutheast": "SEAU",
+                                    "brazilsouth": "CQ",
+                                    "canadacentral": "CCA",
+                                    "canadaeast": "CCA",
+                                    "centralindia": "CIN",
+                                    "centralus": "CUS",
+                                    "eastasia": "EA",
+                                    "eastus": "EUS",
+                                    "eastus2": "EUS2",
+                                    "eastus2euap": "eus2p",
+                                    "francecentral": "PAR",
+                                    "germanywestcentral": "DEWC",
+                                    "japaneast": "EJP",
+                                    "japanwest": "EJP",
+                                    "jioindiawest": "CIN",
+                                    "koreacentral": "SE",
+                                    "koreasouth": "SE",
+                                    "northcentralus": "NCUS",
+                                    "northeurope": "NEU",
+                                    "norwayeast": "NOE",
+                                    "southafricanorth": "JNB",
+                                    "southcentralus": "SCUS",
+                                    "southeastasia": "SEA",
+                                    "southindia": "CIN",
+                                    "swedencentral": "SEC",
+                                    "switzerlandnorth": "CHN",
+                                    "switzerlandwest": "CHW",
+                                    "uaenorth": "DXB",
+                                    "uksouth": "SUK",
+                                    "ukwest": "WUK",
+                                    "westcentralus": "WCUS",
+                                    "westeurope": "WEU",
+                                    "westindia": "CIN",
+                                    "westus": "WUS",
+                                    "westus2": "WUS2"
+                                },
+                                "subscriptionId": "[subscription().subscriptionId]",
+                                "workspaceResourceId": "[parameters('userWorkspaceResourceId')]"
+                            }
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "[parameters('workspaceRegion')]",
+                            "field": "location"
+                        },
+                        {
+                            "equals": "[concat('Microsoft-Security-', parameters('workspaceRegion'), '-dcr')]",
+                            "field": "name"
+                        }
+                    ]
+                },
+                "existenceScope": "subscription",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.Insights/dataCollectionRules"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

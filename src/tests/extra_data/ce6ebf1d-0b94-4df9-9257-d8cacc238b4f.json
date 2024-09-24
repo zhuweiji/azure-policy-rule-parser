@@ -1,0 +1,62 @@
+{
+    "description": "Disable public network access for your Azure Virtual Desktop workspace resource so the feed is not accessible over the public internet. This improves security and keeps your data safe. Learn more at: https://aka.ms/avdprivatelink.",
+    "displayName": "Configure Azure Virtual Desktop workspaces to disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ce6ebf1d-0b94-4df9-9257-d8cacc238b4f",
+    "metadata": {
+        "category": "Desktop Virtualization",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ce6ebf1d-0b94-4df9-9257-d8cacc238b4f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DesktopVirtualization/workspaces",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.DesktopVirtualization/workspaces/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2022-04-01-preview')]",
+                        "field": "Microsoft.DesktopVirtualization/workspaces/publicNetworkAccess",
+                        "operation": "addOrReplace",
+                        "value": "Disabled"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/21efdde3-836f-432b-bf3d-3e8e734d4b2b"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

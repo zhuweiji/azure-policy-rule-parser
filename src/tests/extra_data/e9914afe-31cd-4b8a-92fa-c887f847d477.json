@@ -1,0 +1,212 @@
+{
+    "description": "Restrict HTTPS inputs used by Media Services jobs to known endpoints. Inputs from HTTPS endpoints can be disabled entirely by setting an empty list of allowed job input patterns. Where job inputs specify a 'baseUri' the patterns will be matched against this value; when 'baseUri' is not set, the pattern is matched against the 'files' property.",
+    "displayName": "Azure Media Services jobs with HTTPS inputs should limit input URIs to permitted URI patterns",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e9914afe-31cd-4b8a-92fa-c887f847d477",
+    "metadata": {
+        "category": "Media Services",
+        "version": "1.0.1"
+    },
+    "mode": "All",
+    "name": "e9914afe-31cd-4b8a-92fa-c887f847d477",
+    "parameters": {
+        "allowedJobInputHttpUriPatterns": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Permitted URI patterns for HTTPS job inputs, for example [ 'https://store.contoso.com/media1/*', 'https://store.contoso.com/media2/*' ] or [ ] to block all HTTPS job inputs. URI patterns may contain a single asterisk which should be at the end of the URI to allow any file for a given URI prefix.",
+                "displayName": "Allowed job input HTTPS URI patterns",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "effect": {
+            "allowedValues": [
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Media/mediaservices/transforms/jobs",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputHttp.baseUri"
+                                },
+                                {
+                                    "count": {
+                                        "name": "pattern",
+                                        "value": "[parameters('allowedJobInputHttpUriPatterns')]",
+                                        "where": {
+                                            "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputHttp.baseUri",
+                                            "like": "[current('pattern')]"
+                                        }
+                                    },
+                                    "equals": 0
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputHttp.baseUri"
+                                },
+                                {
+                                    "count": {
+                                        "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputClip.files[*]",
+                                        "where": {
+                                            "count": {
+                                                "name": "pattern",
+                                                "value": "[parameters('allowedJobInputHttpUriPatterns')]",
+                                                "where": {
+                                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputClip.files[*]",
+                                                    "like": "[current('pattern')]"
+                                                }
+                                            },
+                                            "equals": 0
+                                        }
+                                    },
+                                    "greater": 0
+                                }
+                            ]
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*]",
+                                "where": {
+                                    "anyOf": [
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputHttp.baseUri"
+                                                },
+                                                {
+                                                    "count": {
+                                                        "name": "pattern",
+                                                        "value": "[parameters('allowedJobInputHttpUriPatterns')]",
+                                                        "where": {
+                                                            "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputHttp.baseUri",
+                                                            "like": "[current('pattern')]"
+                                                        }
+                                                    },
+                                                    "equals": 0
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputHttp.baseUri"
+                                                },
+                                                {
+                                                    "count": {
+                                                        "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputClip.files[*]",
+                                                        "where": {
+                                                            "count": {
+                                                                "name": "pattern",
+                                                                "value": "[parameters('allowedJobInputHttpUriPatterns')]",
+                                                                "where": {
+                                                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputClip.files[*]",
+                                                                    "like": "[current('pattern')]"
+                                                                }
+                                                            },
+                                                            "equals": 0
+                                                        }
+                                                    },
+                                                    "greater": 0
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "greater": 0
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputs.inputs[*]",
+                                "where": {
+                                    "anyOf": [
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputHttp.baseUri"
+                                                },
+                                                {
+                                                    "count": {
+                                                        "name": "pattern",
+                                                        "value": "[parameters('allowedJobInputHttpUriPatterns')]",
+                                                        "where": {
+                                                            "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputHttp.baseUri",
+                                                            "like": "[current('pattern')]"
+                                                        }
+                                                    },
+                                                    "equals": 0
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "allOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputHttp.baseUri"
+                                                },
+                                                {
+                                                    "count": {
+                                                        "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputClip.files[*]",
+                                                        "where": {
+                                                            "count": {
+                                                                "name": "pattern",
+                                                                "value": "[parameters('allowedJobInputHttpUriPatterns')]",
+                                                                "where": {
+                                                                    "field": "Microsoft.Media/mediaServices/transforms/jobs/input.#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputs.inputs[*].#Microsoft-Media-JobInputClip.files[*]",
+                                                                    "like": "[current('pattern')]"
+                                                                }
+                                                            },
+                                                            "equals": 0
+                                                        }
+                                                    },
+                                                    "greater": 0
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "greater": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

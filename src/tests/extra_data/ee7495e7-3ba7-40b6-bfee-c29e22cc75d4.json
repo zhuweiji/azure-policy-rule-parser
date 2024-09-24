@@ -1,0 +1,63 @@
+{
+    "description": "To ensure security of data in transit, APIs should be available only through encrypted protocols, like HTTPS or WSS. Avoid using unsecured protocols, such as HTTP or WS.",
+    "displayName": "API Management APIs should use only encrypted protocols",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ee7495e7-3ba7-40b6-bfee-c29e22cc75d4",
+    "metadata": {
+        "category": "API Management",
+        "version": "2.0.2"
+    },
+    "mode": "All",
+    "name": "ee7495e7-3ba7-40b6-bfee-c29e22cc75d4",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ApiManagement/service/apis",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.ApiManagement/service/apis/protocols[*]",
+                        "where": {
+                            "anyOf": [
+                                {
+                                    "equals": "http",
+                                    "field": "Microsoft.ApiManagement/service/apis/protocols[*]"
+                                },
+                                {
+                                    "equals": "ws",
+                                    "field": "Microsoft.ApiManagement/service/apis/protocols[*]"
+                                }
+                            ]
+                        }
+                    },
+                    "greaterOrEquals": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

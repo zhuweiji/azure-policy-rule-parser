@@ -1,0 +1,52 @@
+{
+    "description": "This policy definition is no longer the recommended way to achieve its intent. Instead of continuing to use this policy, we recommend you assign this replacement policy with policy ID e9ac8f8e-ce22-4355-8f04-99b911d6be52. Learn more about policy definition deprecation at aka.ms/policydefdeprecation",
+    "displayName": "[Deprecated]: External accounts with read permissions should be removed from your subscription",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/5f76cf89-fbf2-47fd-a3f4-b891fa780b60",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "3.0.0-deprecated"
+    },
+    "mode": "All",
+    "name": "5f76cf89-fbf2-47fd-a3f4-b891fa780b60",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "a8c6a4ad-d51e-88fe-2979-d3ee3c864f8b",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

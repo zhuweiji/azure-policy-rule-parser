@@ -1,0 +1,71 @@
+{
+    "description": "Auditing on your SQL Server should be enabled to track database activities across all databases on the server and save them in an audit log.",
+    "displayName": "Auditing on SQL server should be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a6fb4358-5bf4-4ad7-ba82-2cd2f41ce5e9",
+    "metadata": {
+        "category": "SQL",
+        "version": "2.0.0"
+    },
+    "mode": "Indexed",
+    "name": "a6fb4358-5bf4-4ad7-ba82-2cd2f41ce5e9",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "setting": {
+            "allowedValues": [
+                "enabled",
+                "disabled"
+            ],
+            "defaultValue": "enabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": null,
+                "displayName": "Desired Auditing setting",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Sql/servers",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "notContains": "analytics"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "[parameters('setting')]",
+                    "field": "Microsoft.Sql/auditingSettings.state"
+                },
+                "name": "default",
+                "type": "Microsoft.Sql/servers/auditingSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

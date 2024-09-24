@@ -1,0 +1,191 @@
+{
+    "description": "Private endpoint connections allow secure communication by enabling private connectivity to Azure Automation accounts without a need for public IP addresses at the source or destination. Learn more about private endpoints in Azure Automation at https://docs.microsoft.com/azure/automation/how-to/private-link-security.",
+    "displayName": "Configure private endpoint connections on Azure Automation accounts",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c0c3130e-7dda-4187-aed0-ee4a472eaa60",
+    "metadata": {
+        "category": "Automation",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c0c3130e-7dda-4187-aed0-ee4a472eaa60",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateEndpointSubnetId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "A subnet with private endpoint network policies disabled",
+                "displayName": "Private endpoint subnet id",
+                "strongType": "Microsoft.Network/virtualNetworks/subnets"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Automation/automationAccounts",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "name": {
+                                "value": "[field('name')]"
+                            },
+                            "privateEndpointSubnetId": {
+                                "value": "[parameters('privateEndpointSubnetId')]"
+                            },
+                            "serviceId": {
+                                "value": "[field('id')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "privateEndpointSubnetId": {
+                                    "type": "string"
+                                },
+                                "serviceId": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "name": "[variables('privateEndpointName')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "privateEndpointSubnetId": {
+                                                "value": "[parameters('privateEndpointSubnetId')]"
+                                            },
+                                            "serviceId": {
+                                                "value": "[parameters('serviceId')]"
+                                            },
+                                            "subnetLocation": {
+                                                "value": "[reference(first(take(split(parameters('privateEndpointSubnetId'),'/subnets'),1)),'2020-07-01','Full').location]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "privateEndpointSubnetId": {
+                                                    "type": "string"
+                                                },
+                                                "serviceId": {
+                                                    "type": "string"
+                                                },
+                                                "subnetLocation": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2020-07-01",
+                                                    "location": "[parameters('subnetLocation')]",
+                                                    "name": "[concat(variables('privateEndpointName'),'Webhook')]",
+                                                    "properties": {
+                                                        "manualPrivateLinkServiceConnections": [],
+                                                        "privateLinkServiceConnections": [
+                                                            {
+                                                                "name": "[concat(variables('privateEndpointName'),'Webhook')]",
+                                                                "properties": {
+                                                                    "groupIds": [
+                                                                        "Webhook"
+                                                                    ],
+                                                                    "privateLinkServiceId": "[parameters('serviceId')]",
+                                                                    "requestMessage": "autoapprove"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "subnet": {
+                                                            "id": "[parameters('privateEndpointSubnetId')]"
+                                                        }
+                                                    },
+                                                    "tags": {},
+                                                    "type": "Microsoft.Network/privateEndpoints"
+                                                },
+                                                {
+                                                    "apiVersion": "2020-07-01",
+                                                    "location": "[parameters('subnetLocation')]",
+                                                    "name": "[concat(variables('privateEndpointName'),'DSCAndHybridWorker')]",
+                                                    "properties": {
+                                                        "manualPrivateLinkServiceConnections": [],
+                                                        "privateLinkServiceConnections": [
+                                                            {
+                                                                "name": "[concat(variables('privateEndpointName'),'DSCAndHybridWorker')]",
+                                                                "properties": {
+                                                                    "groupIds": [
+                                                                        "DSCAndHybridWorker"
+                                                                    ],
+                                                                    "privateLinkServiceId": "[parameters('serviceId')]",
+                                                                    "requestMessage": "autoapprove"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "subnet": {
+                                                            "id": "[parameters('privateEndpointSubnetId')]"
+                                                        }
+                                                    },
+                                                    "tags": {},
+                                                    "type": "Microsoft.Network/privateEndpoints"
+                                                }
+                                            ],
+                                            "variables": {
+                                                "privateEndpointName": "[deployment().name]"
+                                            }
+                                        }
+                                    },
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "privateEndpointName": "[concat('pe-',substring(parameters('name'),0,min(length(parameters('name')),50)),'-',uniquestring(deployment().name))]"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "Approved",
+                    "field": "Microsoft.Automation/automationAccounts/privateEndpointConnections/privateLinkServiceConnectionState.status"
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7",
+                    "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.Automation/automationAccounts/privateEndpointConnections"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

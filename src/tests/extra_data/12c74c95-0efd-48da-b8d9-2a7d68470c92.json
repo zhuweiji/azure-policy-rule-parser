@@ -1,0 +1,61 @@
+{
+    "description": "Use customer-managed keys to manage the encryption at rest of your PostgreSQL flexible servers. By default, the data is encrypted at rest with service-managed keys, but customer-managed keys are commonly required to meet regulatory compliance standards. Customer-managed keys enable the data to be encrypted with an Azure Key Vault key created and owned by you. You have full control and responsibility for the key lifecycle, including rotation and management.",
+    "displayName": "PostgreSQL flexible servers should use customer-managed keys to encrypt data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/12c74c95-0efd-48da-b8d9-2a7d68470c92",
+    "metadata": {
+        "category": "PostgreSQL",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "12c74c95-0efd-48da-b8d9-2a7d68470c92",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DBforPostgreSQL/flexibleServers",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.DBforPostgreSQL/flexibleServers/dataEncryption.type",
+                            "notEquals": "AzureKeyVault"
+                        },
+                        {
+                            "exists": false,
+                            "field": "Microsoft.DBforPostgreSQL/flexibleServers/dataEncryption.primaryKeyURI"
+                        },
+                        {
+                            "equals": "",
+                            "field": "Microsoft.DBforPostgreSQL/flexibleServers/dataEncryption.primaryKeyURI"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

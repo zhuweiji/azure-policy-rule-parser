@@ -1,0 +1,115 @@
+{
+    "description": "This policy evaluates existing subscription's preview features. Subscriptions can be remediated to register to a new preview feature. New subscriptions will not be automatically registered.",
+    "displayName": "Configure subscriptions to set up preview features",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e624c84f-2923-4437-9fd9-4115c6da3888",
+    "metadata": {
+        "category": "General",
+        "version": "1.0.1"
+    },
+    "mode": "All",
+    "name": "e624c84f-2923-4437-9fd9-4115c6da3888",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "featureName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "An example is AzureSQLDatabaseBlockGeoRedundantBackupStorage",
+                "displayName": "Feature Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "resourceProviderName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "An example is Microsoft.Sql",
+                "displayName": "Resource Provider Name",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "West Central US",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "featureName": {
+                                "value": "[parameters('featureName')]"
+                            },
+                            "resourceProviderName": {
+                                "value": "[parameters('resourceProviderName')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "FeatureName": {
+                                    "type": "string"
+                                },
+                                "resourceProviderName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-07-01",
+                                    "name": "[concat(parameters('resourceProviderName'), '/', parameters('featureName'))]",
+                                    "properties": {
+                                        "featureName": "[parameters('featureName')]",
+                                        "providerNamespace": "[parameters('resourceProviderName')]",
+                                        "state": "Registered"
+                                    },
+                                    "type": "Microsoft.Features/featureProviders/subscriptionFeatureRegistrations"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "equals": "Registered",
+                    "field": "Microsoft.Features/featureProviders/subscriptionFeatureRegistrations/state"
+                },
+                "name": "[concat(parameters('resourceProviderName'), '/', parameters('featureName'))]",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.Features/featureProviders/subscriptionFeatureRegistrations"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

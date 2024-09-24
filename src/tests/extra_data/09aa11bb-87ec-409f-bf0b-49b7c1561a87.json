@@ -1,0 +1,49 @@
+{
+    "description": "Use customer-managed keys (CMK) to manage the encryption at rest of your on-disk data. By default, customer data is encrypted with platform-managed keys (PMK), but customer-managed keys are commonly required to meet regulatory compliance standards. Customer-managed keys enable the data to be encrypted with an Azure Key Vault key created and owned by you. You have full control and responsibility for the key lifecycle, including rotation and management. Learn more at https://aka.ms/RedisCMK.",
+    "displayName": "Azure Cache for Redis Enterprise should use customer-managed keys for encrypting disk data",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/09aa11bb-87ec-409f-bf0b-49b7c1561a87",
+    "metadata": {
+        "category": "Cache",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "09aa11bb-87ec-409f-bf0b-49b7c1561a87",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Cache/redisEnterprise",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.Cache/redisEnterprise/encryption.customerManagedKeyEncryption"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

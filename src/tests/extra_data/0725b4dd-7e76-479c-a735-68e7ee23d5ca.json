@@ -1,0 +1,50 @@
+{
+    "description": "To improve the security of Cognitive Services accounts, ensure that it isn't exposed to the public internet and can only be accessed from a private endpoint. Disable the public network access property as described in https://go.microsoft.com/fwlink/?linkid=2129800. This option disables access from any public address space outside the Azure IP range, and denies all logins that match IP or virtual network-based firewall rules. This reduces data leakage risks.",
+    "displayName": "[Deprecated]: Cognitive Services accounts should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0725b4dd-7e76-479c-a735-68e7ee23d5ca",
+    "metadata": {
+        "category": "Cognitive Services",
+        "deprecated": true,
+        "version": "3.1.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "0725b4dd-7e76-479c-a735-68e7ee23d5ca",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.CognitiveServices/accounts",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.CognitiveServices/accounts/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

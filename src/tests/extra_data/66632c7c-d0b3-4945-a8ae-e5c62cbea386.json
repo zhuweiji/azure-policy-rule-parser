@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Data Quality and Integrity control",
+    "displayName": "Microsoft Managed Control 1829 - Data Integrity And Data Integrity Board | Publish Agreements on Website",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/66632c7c-d0b3-4945-a8ae-e5c62cbea386",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1829",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "66632c7c-d0b3-4945-a8ae-e5c62cbea386",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

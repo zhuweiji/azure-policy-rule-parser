@@ -1,0 +1,66 @@
+{
+    "description": "Cross-Origin Resource Sharing (CORS) should not allow all domains to access your map account. Allow only required domains to interact with your map account.",
+    "displayName": "CORS should not allow every resource to access your map account.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/50553764-7777-43cf-bf12-8647e0b9ba01",
+    "metadata": {
+        "category": "Maps",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "50553764-7777-43cf-bf12-8647e0b9ba01",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Disabled",
+                "Audit",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Maps/accounts",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Maps/accounts/cors.corsRules[*].allowedOrigins"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Maps/accounts/cors.corsRules[*].allowedOrigins[*]",
+                                "where": {
+                                    "field": "Microsoft.Maps/accounts/cors.corsRules[*].allowedOrigins[*]",
+                                    "in": [
+                                        "*",
+                                        ""
+                                    ]
+                                }
+                            },
+                            "greater": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

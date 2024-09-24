@@ -1,0 +1,68 @@
+{
+    "description": "Install the Azure Security agent on your Linux Arc machines in order to monitor your machines for security configurations and vulnerabilities. Results of the assessments can seen and managed in Azure Security Center.",
+    "displayName": "[Preview]: Azure Security agent should be installed on your Linux Arc machines",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1f300abb-f5a0-41c3-a163-91bd3ed35de7",
+    "metadata": {
+        "category": "Security Center",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "1f300abb-f5a0-41c3-a163-91bd3ed35de7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HybridCompute/imageOffer",
+                    "like": "linux*"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "AzureSecurityLinuxAgent",
+                            "field": "Microsoft.HybridCompute/machines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Security.Monitoring",
+                            "field": "Microsoft.HybridCompute/machines/extensions/Publisher"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.HybridCompute/machines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

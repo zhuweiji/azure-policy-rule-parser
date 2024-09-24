@@ -1,0 +1,77 @@
+{
+    "description": "Ensure all Public IP addresses and Public IP Prefixes have a FirstPartyUsage tag.",
+    "displayName": "Public IPs and Public IP prefixes should have FirstPartyUsage tag",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fe8a9af4-a003-4c7d-b7a4-b9808310c4f8",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "fe8a9af4-a003-4c7d-b7a4-b9808310c4f8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Network/publicIPAddresses",
+                            "field": "type"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Network/publicIPAddresses/ipTags[*]",
+                                "where": {
+                                    "equals": "FirstPartyUsage",
+                                    "field": "Microsoft.Network/publicIPAddresses/ipTags[*].ipTagType"
+                                }
+                            },
+                            "less": 1
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Network/publicIPPrefixes",
+                            "field": "type"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.Network/publicIPPrefixes/ipTags[*]",
+                                "where": {
+                                    "equals": "FirstPartyUsage",
+                                    "field": "Microsoft.Network/publicIPPrefixes/ipTags[*].ipTagType"
+                                }
+                            },
+                            "less": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

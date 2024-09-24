@@ -1,0 +1,55 @@
+{
+    "description": "Enabling Azure Batch disk encryption ensures that data is always encrypted at rest on your Azure Batch compute node. Learn more about disk encryption in Batch at https://docs.microsoft.com/azure/batch/disk-encryption.",
+    "displayName": "Azure Batch pools should have disk encryption enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1760f9d4-7206-436e-a28f-d9f3a5c8a227",
+    "metadata": {
+        "category": "Batch",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "1760f9d4-7206-436e-a28f-d9f3a5c8a227",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Batch/batchAccounts/pools",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Batch/batchAccounts/pools/deploymentConfiguration.virtualMachineConfiguration.diskEncryptionConfiguration.targets[*]",
+                        "where": {
+                            "contains": "TemporaryDisk",
+                            "field": "Microsoft.Batch/batchAccounts/pools/deploymentConfiguration.virtualMachineConfiguration.diskEncryptionConfiguration.targets[*]"
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

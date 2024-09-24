@@ -1,0 +1,186 @@
+{
+    "description": "A private endpoint connection enables private connectivity to your Azure SQL Database via a private IP address inside a virtual network. This configuration improves your security posture and supports Azure networking tools and scenarios.",
+    "displayName": "Configure Azure SQL Server to enable private endpoint connections",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8e8ca470-d980-4831-99e6-dc70d9f6af87",
+    "metadata": {
+        "category": "SQL",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "8e8ca470-d980-4831-99e6-dc70d9f6af87",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateEndpointSubnetId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The name of the subnet within the virtual network that you would like to use for your Private Endpoint Connection deployment",
+                "displayName": "Subnet to use for Private Endpoints",
+                "strongType": "Microsoft.Network/virtualNetworks/subnets"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Sql/servers",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Sql/servers/privateEndpointConnections[*]",
+                        "where": {
+                            "exists": "false",
+                            "field": "Microsoft.Sql/servers/privateEndpointConnections[*].id"
+                        }
+                    },
+                    "equals": 0
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "name": {
+                                "value": "[field('name')]"
+                            },
+                            "privateEndpointSubnetId": {
+                                "value": "[parameters('privateEndpointSubnetId')]"
+                            },
+                            "serviceId": {
+                                "value": "[field('id')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "privateEndpointSubnetId": {
+                                    "type": "string"
+                                },
+                                "serviceId": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "name": "[variables('privateEndpointName')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "name": {
+                                                "value": "[parameters('name')]"
+                                            },
+                                            "privateEndpointSubnetId": {
+                                                "value": "[parameters('privateEndpointSubnetId')]"
+                                            },
+                                            "serviceId": {
+                                                "value": "[parameters('serviceId')]"
+                                            },
+                                            "subnetlocation": {
+                                                "value": "[reference(first(take(split(parameters('privateEndpointSubnetId'),'/subnets'),1)),'2020-07-01','Full').location]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "name": {
+                                                    "type": "String"
+                                                },
+                                                "privateEndpointSubnetId": {
+                                                    "type": "String"
+                                                },
+                                                "serviceId": {
+                                                    "type": "String"
+                                                },
+                                                "subnetlocation": {
+                                                    "type": "String"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2020-07-01",
+                                                    "location": "[parameters('subnetlocation')]",
+                                                    "name": "[variables('privateEndpointName')]",
+                                                    "properties": {
+                                                        "customDnsConfigs": [],
+                                                        "manualPrivateLinkServiceConnections": [],
+                                                        "privateLinkServiceConnections": [
+                                                            {
+                                                                "name": "[parameters('name')]",
+                                                                "properties": {
+                                                                    "groupIds": [
+                                                                        "sqlServer"
+                                                                    ],
+                                                                    "privateLinkServiceConnectionState": {
+                                                                        "actionsRequired": "None",
+                                                                        "description": "Auto-approved",
+                                                                        "status": "Approved"
+                                                                    },
+                                                                    "privateLinkServiceId": "[parameters('serviceId')]"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "subnet": {
+                                                            "id": "[parameters('privateEndpointSubnetId')]"
+                                                        }
+                                                    },
+                                                    "type": "Microsoft.Network/privateEndpoints"
+                                                }
+                                            ],
+                                            "variables": {
+                                                "privateEndpointName": "[deployment().name]"
+                                            }
+                                        }
+                                    },
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "privateEndpointName": "[concat('pe-',substring(parameters('name'),0,min(length(parameters('name')),50)),'-',uniquestring(deployment().name))]"
+                            }
+                        }
+                    }
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7",
+                    "/providers/Microsoft.Authorization/roleDefinitions/6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437"
+                ],
+                "type": "Microsoft.Sql/servers/privateEndpointConnections"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

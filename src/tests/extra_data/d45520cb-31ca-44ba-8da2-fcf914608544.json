@@ -1,0 +1,119 @@
+{
+    "description": "Key access (local authentication) is recommended to be disabled for security. Azure OpenAI Studio, typically used in development/testing, requires key access and will not function if key access is disabled. After disabling, Microsoft Entra ID becomes the only access method, which allows maintaining minimum privilege principle and granular control. Learn more at: https://aka.ms/AI/auth",
+    "displayName": "Configure Azure AI Services resources  to disable local key access (disable local authentication)",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d45520cb-31ca-44ba-8da2-fcf914608544",
+    "metadata": {
+        "category": "Azure Ai Services",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d45520cb-31ca-44ba-8da2-fcf914608544",
+    "parameters": {
+        "disableLocalAuth": {
+            "allowedValues": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "True",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The disableLocalAuth property of the Azure AI service",
+                "displayName": "disableLocalAuth",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Search/searchServices",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "disableLocalAuth": {
+                                "value": "[parameters('disableLocalAuth')]"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "resourceName": {
+                                "value": "[field('name')]"
+                            },
+                            "sku": {
+                                "value": "[field('Microsoft.Search/searchServices/sku')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {},
+                            "parameters": {
+                                "disableLocalAuth": {
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "resourceName": {
+                                    "type": "string"
+                                },
+                                "sku": {
+                                    "type": "object"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2023-11-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[parameters('resourceName')]",
+                                    "properties": {
+                                        "disableLocalAuth": "[parameters('disableLocalAuth')]"
+                                    },
+                                    "sku": "[parameters('sku')]",
+                                    "type": "Microsoft.Search/searchServices"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": true,
+                    "field": "Microsoft.Search/searchServices/disableLocalAuth"
+                },
+                "name": "[field('name')]",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/a001fd3d-188f-4b5d-821b-7da978bf7442",
+                    "/providers/Microsoft.Authorization/roleDefinitions/25fbc0a9-bd7c-42a3-aa1a-3b75d497ee68",
+                    "/providers/Microsoft.Authorization/roleDefinitions/7ca78c08-252a-4471-8644-bb5ff32d4ba0"
+                ],
+                "type": "Microsoft.Search/searchServices"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

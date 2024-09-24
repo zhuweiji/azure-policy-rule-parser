@@ -1,0 +1,55 @@
+{
+    "description": "Use geo-redundancy to create highly available applications",
+    "displayName": "Geo-redundant storage should be enabled for Storage Accounts",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/bf045164-79ba-4215-8f95-f8048dc1780b",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "bf045164-79ba-4215-8f95-f8048dc1780b",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Storage/storageAccounts",
+                    "field": "type"
+                },
+                {
+                    "not": {
+                        "field": "Microsoft.Storage/storageAccounts/sku.name",
+                        "in": [
+                            "Standard_GRS",
+                            "Standard_RAGRS",
+                            "Standard_GZRS",
+                            "Standard_RAGZRS"
+                        ]
+                    }
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

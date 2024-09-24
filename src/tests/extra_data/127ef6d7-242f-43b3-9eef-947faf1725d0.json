@@ -1,0 +1,232 @@
+{
+    "description": "To ensure secrets (such as connection strings) are managed securely, require users to provide secrets using an Azure Key Vault instead of specifying them inline in linked services.",
+    "displayName": "Azure Data Factory linked services should use Key Vault for storing secrets",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/127ef6d7-242f-43b3-9eef-947faf1725d0",
+    "metadata": {
+        "category": "Data Factory",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "127ef6d7-242f-43b3-9eef-947faf1725d0",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DataFactory/factories/linkedservices",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/typeProperties.connectionString"
+                                },
+                                {
+                                    "anyOf": [
+                                        {
+                                            "contains": "AccountKey=",
+                                            "field": "Microsoft.DataFactory/factories/linkedservices/typeProperties.connectionString"
+                                        },
+                                        {
+                                            "contains": "PWD=",
+                                            "field": "Microsoft.DataFactory/factories/linkedservices/typeProperties.connectionString"
+                                        },
+                                        {
+                                            "contains": "Password=",
+                                            "field": "Microsoft.DataFactory/factories/linkedservices/typeProperties.connectionString"
+                                        },
+                                        {
+                                            "contains": "CredString=",
+                                            "field": "Microsoft.DataFactory/factories/linkedservices/typeProperties.connectionString"
+                                        },
+                                        {
+                                            "contains": "pwd=",
+                                            "field": "Microsoft.DataFactory/factories/linkedservices/typeProperties.connectionString"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/SqlServer.typeProperties.password.type"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/SqlServer.typeProperties.password"
+                                },
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/SqlServer.typeProperties.password.type"
+                                }
+                            ]
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/AzureSqlDW.typeProperties.servicePrincipalKey.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/AzureSearch.typeProperties.key.type"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/AzureStorage.typeProperties.sasUri"
+                                },
+                                {
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/AzureStorage.typeProperties.sasUri.type",
+                                    "notEquals": "AzureKeyVaultSecret"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/AzureBlobStorage.typeProperties.servicePrincipalKey"
+                                },
+                                {
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/AzureBlobStorage.typeProperties.servicePrincipalKey.type",
+                                    "notEquals": "AzureKeyVaultSecret"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/AzureStorage.typeProperties.accountKey"
+                                },
+                                {
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/CosmosDb.typeProperties.accountKey.type",
+                                    "notEquals": "AzureKeyVaultSecret"
+                                }
+                            ]
+                        },
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/typeProperties.encryptedCredential"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/AmazonMWS.typeProperties.mwsAuthToken.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/AmazonMWS.typeProperties.secretKey.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/AmazonS3.typeProperties.secretAccessKey.type"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/Dynamics.typeProperties.servicePrincipalCredential"
+                                },
+                                {
+                                    "equals": "SecureString",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/Dynamics.typeProperties.servicePrincipalCredential.type"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "exists": "true",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/Hubspot.typeProperties.accessToken"
+                                },
+                                {
+                                    "equals": "SecureString",
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/Hubspot.typeProperties.accessToken.type"
+                                }
+                            ]
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/Odbc.typeProperties.credential.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/GoogleAdWords.typeProperties.developerToken.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/GoogleBigQuery.typeProperties.clientSecret.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/GoogleBigQuery.typeProperties.refreshToken.type"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/type",
+                                    "in": [
+                                        "MongoDbAtlas",
+                                        "MongoDbV2"
+                                    ]
+                                },
+                                {
+                                    "field": "Microsoft.DataFactory/factories/linkedservices/typeProperties.connectionString.type",
+                                    "notEquals": "AzureKeyVaultSecret"
+                                }
+                            ]
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/OData.typeProperties.servicePrincipalEmbeddedCert.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/OData.typeProperties.servicePrincipalEmbeddedCertPassword.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/Sftp.typeProperties.privateKeyContent.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/Sftp.typeProperties.passPhrase.type"
+                        },
+                        {
+                            "equals": "SecureString",
+                            "field": "Microsoft.DataFactory/factories/linkedservices/Salesforce.typeProperties.securityToken.type"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

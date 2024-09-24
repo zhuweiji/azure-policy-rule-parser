@@ -1,0 +1,82 @@
+{
+    "description": "Configures the Microsoft Defender for Endpoint integration settings, within Microsoft Defender for Cloud (also known as WDATP), for Windows downlevel machines onboarded to MDE via MMA, and auto provisioning of MDE on Windows Server 2019 , Windows Virtual Desktop and above. Must be turned on in order for the other settings (WDATP_UNIFIED, etc.) to work. See: https://learn.microsoft.com/azure/defender-for-cloud/integration-defender-for-endpoint for more information.",
+    "displayName": "Configure Microsoft Defender for Endpoint integration settings with Microsoft Defender for Cloud (WDATP)",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/da56d295-2889-41ce-a4cd-6f50fb93aa68",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "da56d295-2889-41ce-a4cd-6f50fb93aa68",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Resources/subscriptions",
+                    "field": "type"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "northeurope",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {},
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {},
+                            "parameters": {},
+                            "resources": [
+                                {
+                                    "apiVersion": "2022-05-01",
+                                    "kind": "DataExportSettings",
+                                    "name": "WDATP",
+                                    "properties": {
+                                        "enabled": "true"
+                                    },
+                                    "type": "Microsoft.Security/settings"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "equals": "true",
+                    "field": "Microsoft.Security/settings/DataExportSetting.enabled"
+                },
+                "existenceScope": "subscription",
+                "name": "WDATP",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+                ],
+                "type": "Microsoft.Security/settings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

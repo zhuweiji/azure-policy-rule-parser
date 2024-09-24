@@ -1,0 +1,56 @@
+{
+    "description": "Ensure protection installation of backup extension in your AKS Clusters to leverage Azure Backup. Azure Backup for AKS is a secure and cloud native data protection solution for AKS clusters",
+    "displayName": "[Preview]: Azure Backup Extension should be installed in AKS clusters",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fda9cd0b-094c-4cd5-ac2a-5e06e5277c45",
+    "metadata": {
+        "category": "Backup",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "fda9cd0b-094c-4cd5-ac2a-5e06e5277c45",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ContainerService/managedClusters",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "microsoft.dataprotection.kubernetes",
+                            "field": "Microsoft.KubernetesConfiguration/extensions/extensionType"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.KubernetesConfiguration/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "type": "Microsoft.KubernetesConfiguration/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

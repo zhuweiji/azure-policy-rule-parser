@@ -1,0 +1,59 @@
+{
+    "description": "Private endpoints provide a way to connect Azure Attestation providers to your Azure resources without sending traffic over the public internet. By preventing public access, private endpoints help protect against undesired anonymous access.",
+    "displayName": "Azure Attestation providers should use private endpoints",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/7b256a2d-058b-41f8-bed9-3f870541c40a",
+    "metadata": {
+        "category": "Attestation",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "7b256a2d-058b-41f8-bed9-3f870541c40a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Attestation/attestationProviders",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Attestation/attestationProviders/privateEndpointConnections/privateEndpoint"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.Attestation/attestationProviders/privateEndpointConnections/provisioningState"
+                        },
+                        {
+                            "equals": "Approved",
+                            "field": "Microsoft.Attestation/attestationProviders/privateEndpointConnections/privateLinkServiceConnectionState.status"
+                        }
+                    ]
+                },
+                "type": "Microsoft.Attestation/attestationProviders/privateEndpointConnections"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

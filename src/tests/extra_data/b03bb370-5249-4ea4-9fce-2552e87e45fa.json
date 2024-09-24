@@ -1,0 +1,64 @@
+{
+    "description": "TrustedLaunch improves security of a Virtual Machine which requires OS Disk & OS Image to support it (Gen 2). To learn more about TrustedLaunch, visit https://aka.ms/trustedlaunch",
+    "displayName": "Disks and OS image should support TrustedLaunch",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b03bb370-5249-4ea4-9fce-2552e87e45fa",
+    "metadata": {
+        "category": "Trusted Launch",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "b03bb370-5249-4ea4-9fce-2552e87e45fa",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/disks",
+                    "field": "type"
+                },
+                {
+                    "allOf": [
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Compute/disks/osType"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.Compute/disks/hyperVGeneration"
+                                },
+                                {
+                                    "equals": "V1",
+                                    "field": "Microsoft.Compute/disks/hyperVGeneration"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

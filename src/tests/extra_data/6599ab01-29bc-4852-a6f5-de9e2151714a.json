@@ -1,0 +1,56 @@
+{
+    "description": "Enable transparent data encryption (TDE) at-rest on an Azure Arc-enabled SQL Managed Instance. Learn more at https://aka.ms/EnableTDEArcSQLMI.",
+    "displayName": "Transparent Data Encryption must be enabled for Arc SQL managed instances.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6599ab01-29bc-4852-a6f5-de9e2151714a",
+    "metadata": {
+        "category": "SQL Managed Instance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "6599ab01-29bc-4852-a6f5-de9e2151714a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.AzureArcData/sqlmanagedinstances",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.AzureArcData/sqlManagedInstances/k8sRaw.spec.security.transparentDataEncryption"
+                        },
+                        {
+                            "equals": "Disabled",
+                            "field": "Microsoft.AzureArcData/sqlManagedInstances/k8sRaw.spec.security.transparentDataEncryption.mode"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

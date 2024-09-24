@@ -1,0 +1,52 @@
+{
+    "description": "Ensure Azure Machine Learning compute instances run on the latest available operating system. Security is improved and vulnerabilities reduced by running with the latest security patches. For more information, visit https://aka.ms/azureml-ci-updates/.",
+    "displayName": "Azure Machine Learning compute instances should be recreated to get the latest software updates",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f110a506-2dcb-422e-bcea-d533fc8c35e2",
+    "metadata": {
+        "category": "Machine Learning",
+        "version": "1.0.3"
+    },
+    "mode": "All",
+    "name": "f110a506-2dcb-422e-bcea-d533fc8c35e2",
+    "parameters": {
+        "effects": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.MachineLearningServices/workspaces/computes",
+                    "field": "type"
+                },
+                {
+                    "equals": "ComputeInstance",
+                    "field": "Microsoft.MachineLearningServices/workspaces/computes/computeType"
+                },
+                {
+                    "equals": "false",
+                    "field": "Microsoft.MachineLearningServices/workspaces/computes/osImageMetadata.isLatestOsImageVersion"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effects')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

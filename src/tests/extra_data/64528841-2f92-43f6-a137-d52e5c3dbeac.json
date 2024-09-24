@@ -1,0 +1,54 @@
+{
+    "description": "Health Data Services workspace should have at least one approved private endpoint connection. Clients in a virtual network can securely access resources that have private endpoint connections through private links. For more information, visit: https://aka.ms/healthcareapisprivatelink.",
+    "displayName": "Azure Health Data Services workspace should use private link",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/64528841-2f92-43f6-a137-d52e5c3dbeac",
+    "metadata": {
+        "category": "Health Data Services workspace",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "64528841-2f92-43f6-a137-d52e5c3dbeac",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HealthcareApis/workspaces",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.HealthcareApis/workspaces/privateEndpointConnections[*]",
+                        "where": {
+                            "equals": "Approved",
+                            "field": "Microsoft.HealthcareApis/workspaces/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

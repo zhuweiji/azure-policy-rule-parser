@@ -1,0 +1,221 @@
+{
+    "description": "Deploys the diagnostic settings for Azure SQL Database to stream to a regional Event Hub on any Azure SQL Database which is missing this diagnostic settings is created or updated.",
+    "displayName": "Deploy Diagnostic Settings for Azure SQL Database to Event Hub",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9a7c7a7d-49e5-4213-bea8-6a502b6272e0",
+    "metadata": {
+        "category": "SQL",
+        "version": "1.2.0"
+    },
+    "mode": "Indexed",
+    "name": "9a7c7a7d-49e5-4213-bea8-6a502b6272e0",
+    "parameters": {
+        "eventHubRuleId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": true,
+                "description": "The Event Hub authorization rule Id for Azure Diagnostics. The authorization rule needs to be at Event Hub namespace level. e.g. /subscriptions/{subscription Id}/resourceGroups/{resource group}/providers/Microsoft.EventHub/namespaces/{Event Hub namespace}/authorizationrules/{authorization rule}",
+                "displayName": "Event Hub Authorization Rule Id",
+                "strongType": "Microsoft.EventHub/Namespaces/AuthorizationRules"
+            },
+            "type": "String"
+        },
+        "logsEnabled": {
+            "allowedValues": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "True",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Whether to enable logs stream to the Event Hub  - True or False",
+                "displayName": "Enable logs",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "metricsEnabled": {
+            "allowedValues": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "False",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Whether to enable metrics stream to the Event Hub - True or False",
+                "displayName": "Enable metrics",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "profileName": {
+            "allowedValues": null,
+            "defaultValue": "setbypolicy",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The diagnostic settings profile name",
+                "displayName": "Profile name",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Sql/servers/databases",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "eventHubRuleId": {
+                                "value": "[parameters('eventHubRuleId')]"
+                            },
+                            "fullName": {
+                                "value": "[field('fullName')]"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "logsEnabled": {
+                                "value": "[parameters('logsEnabled')]"
+                            },
+                            "metricsEnabled": {
+                                "value": "[parameters('metricsEnabled')]"
+                            },
+                            "profileName": {
+                                "value": "[parameters('profileName')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {
+                                "policy": {
+                                    "type": "string",
+                                    "value": "[concat('Enabled diagnostic settings for ', parameters('fullName'))]"
+                                }
+                            },
+                            "parameters": {
+                                "eventHubRuleId": {
+                                    "type": "string"
+                                },
+                                "fullName": {
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "logsEnabled": {
+                                    "type": "string"
+                                },
+                                "metricsEnabled": {
+                                    "type": "string"
+                                },
+                                "profileName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2017-05-01-preview",
+                                    "dependsOn": [],
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('fullName'), '/', 'Microsoft.Insights/', parameters('profileName'))]",
+                                    "properties": {
+                                        "eventHubAuthorizationRuleId": "[parameters('eventHubRuleId')]",
+                                        "logs": [
+                                            {
+                                                "category": "QueryStoreRuntimeStatistics",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "QueryStoreWaitStatistics",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Errors",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "DatabaseWaitStatistics",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Blocks",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "SQLInsights",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "SQLSecurityAuditEvents",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Timeouts",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "AutomaticTuning",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "Deadlocks",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            },
+                                            {
+                                                "category": "DevOpsOperationsAudit",
+                                                "enabled": "[parameters('logsEnabled')]"
+                                            }
+                                        ],
+                                        "metrics": [
+                                            {
+                                                "category": "AllMetrics",
+                                                "enabled": "[parameters('metricsEnabled')]",
+                                                "retentionPolicy": {
+                                                    "days": 0,
+                                                    "enabled": false
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "type": "Microsoft.Sql/servers/databases/providers/diagnosticSettings"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "[parameters('logsEnabled')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/logs[*].enabled"
+                        },
+                        {
+                            "equals": "[parameters('metricsEnabled')]",
+                            "field": "Microsoft.Insights/diagnosticSettings/metrics[*].enabled"
+                        }
+                    ]
+                },
+                "name": "[parameters('profileName')]",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "DeployIfNotExists"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

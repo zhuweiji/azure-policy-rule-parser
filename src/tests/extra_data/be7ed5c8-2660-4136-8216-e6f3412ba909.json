@@ -1,0 +1,66 @@
+{
+    "description": "Requires Web Application Firewall on any Azure Front Door Service or Application Gateway. A Web Application Firewall provides greater security for your other Azure resources.",
+    "displayName": "[Deprecated]: Web Application Firewall should be enabled for Azure Front Door Service or Application Gateway",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/be7ed5c8-2660-4136-8216-e6f3412ba909",
+    "metadata": {
+        "category": "Network",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "be7ed5c8-2660-4136-8216-e6f3412ba909",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Network/frontdoors",
+                            "field": "type"
+                        },
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.Network/frontdoors/frontendEndpoints[*].webApplicationFirewallPolicyLink.id"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Network/applicationGateways",
+                            "field": "type"
+                        },
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.Network/applicationGateways/webApplicationFirewallConfiguration"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

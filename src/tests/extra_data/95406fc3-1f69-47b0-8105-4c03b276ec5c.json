@@ -1,0 +1,245 @@
+{
+    "description": "Configure supported Linux virtual machines to automatically enable Secure Boot to mitigate against malicious and unauthorized changes to the boot chain. Once enabled, only trusted bootloaders, kernel and kernel drivers will be allowed to run.",
+    "displayName": "[Preview]: Configure supported Linux virtual machines to automatically enable Secure Boot",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/95406fc3-1f69-47b0-8105-4c03b276ec5c",
+    "metadata": {
+        "category": "Security Center",
+        "preview": true,
+        "version": "5.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "95406fc3-1f69-47b0-8105-4c03b276ec5c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                            "like": "Linux*"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "Canonical",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "UbuntuServer",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSku",
+                                    "like": "18_04-lts-gen2"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "Canonical",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "0001-com-ubuntu-server-focal",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSku",
+                                    "like": "20_04-lts-gen2"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "RedHat",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "RHEL",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSku",
+                                    "like": "83-gen2"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "SUSE",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "SLES-15-SP2",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "field": "Microsoft.Compute/imageSku",
+                                    "like": "gen2"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "OpenLogic",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "CENTOS",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "8_3-gen2",
+                                    "field": "Microsoft.Compute/imageSku"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "Oracle",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "Oracle-Linux",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "ol83-lvm-gen2",
+                                    "field": "Microsoft.Compute/imageSku"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "microsoftcblmariner",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "cbl-mariner",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "1-gen2",
+                                    "field": "Microsoft.Compute/imageSku"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "debian",
+                                    "field": "Microsoft.Compute/imagePublisher"
+                                },
+                                {
+                                    "equals": "debian-11",
+                                    "field": "Microsoft.Compute/imageOffer"
+                                },
+                                {
+                                    "equals": "11-gen2",
+                                    "field": "Microsoft.Compute/imageSku"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "equals": "TrustedLaunch",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.securityType"
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings"
+                },
+                {
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.secureBootEnabled",
+                    "notEquals": "true"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-12-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[parameters('vmName')]",
+                                    "properties": {
+                                        "securityProfile": {
+                                            "securityType": "TrustedLaunch",
+                                            "uefiSettings": {
+                                                "secureBootEnabled": "true"
+                                            }
+                                        }
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachines"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "true",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.secureBootEnabled"
+                },
+                "name": "[field('fullName')]",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                ],
+                "type": "Microsoft.Compute/virtualMachines"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

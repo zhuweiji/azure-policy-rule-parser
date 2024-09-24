@@ -1,0 +1,49 @@
+{
+    "description": "Disabling public network access improves security by ensuring that IoT Hub device provisioning service instance isn't exposed on the public internet. Creating private endpoints can limit exposure of the IoT Hub device provisioning instances. Learn more at: https://aka.ms/iotdpsvnet.",
+    "displayName": "IoT Hub device provisioning service instances should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d82101f3-f3ce-4fc5-8708-4c09f4009546",
+    "metadata": {
+        "category": "Internet of Things",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d82101f3-f3ce-4fc5-8708-4c09f4009546",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Devices/provisioningServices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Devices/provisioningServices/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

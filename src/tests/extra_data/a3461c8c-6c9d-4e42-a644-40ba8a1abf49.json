@@ -1,0 +1,74 @@
+{
+    "description": "Azure Private Link lets you connect your virtual networks to Azure services without a public IP address at the source or destination. The Private Link platform handles the connectivity between the consumer and services over the Azure backbone network. By mapping Azure Arc-enabled servers to an Azure Arc Private Link Scope that is configured with a private endpoint, data leakage risks are reduced. Learn more about private links at: https://aka.ms/arc/privatelink.",
+    "displayName": "Configure Azure Arc-enabled servers to use an Azure Arc Private Link Scope",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a3461c8c-6c9d-4e42-a644-40ba8a1abf49",
+    "metadata": {
+        "category": "Azure Arc",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "a3461c8c-6c9d-4e42-a644-40ba8a1abf49",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateLinkScopeId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The Azure Arc Private Link Scope to associate with the Azure Arc-enabled server.",
+                "displayName": "Azure Arc Private Link Scope ID",
+                "strongType": "Microsoft.HybridCompute/privateLinkScopes"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HybridCompute/machines/privateLinkScopeResourceId",
+                    "notEquals": "[parameters('privateLinkScopeId')]"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2020-08-15-preview')]",
+                        "field": "Microsoft.HybridCompute/machines/privateLinkScopeResourceId",
+                        "operation": "addOrReplace",
+                        "value": "[parameters('privateLinkScopeId')]"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/cd570a14-e51a-42ad-bac8-bafd67325302"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

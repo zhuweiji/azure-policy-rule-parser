@@ -1,0 +1,121 @@
+{
+    "description": "Use private DNS zones to override the DNS resolution for a private endpoint. A private DNS zone links to your virtual network to resolve to Azure SignalR Service resource. Learn more at: https://aka.ms/asrs/privatelink.",
+    "displayName": "Deploy - Configure private DNS zones for private endpoints connect to Azure SignalR Service",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b0e86710-7fb7-4a6c-a064-32e9b829509e",
+    "metadata": {
+        "category": "SignalR",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "b0e86710-7fb7-4a6c-a064-32e9b829509e",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateDnsZoneId": {
+            "allowedValues": null,
+            "defaultValue": "privatelink.service.signalr.net",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Private DNS zone to integrate with private endpoint.",
+                "displayName": "Private DNS Zone Id",
+                "strongType": "Microsoft.Network/privateDnsZones"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/privateEndpoints",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]",
+                        "where": {
+                            "equals": "signalr",
+                            "field": "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]"
+                        }
+                    },
+                    "greaterOrEquals": 1
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "privateDnsZoneId": {
+                                "value": "[parameters('privateDnsZoneId')]"
+                            },
+                            "privateEndpointName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "privateDnsZoneId": {
+                                    "type": "string"
+                                },
+                                "privateEndpointName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-03-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('privateEndpointName'), '/deployedByPolicy')]",
+                                    "properties": {
+                                        "privateDnsZoneConfigs": [
+                                            {
+                                                "name": "privatelink-service-signalr-net",
+                                                "properties": {
+                                                    "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+                ],
+                "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

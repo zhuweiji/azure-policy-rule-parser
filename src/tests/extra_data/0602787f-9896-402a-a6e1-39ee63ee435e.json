@@ -1,0 +1,65 @@
+{
+    "description": "Azure Event Hub should have public network access disabled. Disabling public network access improves security by ensuring that the resource isn't exposed on the public internet. You can limit exposure of your resources by creating private endpoints instead. Learn more at: https://docs.microsoft.com/azure/event-hubs/private-link-service",
+    "displayName": "Event Hub Namespaces should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0602787f-9896-402a-a6e1-39ee63ee435e",
+    "metadata": {
+        "category": "Event Hub",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "0602787f-9896-402a-a6e1-39ee63ee435e",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.EventHub/namespaces/networkRuleSets",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.EventHub/namespaces/networkRuleSets/publicNetworkAccess",
+                            "notEquals": "Disabled"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.EventHub/namespaces",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.EventHub/namespaces/publicNetworkAccess",
+                            "notEquals": "Disabled"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

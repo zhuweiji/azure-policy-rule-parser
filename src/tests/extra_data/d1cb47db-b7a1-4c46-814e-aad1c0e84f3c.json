@@ -1,0 +1,72 @@
+{
+    "description": "Use of custom domains protects a Function app from common attacks such as phishing and other DNS-related attacks.",
+    "displayName": "[Deprecated]: Audit Function Apps that are not using custom domains",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d1cb47db-b7a1-4c46-814e-aad1c0e84f3c",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "All",
+    "name": "d1cb47db-b7a1-4c46-814e-aad1c0e84f3c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allof": [
+                {
+                    "equals": "microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "anyof": [
+                        {
+                            "equals": "functionapp",
+                            "field": "kind"
+                        },
+                        {
+                            "equals": "functionapp,linux",
+                            "field": "kind"
+                        },
+                        {
+                            "equals": "functionapp,linux,container",
+                            "field": "kind"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/complianceResults/resourceStatus",
+                    "in": [
+                        "OffByPolicy",
+                        "Healthy"
+                    ]
+                },
+                "name": "UsedCustomDomains",
+                "type": "Microsoft.Security/complianceResults"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

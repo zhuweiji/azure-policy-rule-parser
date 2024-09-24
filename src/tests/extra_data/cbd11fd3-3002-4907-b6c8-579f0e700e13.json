@@ -1,0 +1,65 @@
+{
+    "description": "Azure Service Bus should have public network access disabled. Disabling public network access improves security by ensuring that the resource isn't exposed on the public internet. You can limit exposure of your resources by creating private endpoints instead. Learn more at: https://docs.microsoft.com/azure/service-bus-messaging/private-link-service",
+    "displayName": "Service Bus Namespaces should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/cbd11fd3-3002-4907-b6c8-579f0e700e13",
+    "metadata": {
+        "category": "Service Bus",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "cbd11fd3-3002-4907-b6c8-579f0e700e13",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.ServiceBus/namespaces/networkRuleSets",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.ServiceBus/namespaces/networkRuleSets/publicNetworkAccess",
+                            "notEquals": "Disabled"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.ServiceBus/namespaces",
+                            "field": "type"
+                        },
+                        {
+                            "field": "Microsoft.ServiceBus/namespaces/publicNetworkAccess",
+                            "notEquals": "Disabled"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

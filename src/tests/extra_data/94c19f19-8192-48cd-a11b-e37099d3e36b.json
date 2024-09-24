@@ -1,0 +1,30 @@
+{
+    "description": "Allows resource creation in the following locations only: North Europe, West Europe",
+    "displayName": "[Deprecated]: Allow resource creation only in European data centers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/94c19f19-8192-48cd-a11b-e37099d3e36b",
+    "metadata": {
+        "category": "General",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "94c19f19-8192-48cd-a11b-e37099d3e36b",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "not": {
+                "field": "location",
+                "in": [
+                    "northeurope",
+                    "westeurope"
+                ]
+            }
+        },
+        "then": {
+            "effect": "Deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

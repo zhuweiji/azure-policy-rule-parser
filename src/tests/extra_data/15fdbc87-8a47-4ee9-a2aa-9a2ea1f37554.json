@@ -1,0 +1,51 @@
+{
+    "description": "Security Center collects data from your Cloud Services (extended support) role instances to monitor for security vulnerabilities and threats.",
+    "displayName": "Log Analytics agent should be installed on your Cloud Services (extended support) role instances",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/15fdbc87-8a47-4ee9-a2aa-9a2ea1f37554",
+    "metadata": {
+        "category": "Security Center",
+        "version": "2.0.0"
+    },
+    "mode": "Indexed",
+    "name": "15fdbc87-8a47-4ee9-a2aa-9a2ea1f37554",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Compute/cloudServices",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "45cfe080-ceb1-a91e-9743-71551ed24e94",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

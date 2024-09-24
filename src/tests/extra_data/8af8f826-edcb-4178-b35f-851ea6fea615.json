@@ -1,0 +1,79 @@
+{
+    "description": "Secure communication between your containers with Azure Virtual Networks. When you specify a virtual network, resources within the virtual network can securely and privately communicate with each other.",
+    "displayName": "Azure Container Instance container group should deploy into a virtual network",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8af8f826-edcb-4178-b35f-851ea6fea615",
+    "metadata": {
+        "category": "Container Instance",
+        "version": "2.0.0"
+    },
+    "mode": "Indexed",
+    "name": "8af8f826-edcb-4178-b35f-851ea6fea615",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerInstance/containerGroups",
+                    "field": "type"
+                },
+                {
+                    "not": {
+                        "equals": "Private",
+                        "field": "Microsoft.ContainerInstance/containerGroups/ipAddress.type"
+                    }
+                },
+                {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "greater": "2021-03-01",
+                                    "value": "[requestContext().apiVersion]"
+                                },
+                                {
+                                    "exists": false,
+                                    "field": "Microsoft.ContainerInstance/containerGroups/subnetIds[*].id"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "lessOrEquals": "2021-03-01",
+                                    "value": "[requestContext().apiVersion]"
+                                },
+                                {
+                                    "exists": false,
+                                    "field": "Microsoft.ContainerInstance/containerGroups/networkProfile.id"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

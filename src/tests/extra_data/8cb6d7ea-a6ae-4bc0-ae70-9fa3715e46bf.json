@@ -1,0 +1,36 @@
+{
+    "description": "Microsoft implements this Data Quality and Integrity control",
+    "displayName": "Microsoft Managed Control 1822 - Data Quality",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/8cb6d7ea-a6ae-4bc0-ae70-9fa3715e46bf",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1822",
+        "category": "Regulatory Compliance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "8cb6d7ea-a6ae-4bc0-ae70-9fa3715e46bf",
+    "parameters": null,
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.Resources/subscriptions",
+                        "Microsoft.Resources/subscriptions/resourceGroups"
+                    ]
+                },
+                {
+                    "equals": "true",
+                    "value": "false"
+                }
+            ]
+        },
+        "then": {
+            "effect": "audit"
+        }
+    },
+    "policyType": "Static",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,65 @@
+{
+    "description": "Use a managed identity for enhanced authentication security. We recommend all customers who are still using API Apps to implement the built-in policy called 'App Service apps should use managed identity', which is scoped to include API apps in addition to Web Apps.",
+    "displayName": "[Deprecated]: Managed identity should be used in your API App",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c4d441f8-f9d9-4a9e-9cef-e82117cb3eef",
+    "metadata": {
+        "category": "App Service",
+        "deprecated": true,
+        "version": "2.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "c4d441f8-f9d9-4a9e-9cef-e82117cb3eef",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "*api"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Web/sites/config/managedServiceIdentityId"
+                        },
+                        {
+                            "exists": "true",
+                            "field": "Microsoft.Web/sites/config/xmanagedServiceIdentityId"
+                        }
+                    ]
+                },
+                "name": "web",
+                "type": "Microsoft.Web/sites/config"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

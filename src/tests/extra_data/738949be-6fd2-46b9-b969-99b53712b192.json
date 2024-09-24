@@ -1,0 +1,69 @@
+{
+    "description": "Require and reconfigure Synapse Workspaces to use Microsoft Entra-only authentication. This policy doesn't block workspaces from being created with local authentication enabled. It does block local authentication from being enabled and re-enables Microsoft Entra-only authentication on resources after create. Consider using the 'Microsoft Entra-only authentication' initiative instead to require both. Learn more at: https://aka.ms/Synapse.",
+    "displayName": "Configure Synapse Workspaces to use only Microsoft Entra identities for authentication",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/738949be-6fd2-46b9-b969-99b53712b192",
+    "metadata": {
+        "category": "Synapse",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "738949be-6fd2-46b9-b969-99b53712b192",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Modify",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Synapse/workspaces/azureADOnlyAuthentications",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Synapse/workspaces/azureADOnlyAuthentications/azureADOnlyAuthentication"
+                        },
+                        {
+                            "field": "Microsoft.Synapse/workspaces/azureADOnlyAuthentications/azureADOnlyAuthentication",
+                            "notEquals": true
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "field": "Microsoft.Synapse/workspaces/azureADOnlyAuthentications/azureADOnlyAuthentication",
+                        "operation": "addOrReplace",
+                        "value": true
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

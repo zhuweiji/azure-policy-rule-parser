@@ -1,0 +1,60 @@
+{
+    "description": "This policy is deprecated because Microsoft 365 App Compliance Program no longer requires Azure Firewall premium as the only network security control solution. Learn more details about the latest M365 APP Compliance requirements about network security controls at aka.ms/acat-cert2-seg-ops-nsc. Learn more about policy definition deprecation at aka.ms/policydefdeprecation.",
+    "displayName": "[Deprecated]: Bypass list of Intrusion Detection and Prevention System (IDPS) should be empty in Firewall Policy Premium",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f516dc7a-4543-4d40-aad6-98f76a706b50",
+    "metadata": {
+        "category": "Network",
+        "deprecated": true,
+        "version": "1.1.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "f516dc7a-4543-4d40-aad6-98f76a706b50",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/firewallPolicies",
+                    "field": "type"
+                },
+                {
+                    "equals": "Premium",
+                    "field": "Microsoft.Network/firewallPolicies/sku.tier"
+                },
+                {
+                    "exists": true,
+                    "field": "Microsoft.Network/firewallPolicies/intrusionDetection.configuration.bypassTrafficSettings"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/firewallPolicies/intrusionDetection.configuration.bypassTrafficSettings[*]"
+                    },
+                    "notEquals": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

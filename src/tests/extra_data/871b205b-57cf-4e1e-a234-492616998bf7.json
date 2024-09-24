@@ -1,0 +1,48 @@
+{
+    "description": "Disabling local authentication methods for FTP deployments improves security by ensuring that App Services exclusively require Microsoft Entra identities for authentication. Learn more at: https://aka.ms/app-service-disable-basic-auth.",
+    "displayName": "App Service apps should have local authentication methods disabled for FTP deployments",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/871b205b-57cf-4e1e-a234-492616998bf7",
+    "metadata": {
+        "category": "App Service",
+        "version": "1.0.3"
+    },
+    "mode": "Indexed",
+    "name": "871b205b-57cf-4e1e-a234-492616998bf7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Web/sites",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "equals": "false",
+                    "field": "Microsoft.Web/sites/basicPublishingCredentialsPolicies/allow"
+                },
+                "name": "ftp",
+                "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

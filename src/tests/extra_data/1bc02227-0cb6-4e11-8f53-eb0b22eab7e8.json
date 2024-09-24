@@ -1,0 +1,60 @@
+{
+    "description": "Improve Application Insights security by blocking log ingestion and querying from public networks. Only private-link connected networks will be able to ingest and query logs of this component. Learn more at https://aka.ms/AzMonPrivateLink#configure-application-insights.",
+    "displayName": "Application Insights components should block log ingestion and querying from public networks",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1bc02227-0cb6-4e11-8f53-eb0b22eab7e8",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "1bc02227-0cb6-4e11-8f53-eb0b22eab7e8",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Insights/components",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.Insights/components/publicNetworkAccessForIngestion",
+                            "notEquals": "disabled"
+                        },
+                        {
+                            "field": "Microsoft.Insights/components/publicNetworkAccessForQuery",
+                            "notEquals": "disabled"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

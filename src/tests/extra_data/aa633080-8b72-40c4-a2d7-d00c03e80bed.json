@@ -1,0 +1,52 @@
+{
+    "description": "This policy definition is no longer the recommended way to achieve its intent. Instead of continuing to use this policy, we recommend you assign this replacement policy with policy ID e3e008c3-56b9-4133-8fd7-d3347377402a. Learn more about policy definition deprecation at aka.ms/policydefdeprecation",
+    "displayName": "[Deprecated]: MFA should be enabled on accounts with owner permissions on your subscription",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/aa633080-8b72-40c4-a2d7-d00c03e80bed",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "3.0.0-deprecated"
+    },
+    "mode": "All",
+    "name": "aa633080-8b72-40c4-a2d7-d00c03e80bed",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "94290b00-4d0c-d7b4-7cea-064a9554e681",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,340 @@
+{
+    "description": "Windows machines should have the specified Group Policy settings in the category 'Security Options - Microsoft Network Client' for Microsoft network client/server and SMB v1. This policy requires that the Guest Configuration prerequisites have been deployed to the policy assignment scope. For details, visit https://aka.ms/gcpol.",
+    "displayName": "Windows machines should meet requirements for 'Security Options - Microsoft Network Client'",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d6c69680-54f0-4349-af10-94dd05f4225e",
+    "metadata": {
+        "category": "Guest Configuration",
+        "guestConfiguration": {
+            "configurationParameter": {
+                "MicrosoftNetworkClientDigitallySignCommunicationsAlways": "Microsoft network client: Digitally sign communications (always);ExpectedValue",
+                "MicrosoftNetworkClientSendUnencryptedPasswordToThirdpartySMBServers": "Microsoft network client: Send unencrypted password to third-party SMB servers;ExpectedValue",
+                "MicrosoftNetworkServerAmountOfIdleTimeRequiredBeforeSuspendingSession": "Microsoft network server: Amount of idle time required before suspending session;ExpectedValue",
+                "MicrosoftNetworkServerDigitallySignCommunicationsAlways": "Microsoft network server: Digitally sign communications (always);ExpectedValue",
+                "MicrosoftNetworkServerDisconnectClientsWhenLogonHoursExpire": "Microsoft network server: Disconnect clients when logon hours expire;ExpectedValue"
+            },
+            "name": "AzureBaseline_SecurityOptionsMicrosoftNetworkClient",
+            "version": "1.*"
+        },
+        "requiredProviders": [
+            "Microsoft.GuestConfiguration"
+        ],
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "d6c69680-54f0-4349-af10-94dd05f4225e",
+    "parameters": {
+        "IncludeArcMachines": {
+            "allowedValues": [
+                "true",
+                "false"
+            ],
+            "defaultValue": "false",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "By selecting this option, you agree to be charged monthly per Arc connected machine.",
+                "displayName": "Include Arc connected servers",
+                "portalReview": "true",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "MicrosoftNetworkClientDigitallySignCommunicationsAlways": {
+            "allowedValues": null,
+            "defaultValue": "1",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies whether packet signing is required by the SMB client component.",
+                "displayName": "Microsoft network client: Digitally sign communications (always)",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "MicrosoftNetworkClientSendUnencryptedPasswordToThirdpartySMBServers": {
+            "allowedValues": null,
+            "defaultValue": "0",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies whether the SMB redirector will send plaintext passwords during authentication to third-party SMB servers that do not support password encryption. It is recommended that you disable this policy setting unless there is a strong business case to enable it.",
+                "displayName": "Microsoft network client: Send unencrypted password to third-party SMB servers",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "MicrosoftNetworkServerAmountOfIdleTimeRequiredBeforeSuspendingSession": {
+            "allowedValues": null,
+            "defaultValue": "1,15",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies the amount of continuous idle time that must pass in an SMB session before the session is suspended because of inactivity. The format of the value is two integers separated by a comma, denoting an inclusive range.",
+                "displayName": "Microsoft network server: Amount of idle time required before suspending session",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "MicrosoftNetworkServerDigitallySignCommunicationsAlways": {
+            "allowedValues": null,
+            "defaultValue": "1",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies whether packet signing is required by the SMB server component.",
+                "displayName": "Microsoft network server: Digitally sign communications (always)",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "MicrosoftNetworkServerDisconnectClientsWhenLogonHoursExpire": {
+            "allowedValues": null,
+            "defaultValue": "1",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specifies whether to disconnect users who are connected to the local computer outside their user account's valid logon hours. This setting affects the Server Message Block (SMB) component. If you enable this policy setting you should also enable 'Network security: Force logoff when logon hours expire'",
+                "displayName": "Microsoft network server: Disconnect clients when logon hours expire",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of this policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.Compute/virtualMachines",
+                            "field": "type"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Compute/imagePublisher",
+                                    "in": [
+                                        "esri",
+                                        "incredibuild",
+                                        "MicrosoftDynamicsAX",
+                                        "MicrosoftSharepoint",
+                                        "MicrosoftVisualStudio",
+                                        "MicrosoftWindowsDesktop",
+                                        "MicrosoftWindowsServerHPCPack"
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftWindowsServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageSKU",
+                                            "notLike": "2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "MicrosoftSQLServer",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "notLike": "SQL2008*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-dsvm",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "dsvm-win*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "microsoft-ads",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "in": [
+                                                "standard-data-science-vm",
+                                                "windows-data-science-vm"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "batch",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "equals": "rendering-windows2016",
+                                            "field": "Microsoft.Compute/imageOffer"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "center-for-internet-security-inc",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "cis-windows-server-201*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "pivotal",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "bosh-windows-server*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "cloud-infrastructure-services",
+                                            "field": "Microsoft.Compute/imagePublisher"
+                                        },
+                                        {
+                                            "field": "Microsoft.Compute/imageOffer",
+                                            "like": "ad*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "true",
+                                                    "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration"
+                                                },
+                                                {
+                                                    "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+                                                    "like": "Windows*"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "exists": "false",
+                                                    "field": "Microsoft.Compute/imageSKU"
+                                                },
+                                                {
+                                                    "allOf": [
+                                                        {
+                                                            "field": "Microsoft.Compute/imageSKU",
+                                                            "notLike": "2008*"
+                                                        },
+                                                        {
+                                                            "field": "Microsoft.Compute/imageOffer",
+                                                            "notLike": "SQL2008*"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "true",
+                            "value": "[parameters('IncludeArcMachines')]"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.HybridCompute/machines",
+                                            "field": "type"
+                                        },
+                                        {
+                                            "field": "Microsoft.HybridCompute/imageOffer",
+                                            "like": "windows*"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "allOf": [
+                                        {
+                                            "equals": "Microsoft.ConnectedVMwarevSphere/virtualMachines",
+                                            "field": "type"
+                                        },
+                                        {
+                                            "field": "Microsoft.ConnectedVMwarevSphere/virtualMachines/osProfile.osType",
+                                            "like": "windows*"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Compliant",
+                            "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/complianceStatus"
+                        },
+                        {
+                            "equals": "[base64(concat('Microsoft network client: Digitally sign communications (always);ExpectedValue', '=', parameters('MicrosoftNetworkClientDigitallySignCommunicationsAlways'), ',', 'Microsoft network client: Send unencrypted password to third-party SMB servers;ExpectedValue', '=', parameters('MicrosoftNetworkClientSendUnencryptedPasswordToThirdpartySMBServers'), ',', 'Microsoft network server: Amount of idle time required before suspending session;ExpectedValue', '=', parameters('MicrosoftNetworkServerAmountOfIdleTimeRequiredBeforeSuspendingSession'), ',', 'Microsoft network server: Digitally sign communications (always);ExpectedValue', '=', parameters('MicrosoftNetworkServerDigitallySignCommunicationsAlways'), ',', 'Microsoft network server: Disconnect clients when logon hours expire;ExpectedValue', '=', parameters('MicrosoftNetworkServerDisconnectClientsWhenLogonHoursExpire')))]",
+                            "field": "Microsoft.GuestConfiguration/guestConfigurationAssignments/parameterHash"
+                        }
+                    ]
+                },
+                "name": "AzureBaseline_SecurityOptionsMicrosoftNetworkClient",
+                "type": "Microsoft.GuestConfiguration/guestConfigurationAssignments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,49 @@
+{
+    "description": "It is important to enable encryption of Automation account variable assets when storing sensitive data",
+    "displayName": "Automation account variables should be encrypted",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/3657f5a0-770e-44a3-b44e-9431ba1e9735",
+    "metadata": {
+        "category": "Automation",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "3657f5a0-770e-44a3-b44e-9431ba1e9735",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Automation/automationAccounts/variables",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Automation/automationAccounts/variables/isEncrypted",
+                    "notEquals": "true"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

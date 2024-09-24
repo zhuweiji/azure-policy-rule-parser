@@ -1,0 +1,82 @@
+{
+    "description": "Create Azure Monitor logs cluster with customer-managed keys encryption. By default, the log data is encrypted with service-managed keys, but customer-managed keys are commonly required to meet regulatory compliance. Customer-managed key in Azure Monitor gives you more control over the access to you data, see https://docs.microsoft.com/azure/azure-monitor/platform/customer-managed-keys.",
+    "displayName": "Azure Monitor Logs clusters should be encrypted with customer-managed key",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1f68a601-6e6d-4e42-babf-3f643a047ea2",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "1f68a601-6e6d-4e42-babf-3f643a047ea2",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.OperationalInsights/clusters",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "anyOf": [
+                                {
+                                    "equals": "",
+                                    "field": "Microsoft.OperationalInsights/clusters/keyVaultProperties.keyVaultUri"
+                                },
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.OperationalInsights/clusters/keyVaultProperties.keyVaultUri"
+                                }
+                            ]
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "equals": "",
+                                    "field": "Microsoft.OperationalInsights/clusters/keyVaultProperties.keyName"
+                                },
+                                {
+                                    "exists": "false",
+                                    "field": "Microsoft.OperationalInsights/clusters/keyVaultProperties.keyName"
+                                }
+                            ]
+                        },
+                        {
+                            "not": {
+                                "exists": "true",
+                                "field": "Microsoft.OperationalInsights/clusters/keyVaultProperties.keyVersion"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,243 @@
+{
+    "description": "Enforce backup for all Azure Disks (Managed Disks) that do not contain a given tag to a central backup vault. Learn more at https://aka.ms/AB-DiskBackupAzPolicies",
+    "displayName": "[Preview]: Configure backup for Azure Disks (Managed Disks) without a given tag to an existing backup vault in the same region",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6e68865f-f3cd-48ec-9bba-54795672eaa4",
+    "metadata": {
+        "category": "Backup",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "6e68865f-f3cd-48ec-9bba-54795672eaa4",
+    "parameters": {
+        "backupPolicyId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specify the backup policy to be used for configuring backup for Azure Disks. The selected Azure Backup policy should be of type Azure Disks. This policy needs to be in a vault that is present in the location chosen above. For example - /subscriptions/<SubscriptionId>/resourceGroups/<resourceGroupName>/providers/Microsoft.DataProtection/vaults/<VaultName>/backupPolicies/<BackupPolicyName>. Also, make sure that this Backup vault's managed identity has Disk Backup Reader role on the disks to be backed up, and Backup vault's managed identity has Disk Snapshot Contributor on the snapshot resource group.",
+                "displayName": "Backup Policy (of type Azure Disks from a vault in the location chosen above)",
+                "strongType": "Microsoft.DataProtection/backupVaults/backupPolicies"
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "exclusionTagName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Name of the tag to use for excluding Azure Disks from the scope of this policy. This should be used along with the Exclusion Tag Values parameter.",
+                "displayName": "Exclusion Tag Name",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "exclusionTagValues": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Value of the tag to use for excluding Azure Disks from the scope of this policy (in case of multiple values, use a comma-separated list). This should be used along with the Exclusion Tag Name parameter.",
+                "displayName": "Exclusion Tag Values",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "snapshotResourceGroupName": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specify the name of the resource group (in the same subscription where the policy is being deployed) where the snapshot of the Azure disks will be created. Ensure that the backup vault's managed identity has the Disk Snapshot Contributor role on this resource group.",
+                "displayName": "Snapshot Resource Group",
+                "strongType": "existingResourceGroups"
+            },
+            "type": "String"
+        },
+        "vaultLocation": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Specify the location of the Azure Disks that you want to protect. Azure Disks should be backed up to a vault in the same location. For example - CanadaCentral",
+                "displayName": "Location (Specify the location of the Azure Disks that you want to protect)",
+                "strongType": "location"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/disks",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "not": {
+                                "field": "[concat('tags[', parameters('exclusionTagName'), ']')]",
+                                "in": "[parameters('exclusionTagValues')]"
+                            }
+                        },
+                        {
+                            "equals": "true",
+                            "value": "[empty(parameters('exclusionTagValues'))]"
+                        },
+                        {
+                            "equals": "true",
+                            "value": "[empty(parameters('exclusionTagName'))]"
+                        }
+                    ]
+                },
+                {
+                    "equals": "[parameters('vaultLocation')]",
+                    "field": "location"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "backupPolicyId": {
+                                "value": "[parameters('backupPolicyId')]"
+                            },
+                            "diskResourceId": {
+                                "value": "[field('id')]"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "snapshotResourceGroupName": {
+                                "value": "[parameters('snapshotResourceGroupName')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "backupPolicyId": {
+                                    "metadata": {
+                                        "description": "Backup Policy Id"
+                                    },
+                                    "type": "string"
+                                },
+                                "diskResourceId": {
+                                    "metadata": {
+                                        "description": "ResourceId of the Azure Disk"
+                                    },
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "metadata": {
+                                        "description": "Location for all resources"
+                                    },
+                                    "type": "string"
+                                },
+                                "snapshotResourceGroupName": {
+                                    "metadata": {
+                                        "description": "Resource Group for the disk snapshots"
+                                    },
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-04-01",
+                                    "name": "[concat('DeployProtection-',uniqueString(variables('diskName')))]",
+                                    "properties": {
+                                        "mode": "Incremental",
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {},
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2021-01-01",
+                                                    "name": "[concat(variables('vaultName'), '/', variables('diskName'))]",
+                                                    "properties": {
+                                                        "dataSourceInfo": {
+                                                            "datasourceType": "[variables('dataSourceType')]",
+                                                            "objectType": "Datasource",
+                                                            "resourceID": "[parameters('diskResourceId')]",
+                                                            "resourceLocation": "[parameters('location')]",
+                                                            "resourceName": "[variables('diskName')]",
+                                                            "resourceType": "[variables('resourceType')]",
+                                                            "resourceUri": "[parameters('diskResourceId')]"
+                                                        },
+                                                        "objectType": "BackupInstance",
+                                                        "policyInfo": {
+                                                            "name": "[variables('backupPolicyName')]",
+                                                            "policyId": "[parameters('backupPolicyId')]",
+                                                            "policyParameters": {
+                                                                "dataStoreParametersList": [
+                                                                    {
+                                                                        "dataStoreType": "OperationalStore",
+                                                                        "objectType": "AzureOperationalStoreParameters",
+                                                                        "resourceGroupId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('snapshotResourceGroupName'))]"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "validationType": "DeepValidation"
+                                                    },
+                                                    "type": "Microsoft.DataProtection/backupvaults/backupInstances"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "resourceGroup": "[variables('vaultResourceGroup')]",
+                                    "subscriptionId": "[variables('vaultSubscriptionId')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "backupPolicyName": "[first(skip(split(parameters('backupPolicyId'), '/'), 10))]",
+                                "dataSourceType": "Microsoft.Compute/disks",
+                                "diskName": "[first(skip(split(parameters('diskResourceId'), '/'), 8))]",
+                                "resourceType": "Microsoft.Compute/disks",
+                                "vaultName": "[first(skip(split(parameters('backupPolicyId'), '/'), 8))]",
+                                "vaultResourceGroup": "[first(skip(split(parameters('backupPolicyId'), '/'), 4))]",
+                                "vaultSubscriptionId": "[first(skip(split(parameters('backupPolicyId'), '/'), 2))]"
+                            }
+                        }
+                    }
+                },
+                "evaluationDelay": "AfterProvisioning",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/5e467623-bb1f-42f4-a55d-6e525e11384b"
+                ],
+                "type": "Microsoft.DataProtection/backupInstances"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

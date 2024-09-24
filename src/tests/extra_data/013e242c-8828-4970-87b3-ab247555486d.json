@@ -1,0 +1,59 @@
+{
+    "description": "Ensure protection of your Azure Virtual Machines by enabling Azure Backup. Azure Backup is a secure and cost effective data protection solution for Azure.",
+    "displayName": "Azure Backup should be enabled for Virtual Machines",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/013e242c-8828-4970-87b3-ab247555486d",
+    "metadata": {
+        "category": "Backup",
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "013e242c-8828-4970-87b3-ab247555486d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "field": "id",
+                    "notContains": "/resourceGroups/databricks-rg-"
+                },
+                {
+                    "field": "Microsoft.Compute/imagePublisher",
+                    "notEquals": "azureopenshift"
+                },
+                {
+                    "field": "Microsoft.Compute/imagePublisher",
+                    "notEquals": "AzureDatabricks"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "type": "Microsoft.RecoveryServices/backupprotecteditems"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,82 @@
+{
+    "description": "The policy defines the naming conventions for the specified resource types in the specified regions",
+    "displayName": "[Deprecated]: The resource name should follow naming conventions in the region.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0e7201a7-b325-480a-907d-5f198e95e1d3",
+    "metadata": {
+        "category": "System Policy",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "0e7201a7-b325-480a-907d-5f198e95e1d3",
+    "parameters": {
+        "resourceLocations": {
+            "allowedValues": null,
+            "defaultValue": [
+                "brazilsouth"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of locations where the resources should follow naming conventions.",
+                "displayName": "Resource locations",
+                "strongType": "location"
+            },
+            "type": "Array"
+        },
+        "resourceNameTemplate": {
+            "allowedValues": null,
+            "defaultValue": "*nsg",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The resource name template. It is using like operator. You provide a wildcard * in the value. The value shouldn't have more than one wildcard *.",
+                "displayName": "Resource name template",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "resourceTypes": {
+            "allowedValues": null,
+            "defaultValue": [
+                "Microsoft.Network/networkSecurityGroups"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of resource types that should follow naming conventions.",
+                "displayName": "Resource types",
+                "strongType": "resourceTypes"
+            },
+            "type": "Array"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": "[parameters('resourceTypes')]"
+                },
+                {
+                    "field": "location",
+                    "in": "[parameters('resourceLocations')]"
+                },
+                {
+                    "equals": false,
+                    "value": "[empty(parameters('resourceNameTemplate'))]"
+                },
+                {
+                    "field": "name",
+                    "notLike": "[parameters('resourceNameTemplate')]"
+                }
+            ]
+        },
+        "then": {
+            "effect": "deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

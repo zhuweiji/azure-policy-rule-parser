@@ -1,0 +1,53 @@
+{
+    "description": "The content directory of an API app should be located on an Azure file share. To learn more about using Azure Files for hosting app service content refer to https://go.microsoft.com/fwlink/?linkid=2151594. We recommend all customers who are still using API Apps to implement the built-in policy called 'App Service apps should use an Azure file shares for its content directory', which is scoped to include API apps in addition to Web Apps.",
+    "displayName": "[Deprecated]: API apps should use an Azure file share for its content directory",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/324c7761-08db-4474-9661-d1039abc92ee",
+    "metadata": {
+        "category": "App Service",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "324c7761-08db-4474-9661-d1039abc92ee",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/sites",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "*api"
+                },
+                {
+                    "equals": "true",
+                    "field": "Microsoft.Web/sites/storageAccountRequired"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

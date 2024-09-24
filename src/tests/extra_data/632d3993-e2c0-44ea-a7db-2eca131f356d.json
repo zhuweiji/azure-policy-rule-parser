@@ -1,0 +1,52 @@
+{
+    "description": "This policy is deprecated because sometimes it is impractical to enable all WAF rules. Instead of continuing to use this policy, we recommend you instead assign this replacement policy with policy ID 564feb30-bf6a-4854-b4bb-0d2d2d1e6c66.  Learn more details about the latest M365 APP Compliance requirements about network security controls at aka.ms/acat-cert2-seg-ops-nsc. Learn more about policy definition deprecation at aka.ms/policydefdeprecation.",
+    "displayName": "[Deprecated]: Web Application Firewall (WAF) should enable all firewall rules for Application Gateway",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/632d3993-e2c0-44ea-a7db-2eca131f356d",
+    "metadata": {
+        "category": "Network",
+        "deprecated": true,
+        "version": "1.1.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "632d3993-e2c0-44ea-a7db-2eca131f356d",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/applicationGateways",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/applicationGateways/webApplicationFirewallConfiguration.disabledRuleGroups[*]"
+                    },
+                    "notEquals": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,67 @@
+{
+    "description": "TLS 1.0 and 1.1 are out-of-date protocols that do not support modern cryptographic algorithms. Disabling inbound TLS 1.0 and 1.1 traffic helps secure apps in an App Service Environment.",
+    "displayName": "App Service Environment should have TLS 1.0 and 1.1 disabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/d6545c6b-dd9d-4265-91e6-0b451e2f1c50",
+    "metadata": {
+        "category": "App Service",
+        "version": "2.0.1"
+    },
+    "mode": "Indexed",
+    "name": "d6545c6b-dd9d-4265-91e6-0b451e2f1c50",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/hostingEnvironments",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "ASE*"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Web/HostingEnvironments/clusterSettings[*]",
+                        "where": {
+                            "allOf": [
+                                {
+                                    "equals": "DisableTls1.0",
+                                    "field": "Microsoft.Web/HostingEnvironments/clusterSettings[*].name"
+                                },
+                                {
+                                    "equals": "1",
+                                    "field": "Microsoft.Web/HostingEnvironments/clusterSettings[*].value"
+                                }
+                            ]
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

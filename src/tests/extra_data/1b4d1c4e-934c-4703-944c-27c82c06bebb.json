@@ -1,0 +1,55 @@
+{
+    "description": "Enable logs for Azure AI services resources. This enables you to recreate activity trails for investigation purposes, when a security incident occurs or your network is compromised",
+    "displayName": "Diagnostic logs in Azure AI services resources should be enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/1b4d1c4e-934c-4703-944c-27c82c06bebb",
+    "metadata": {
+        "category": "Azure Ai Services",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "1b4d1c4e-934c-4703-944c-27c82c06bebb",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "equals": "Microsoft.CognitiveServices/accounts",
+                    "field": "type"
+                },
+                {
+                    "equals": "Microsoft.Search/searchServices",
+                    "field": "type"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "exists": true,
+                    "field": "Microsoft.Insights/diagnosticSettings/logs[*]"
+                },
+                "type": "Microsoft.Insights/diagnosticSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,109 @@
+{
+    "description": "Configure supported virtual machines to automatically enable vTPM to facilitate Measured Boot and other OS security features that require a TPM. Once enabled, vTPM can be used to attest boot integrity.",
+    "displayName": "[Preview]: Configure supported virtual machines to automatically enable vTPM",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/e494853f-93c3-4e44-9210-d12f61a64b34",
+    "metadata": {
+        "category": "Security Center",
+        "preview": true,
+        "version": "2.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "e494853f-93c3-4e44-9210-d12f61a64b34",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "equals": "TrustedLaunch",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.securityType"
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings"
+                },
+                {
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.vTpmEnabled",
+                    "notEquals": "true"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-12-01",
+                                    "location": "[parameters('location')]",
+                                    "name": "[parameters('vmName')]",
+                                    "properties": {
+                                        "securityProfile": {
+                                            "securityType": "TrustedLaunch",
+                                            "uefiSettings": {
+                                                "vTpmEnabled": "true"
+                                            }
+                                        }
+                                    },
+                                    "type": "Microsoft.Compute/virtualMachines"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "true",
+                    "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.vTpmEnabled"
+                },
+                "name": "[field('fullName')]",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                ],
+                "type": "Microsoft.Compute/virtualMachines"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

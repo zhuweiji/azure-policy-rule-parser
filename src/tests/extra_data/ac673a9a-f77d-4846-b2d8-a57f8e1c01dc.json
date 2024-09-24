@@ -1,0 +1,61 @@
+{
+    "description": "Enable the key vault firewall so that the key vault is not accessible by default to any public IPs. You can then configure specific IP ranges to limit access to those networks. Learn more at: https://docs.microsoft.com/azure/key-vault/general/network-security",
+    "displayName": "Configure key vaults to enable firewall",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ac673a9a-f77d-4846-b2d8-a57f8e1c01dc",
+    "metadata": {
+        "category": "Key Vault",
+        "version": "1.1.1"
+    },
+    "mode": "Indexed",
+    "name": "ac673a9a-f77d-4846-b2d8-a57f8e1c01dc",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.KeyVault/vaults",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.KeyVault/vaults/networkAcls.defaultAction",
+                    "notEquals": "Deny"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "field": "Microsoft.KeyVault/vaults/networkAcls.defaultAction",
+                        "operation": "addOrReplace",
+                        "value": "Deny"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

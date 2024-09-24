@@ -1,0 +1,55 @@
+{
+    "description": "This policy ensures that bot protection is enabled in all Azure Application Gateway Web Application Firewall (WAF) policies",
+    "displayName": "Bot Protection should be enabled for Azure Application Gateway WAF",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ebea0d86-7fbd-42e3-8a46-27e7568c2525",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ebea0d86-7fbd-42e3-8a46-27e7568c2525",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/managedRules.managedRuleSets[*]",
+                        "where": {
+                            "equals": "Microsoft_BotManagerRuleSet",
+                            "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/managedRules.managedRuleSets[*].ruleSetType"
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,53 @@
+{
+    "description": "Enabling double encryption helps protect and safeguard your data to meet your organizational security and compliance commitments. When double encryption has been enabled, data in the storage account is encrypted twice, once at the service level and once at the infrastructure level, using two different encryption algorithms and two different keys.",
+    "displayName": "Event Hub namespaces should have double encryption enabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/836cd60e-87f3-4e6a-a27c-29d687f01a4c",
+    "metadata": {
+        "category": "Event Hub",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "836cd60e-87f3-4e6a-a27c-29d687f01a4c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the audit policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.EventHub/namespaces",
+                    "field": "type"
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.EventHub/namespaces/clusterArmId"
+                },
+                {
+                    "field": "Microsoft.EventHub/namespaces/encryption.requireInfrastructureEncryption",
+                    "notEquals": "true"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

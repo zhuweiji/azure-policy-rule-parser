@@ -1,0 +1,128 @@
+{
+    "description": "Enable Extended Security Updates (ESUs) license to keep Windows 2012 machines protected even after their support lifecycle has ended. Learn How to prepare to deliver Extended Security Updates for Windows Server 2012 through AzureArc please visit https://learn.microsoft.com/en-us/azure/azure-arc/servers/prepare-extended-security-updates. For more details on pricing please visit https://aka.ms/ArcWS2012ESUPricing",
+    "displayName": "[Preview]: Enable Extended Security Updates (ESUs) license to keep Windows 2012 machines protected after their support lifecycle has ended.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/4864134f-d306-4ff5-94d8-ea4553b18c97",
+    "metadata": {
+        "category": "Azure Arc",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "4864134f-d306-4ff5-94d8-ea4553b18c97",
+    "parameters": {
+        "ESULicenseResourceId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "assignPermissions": true,
+                "description": "Resource ID of the Extended Security Updates (ESUs) license.",
+                "displayName": "Extended Security Updates (ESUs) license Resource ID.",
+                "portalReview": "true",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HybridCompute/imageOffer",
+                    "like": "windows*"
+                },
+                {
+                    "equals": "Eligible",
+                    "field": "Microsoft.HybridCompute/machines/licenseProfile.esuProfile.esuEligibility"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "ESULicenseResourceId": {
+                                "value": "[parameters('ESULicenseResourceId')]"
+                            },
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "type": {
+                                "value": "[field('type')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "ESULicenseResourceId": {
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2023-06-20-preview",
+                                    "condition": "[equals(toLower(parameters('type')), toLower('Microsoft.HybridCompute/machines'))]",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'), '/default')]",
+                                    "properties": {
+                                        "esuProfile": {
+                                            "assignedLicense": "[parameters('ESULicenseResourceId')]"
+                                        }
+                                    },
+                                    "type": "Microsoft.HybridCompute/machines/licenseProfiles"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "[parameters('ESULicenseResourceId')]",
+                    "field": "Microsoft.HybridCompute/machines/licenseProfiles/esuProfile.assignedLicense"
+                },
+                "name": "default",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/48b40c6e-82e0-4eb3-90d5-19e40f49b624",
+                    "/providers/Microsoft.Authorization/roleDefinitions/088ab73d-1256-47ae-bea9-9de8e7131f31"
+                ],
+                "type": "Microsoft.HybridCompute/machines/licenseProfiles"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

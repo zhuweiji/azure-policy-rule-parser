@@ -1,0 +1,51 @@
+{
+    "description": "Block creation of MCPP resources.",
+    "displayName": "Do Not Allow MCPP resources",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/335d919a-dc24-4a94-b7cb-9f81b1a8156f",
+    "metadata": {
+        "category": "General",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "335d919a-dc24-4a94-b7cb-9f81b1a8156f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Deny",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.CloudPartnerProgram/memberships"
+                    ]
+                },
+                {
+                    "exists": true,
+                    "value": "[field('type')]"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

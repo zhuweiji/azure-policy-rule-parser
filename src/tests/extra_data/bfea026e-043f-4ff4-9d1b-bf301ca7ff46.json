@@ -1,0 +1,170 @@
+{
+    "description": "Configure auto-assessment (every 24 hours) for OS updates on Azure Arc-enabled servers. You can control the scope of assignment according to machine subscription, resource group, location or tag. Learn more about this for Windows: https://aka.ms/computevm-windowspatchassessmentmode, for Linux: https://aka.ms/computevm-linuxpatchassessmentmode.",
+    "displayName": "Configure periodic checking for missing system updates on azure Arc-enabled servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/bfea026e-043f-4ff4-9d1b-bf301ca7ff46",
+    "metadata": {
+        "category": "Azure Update Manager",
+        "version": "2.2.1"
+    },
+    "mode": "Indexed",
+    "name": "bfea026e-043f-4ff4-9d1b-bf301ca7ff46",
+    "parameters": {
+        "assessmentMode": {
+            "allowedValues": [
+                "ImageDefault",
+                "AutomaticByPlatform"
+            ],
+            "defaultValue": "AutomaticByPlatform",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Assessment mode for the machines.",
+                "displayName": "Assessment mode",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "locations": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of locations from which machines need to be targeted.",
+                "displayName": "Machines locations",
+                "strongType": "location"
+            },
+            "type": "Array"
+        },
+        "osType": {
+            "allowedValues": [
+                "Windows",
+                "Linux"
+            ],
+            "defaultValue": "Windows",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "OS type for the machines.",
+                "displayName": "OS type",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagOperator": {
+            "allowedValues": [
+                "All",
+                "Any"
+            ],
+            "defaultValue": "Any",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Matching condition for resource tags",
+                "displayName": "Tag operator",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "tagValues": {
+            "allowedValues": null,
+            "defaultValue": {},
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The list of tags that need to matched for getting target machines.",
+                "displayName": "Tags on machines",
+                "strongType": null
+            },
+            "type": "Object"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "equals": "[parameters('osType')]",
+                    "field": "Microsoft.HybridCompute/machines/osName"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": true,
+                            "value": "[empty(parameters('locations'))]"
+                        },
+                        {
+                            "field": "location",
+                            "in": "[parameters('locations')]"
+                        }
+                    ]
+                },
+                {
+                    "field": "[if(equals(tolower(parameters('osType')), 'windows'), 'Microsoft.HybridCompute/machines/osProfile.windowsConfiguration.patchSettings.assessmentMode', 'Microsoft.HybridCompute/machines/osProfile.linuxConfiguration.patchSettings.assessmentMode')]",
+                    "notEquals": "[parameters('assessmentMode')]"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": true,
+                            "value": "[empty(parameters('tagValues'))]"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "Any",
+                                    "value": "[parameters('tagOperator')]"
+                                },
+                                {
+                                    "equals": true,
+                                    "value": "[greaterOrEquals(if(empty(field('tags')), 0, length(intersection(parameters('tagValues'), field('tags')))), 1)]"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "All",
+                                    "value": "[parameters('tagOperator')]"
+                                },
+                                {
+                                    "equals": true,
+                                    "value": "[equals(if(empty(field('tags')), 0, length(intersection(parameters('tagValues'), field('tags')))), length(parameters('tagValues')))]"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[equals(tolower(parameters('osType')), 'windows')]",
+                        "field": "Microsoft.HybridCompute/machines/osProfile.windowsConfiguration.patchSettings.assessmentMode",
+                        "operation": "addOrReplace",
+                        "value": "[parameters('assessmentMode')]"
+                    },
+                    {
+                        "condition": "[equals(tolower(parameters('osType')), 'linux')]",
+                        "field": "Microsoft.HybridCompute/machines/osProfile.linuxConfiguration.patchSettings.assessmentMode",
+                        "operation": "addOrReplace",
+                        "value": "[parameters('assessmentMode')]"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/cd570a14-e51a-42ad-bac8-bafd67325302"
+                ]
+            },
+            "effect": "modify"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

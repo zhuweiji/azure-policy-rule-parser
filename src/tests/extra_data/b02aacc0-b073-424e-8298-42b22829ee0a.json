@@ -1,0 +1,71 @@
+{
+    "description": "This policy audits the activity log if the retention is not set for 365 days or forever (retention days set to 0).",
+    "displayName": "Activity log should be retained for at least one year",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b02aacc0-b073-424e-8298-42b22829ee0a",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "b02aacc0-b073-424e-8298-42b22829ee0a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "true",
+                                    "field": "Microsoft.Insights/logProfiles/retentionPolicy.enabled"
+                                },
+                                {
+                                    "equals": "365",
+                                    "field": "Microsoft.Insights/logProfiles/retentionPolicy.days"
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "equals": "false",
+                                    "field": "Microsoft.Insights/logProfiles/retentionPolicy.enabled"
+                                },
+                                {
+                                    "equals": "0",
+                                    "field": "Microsoft.Insights/logProfiles/retentionPolicy.days"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "type": "Microsoft.Insights/logProfiles"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

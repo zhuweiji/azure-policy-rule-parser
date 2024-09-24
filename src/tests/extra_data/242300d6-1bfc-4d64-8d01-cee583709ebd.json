@@ -1,0 +1,227 @@
+{
+    "description": "Microsoft Defender for SQL collects events from the agent and uses them to provide security alerts and tailored hardening tasks (recommendations). Create a resource group and Log Analytics workspace in the same region as the machine.",
+    "displayName": "Configure the Microsoft Defender for SQL Log Analytics workspace",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/242300d6-1bfc-4d64-8d01-cee583709ebd",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.4.0"
+    },
+    "mode": "Indexed",
+    "name": "242300d6-1bfc-4d64-8d01-cee583709ebd",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.SqlVirtualMachine/SqlVirtualMachines",
+                            "field": "type"
+                        },
+                        {
+                            "greaterOrEquals": "2023-10-01",
+                            "value": "[requestContext().apiVersion]"
+                        },
+                        {
+                            "equals": "Windows",
+                            "field": "Microsoft.SqlVirtualMachine/sqlVirtualMachines/osType"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "equals": "Microsoft.HybridCompute/machines",
+                            "field": "type"
+                        },
+                        {
+                            "equals": "Windows",
+                            "field": "Microsoft.HybridCompute/machines/osName"
+                        },
+                        {
+                            "equals": "true",
+                            "field": "Microsoft.HybridCompute/machines/mssqlDiscovered"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "eastus",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "resourceGroup": {
+                                "value": "[resourceGroup().name]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "resourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2022-09-01",
+                                    "location": "[variables('defaultRGLocation')]",
+                                    "name": "[variables('defaultRGName')]",
+                                    "tags": {
+                                        "createdBy": "MicrosoftDefenderForSQL"
+                                    },
+                                    "type": "Microsoft.Resources/resourceGroups"
+                                },
+                                {
+                                    "apiVersion": "2022-09-01",
+                                    "dependsOn": [
+                                        "[variables('defaultRGName')]"
+                                    ],
+                                    "name": "[variables('deployWorkspace')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "defaultRGLocation": {
+                                                "value": "[variables('defaultRGLocation')]"
+                                            },
+                                            "workspaceName": {
+                                                "value": "[variables('workspaceName')]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "defaultRGLocation": {
+                                                    "type": "string"
+                                                },
+                                                "workspaceName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2022-10-01",
+                                                    "location": "[parameters('defaultRGLocation')]",
+                                                    "name": "[parameters('workspaceName')]",
+                                                    "properties": {
+                                                        "retentionInDays": 30,
+                                                        "sku": {
+                                                            "name": "pergb2018"
+                                                        }
+                                                    },
+                                                    "tags": {
+                                                        "createdBy": "MicrosoftDefenderForSQL"
+                                                    },
+                                                    "type": "Microsoft.OperationalInsights/workspaces"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "resourceGroup": "[variables('defaultRGName')]",
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "defaultRGLocation": "[parameters('location')]",
+                                "defaultRGName": "[concat('DefaultResourceGroup-', variables('locationCode'))]",
+                                "deployWorkspace": "[concat('deployWS-', variables('workspaceName'))]",
+                                "locationCode": "[if(contains(variables('locationLongNameToShortMap'), parameters('location')), variables('locationLongNameToShortMap')[parameters('location')], parameters('location'))]",
+                                "locationLongNameToShortMap": {
+                                    "australiacentral": "CAU",
+                                    "australiaeast": "EAU",
+                                    "australiasoutheast": "SEAU",
+                                    "brazilsouth": "CQ",
+                                    "canadacentral": "CCA",
+                                    "canadaeast": "CCA",
+                                    "centralindia": "CIN",
+                                    "centralus": "CUS",
+                                    "eastasia": "EA",
+                                    "eastus": "EUS",
+                                    "eastus2": "EUS2",
+                                    "eastus2euap": "eus2p",
+                                    "francecentral": "PAR",
+                                    "germanywestcentral": "DEWC",
+                                    "japaneast": "EJP",
+                                    "jioindiawest": "CIN",
+                                    "koreacentral": "SE",
+                                    "koreasouth": "SE",
+                                    "northcentralus": "NCUS",
+                                    "northeurope": "NEU",
+                                    "norwayeast": "NOE",
+                                    "southafricanorth": "JNB",
+                                    "southcentralus": "SCUS",
+                                    "southeastasia": "SEA",
+                                    "southindia": "CIN",
+                                    "swedencentral": "SEC",
+                                    "switzerlandnorth": "CHN",
+                                    "switzerlandwest": "CHW",
+                                    "uaenorth": "DXB",
+                                    "uksouth": "SUK",
+                                    "ukwest": "WUK",
+                                    "westcentralus": "WCUS",
+                                    "westeurope": "WEU",
+                                    "westindia": "CIN",
+                                    "westus": "WUS",
+                                    "westus2": "WUS2"
+                                },
+                                "subscriptionId": "[subscription().subscriptionId]",
+                                "workspaceName": "[concat('D4SQL-', replace(subscription().subscriptionId, '-', ''),'-', parameters('location'))]"
+                            }
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "[field('location')]",
+                            "field": "location"
+                        },
+                        {
+                            "equals": "[concat('D4SQL-', replace(subscription().subscriptionId, '-', ''),'-', field('location'))]",
+                            "field": "name"
+                        }
+                    ]
+                },
+                "existenceScope": "subscription",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.OperationalInsights/workspaces"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

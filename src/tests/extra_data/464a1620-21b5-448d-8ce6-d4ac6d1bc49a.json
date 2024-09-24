@@ -1,0 +1,49 @@
+{
+    "description": "Azure Private Link lets you connect your virtual network to Azure services without a public IP address at the source or destination which protect your resources against public data leakage risks. The policy limits you to Private Link enabled SKUs for Azure SignalR Service. Learn more about private link at: https://aka.ms/asrs/privatelink.",
+    "displayName": "Azure SignalR Service should use a Private Link enabled SKU",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/464a1620-21b5-448d-8ce6-d4ac6d1bc49a",
+    "metadata": {
+        "category": "SignalR",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "464a1620-21b5-448d-8ce6-d4ac6d1bc49a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.SignalRService/SignalR",
+                    "field": "type"
+                },
+                {
+                    "equals": "Free",
+                    "field": "Microsoft.SignalRService/SignalR/sku.tier"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

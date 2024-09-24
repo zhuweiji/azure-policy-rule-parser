@@ -1,0 +1,176 @@
+{
+    "description": "Automate the deployment of Azure Monitor Agent extension on your Linux Arc-enabled machines for collecting telemetry data from the guest OS. This policy will install the extension if the region is supported. Learn more: https://aka.ms/AMAOverview.",
+    "displayName": "Configure Linux Arc-enabled machines to run Azure Monitor Agent",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/845857af-0333-4c5d-bbbc-6076697da122",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "2.4.0"
+    },
+    "mode": "Indexed",
+    "name": "845857af-0333-4c5d-bbbc-6076697da122",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "equals": "linux",
+                    "field": "Microsoft.HybridCompute/machines/osName"
+                },
+                {
+                    "field": "location",
+                    "in": [
+                        "australiacentral",
+                        "australiacentral2",
+                        "australiaeast",
+                        "australiasoutheast",
+                        "brazilsouth",
+                        "brazilsoutheast",
+                        "canadacentral",
+                        "canadaeast",
+                        "centralindia",
+                        "centralus",
+                        "centraluseuap",
+                        "eastasia",
+                        "eastus",
+                        "eastus2",
+                        "eastus2euap",
+                        "francecentral",
+                        "francesouth",
+                        "germanynorth",
+                        "germanywestcentral",
+                        "israelcentral",
+                        "italynorth",
+                        "japaneast",
+                        "japanwest",
+                        "jioindiacentral",
+                        "jioindiawest",
+                        "koreacentral",
+                        "koreasouth",
+                        "malaysiasouth",
+                        "mexicocentral",
+                        "northcentralus",
+                        "northeurope",
+                        "norwayeast",
+                        "norwaywest",
+                        "polandcentral",
+                        "qatarcentral",
+                        "southafricanorth",
+                        "southafricawest",
+                        "southcentralus",
+                        "southeastasia",
+                        "southindia",
+                        "spaincentral",
+                        "swedencentral",
+                        "swedensouth",
+                        "switzerlandnorth",
+                        "switzerlandwest",
+                        "taiwannorth",
+                        "taiwannorthwest",
+                        "uaecentral",
+                        "uaenorth",
+                        "uksouth",
+                        "ukwest",
+                        "westcentralus",
+                        "westeurope",
+                        "westindia",
+                        "westus",
+                        "westus2",
+                        "westus3"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "location": {
+                                "value": "[field('location')]"
+                            },
+                            "vmName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "location": {
+                                    "type": "string"
+                                },
+                                "vmName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-05-20",
+                                    "location": "[parameters('location')]",
+                                    "name": "[concat(parameters('vmName'), '/', variables('extensionName'))]",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "enableAutomaticUpgrade": true,
+                                        "publisher": "[variables('extensionPublisher')]",
+                                        "type": "[variables('extensionType')]"
+                                    },
+                                    "type": "Microsoft.HybridCompute/machines/extensions"
+                                }
+                            ],
+                            "variables": {
+                                "extensionName": "AzureMonitorLinuxAgent",
+                                "extensionPublisher": "Microsoft.Azure.Monitor",
+                                "extensionType": "AzureMonitorLinuxAgent"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "AzureMonitorLinuxAgent",
+                            "field": "Microsoft.HybridCompute/machines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Monitor",
+                            "field": "Microsoft.HybridCompute/machines/extensions/publisher"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.HybridCompute/machines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/cd570a14-e51a-42ad-bac8-bafd67325302"
+                ],
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

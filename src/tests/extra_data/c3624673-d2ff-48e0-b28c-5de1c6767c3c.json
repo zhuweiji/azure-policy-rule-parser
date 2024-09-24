@@ -1,0 +1,93 @@
+{
+    "description": "Require and reconfigure Synapse Workspaces to be created with Microsoft Entra-only authentication. This policy doesn't block local authentication from being re-enabled on resources after create. Consider using the 'Microsoft Entra-only authentication' initiative instead to require both. Learn more at: https://aka.ms/Synapse.",
+    "displayName": "Configure Synapse Workspaces to use only Microsoft Entra identities for authentication during workspace creation",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c3624673-d2ff-48e0-b28c-5de1c6767c3c",
+    "metadata": {
+        "category": "Synapse",
+        "version": "1.2.0"
+    },
+    "mode": "Indexed",
+    "name": "c3624673-d2ff-48e0-b28c-5de1c6767c3c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Modify",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Synapse/workspaces",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Synapse/workspaces/extraProperties"
+                        },
+                        {
+                            "equals": 1,
+                            "value": "[if(empty(field('Microsoft.Synapse/workspaces/extraProperties')), 0, length(intersection(field('Microsoft.Synapse/workspaces/extraProperties'), createObject('WorkspaceType', 'Normal'))))]"
+                        }
+                    ]
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.Synapse/workspaces/azureADOnlyAuthentication"
+                        },
+                        {
+                            "field": "Microsoft.Synapse/workspaces/azureADOnlyAuthentication",
+                            "notEquals": true
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "exists": true,
+                                    "field": "Microsoft.Synapse/workspaces/settings"
+                                },
+                                {
+                                    "equals": 1,
+                                    "value": "[if(empty(field('Microsoft.Synapse/workspaces/settings')), 0, length(intersection(field('Microsoft.Synapse/workspaces/settings'), createObject('azureADOnlyAuthentication', createObject('value', 'true', 'state', 'Inconsistent')))))]"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "field": "Microsoft.Synapse/workspaces/azureADOnlyAuthentication",
+                        "operation": "addOrReplace",
+                        "value": true
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

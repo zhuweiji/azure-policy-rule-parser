@@ -1,0 +1,50 @@
+{
+    "description": "Disallows creating Pool resources if a valid subnet resource is not provided.",
+    "displayName": "[Preview]: Microsoft Managed DevOps Pools should be provided with valid subnet resource in order to configure with own virtual network.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0d6d79a8-8406-4e87-814d-2dcd83b2c355",
+    "metadata": {
+        "category": "DevOpsInfrastructure",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "0d6d79a8-8406-4e87-814d-2dcd83b2c355",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DevOpsInfrastructure/pools",
+                    "field": "type"
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.DevOpsInfrastructure/pools/fabricProfile.Vmss.networkProfile.subnetId"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

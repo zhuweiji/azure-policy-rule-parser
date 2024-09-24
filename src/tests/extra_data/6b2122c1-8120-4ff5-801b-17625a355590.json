@@ -1,0 +1,64 @@
+{
+    "description": "The Azure Policy extension for Azure Arc provides at-scale enforcements and safeguards on your Arc enabled Kubernetes clusters in a centralized, consistent manner. Learn more at https://aka.ms/akspolicydoc.",
+    "displayName": "Azure Arc enabled Kubernetes clusters should have the Azure Policy extension installed",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6b2122c1-8120-4ff5-801b-17625a355590",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "6b2122c1-8120-4ff5-801b-17625a355590",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Kubernetes/connectedClusters",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Kubernetes/connectedClusters/distribution",
+                    "notEquals": "aks"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "evaluationDelay": "AfterProvisioning",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "microsoft.policyinsights",
+                            "field": "Microsoft.KubernetesConfiguration/extensions/extensionType"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.KubernetesConfiguration/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "type": "Microsoft.KubernetesConfiguration/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

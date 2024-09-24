@@ -1,0 +1,63 @@
+{
+    "description": "Enable RBAC permission model across Key Vaults. Learn more at: https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-migration",
+    "displayName": "Azure Key Vault should use RBAC permission model",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/12d4fa5e-1f9f-4c21-97a9-b99b3c6611b5",
+    "metadata": {
+        "category": "Key Vault",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "12d4fa5e-1f9f-4c21-97a9-b99b3c6611b5",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.KeyVault/vaults",
+                    "field": "type"
+                },
+                {
+                    "not": {
+                        "equals": "recover",
+                        "field": "Microsoft.KeyVault/vaults/createMode"
+                    }
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.KeyVault/vaults/enableRbacAuthorization"
+                        },
+                        {
+                            "equals": "false",
+                            "field": "Microsoft.KeyVault/vaults/enableRbacAuthorization"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

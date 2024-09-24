@@ -1,0 +1,34 @@
+{
+    "description": "Allows resource creation in the following locations only: Central US, East US, East US2, North Central US, South Central US, West US",
+    "displayName": "[Deprecated]: Allow resource creation only in United States data centers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/983211ba-f348-4758-983b-21fa29294869",
+    "metadata": {
+        "category": "General",
+        "deprecated": true,
+        "version": "1.0.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "983211ba-f348-4758-983b-21fa29294869",
+    "parameters": {},
+    "policyRule": {
+        "if": {
+            "not": {
+                "field": "location",
+                "in": [
+                    "centralus",
+                    "eastus",
+                    "eastus2",
+                    "northcentralus",
+                    "southcentralus",
+                    "westus"
+                ]
+            }
+        },
+        "then": {
+            "effect": "Deny"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

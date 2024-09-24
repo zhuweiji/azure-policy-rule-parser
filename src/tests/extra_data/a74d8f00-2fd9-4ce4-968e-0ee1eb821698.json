@@ -1,0 +1,45 @@
+{
+    "description": "This policy enforces load balancers do not have public IPs in an Azure Kubernetes Service cluster. This policy is deprecated, please visit https://aka.ms/kubepolicydoc for instructions on using new Kubernetes policies.",
+    "displayName": "[Deprecated]: Enforce internal load balancers in AKS",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/a74d8f00-2fd9-4ce4-968e-0ee1eb821698",
+    "metadata": {
+        "category": "Kubernetes service",
+        "deprecated": true,
+        "version": "1.0.1-deprecated"
+    },
+    "mode": "Microsoft.ContainerService.Data",
+    "name": "a74d8f00-2fd9-4ce4-968e-0ee1eb821698",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "EnforceRegoPolicy",
+                "Disabled"
+            ],
+            "defaultValue": "EnforceRegoPolicy",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.ContainerService/managedClusters",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "policy": "https://raw.githubusercontent.com/Azure/azure-policy/master/built-in-references/KubernetesService/loadbalancer-no-publicips/limited-preview/gatekeeperpolicy.rego",
+                "policyId": "LoadBalancersInternal"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

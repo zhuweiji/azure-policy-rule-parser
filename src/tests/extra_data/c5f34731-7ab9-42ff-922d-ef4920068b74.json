@@ -1,0 +1,48 @@
+{
+    "description": "Disabling public network access improves security by ensuring that the resource isn't exposed on the public internet. You can limit exposure of your resources by creating private endpoints instead.",
+    "displayName": "Azure Health Data Services de-identification service should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/c5f34731-7ab9-42ff-922d-ef4920068b74",
+    "metadata": {
+        "category": "Health Deidentification Service",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "c5f34731-7ab9-42ff-922d-ef4920068b74",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HealthDataAIServices/deidServices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.HealthDataAIServices/deidServices/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

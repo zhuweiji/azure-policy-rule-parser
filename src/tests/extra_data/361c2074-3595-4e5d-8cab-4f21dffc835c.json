@@ -1,0 +1,80 @@
+{
+    "description": "This policy enables Defender for Storage (Classic) on storage accounts.",
+    "displayName": "Deploy Defender for Storage (Classic) on storage accounts",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/361c2074-3595-4e5d-8cab-4f21dffc835c",
+    "metadata": {
+        "category": "Storage",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "361c2074-3595-4e5d-8cab-4f21dffc835c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Storage/storageAccounts",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "storageAccountName": {
+                                "value": "[field('name')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "storageAccountName": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2019-01-01",
+                                    "name": "[concat(parameters('storageAccountName'), '/Microsoft.Security/current')]",
+                                    "properties": {
+                                        "isEnabled": true
+                                    },
+                                    "type": "Microsoft.Storage/storageAccounts/providers/advancedThreatProtectionSettings"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "true",
+                    "field": "Microsoft.Security/advancedThreatProtectionSettings/isEnabled"
+                },
+                "name": "current",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+                ],
+                "type": "Microsoft.Security/advancedThreatProtectionSettings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

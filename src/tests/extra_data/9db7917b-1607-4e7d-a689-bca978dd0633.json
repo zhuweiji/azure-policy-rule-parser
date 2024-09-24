@@ -1,0 +1,52 @@
+{
+    "description": "Use your own storage account to control the application definition data when this is a regulatory or compliance requirement. You can choose to store your managed application definition within a storage account provided by you during creation, so that its location and access can be fully managed by you to fulfill regulatory compliance requirements.",
+    "displayName": "Application definition for Managed Application should use customer provided storage account",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9db7917b-1607-4e7d-a689-bca978dd0633",
+    "metadata": {
+        "category": "Managed Application",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "9db7917b-1607-4e7d-a689-bca978dd0633",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Solutions/applicationDefinitions",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.Solutions/applicationDefinitions/storageAccountId"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

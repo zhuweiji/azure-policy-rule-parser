@@ -1,0 +1,65 @@
+{
+    "description": "To ensure apps deployed in an App Service Environment are not accessible over public internet, one should deploy App Service Environment with an IP address in virtual network. To set the IP address to a virtual network IP, the App Service Environment must be deployed with an internal load balancer.",
+    "displayName": "App Service Environment apps should not be reachable over public internet",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2d048aca-6479-4923-88f5-e2ac295d9af3",
+    "metadata": {
+        "category": "App Service",
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "2d048aca-6479-4923-88f5-e2ac295d9af3",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Web/hostingEnvironments",
+                    "field": "type"
+                },
+                {
+                    "field": "kind",
+                    "like": "ASE*"
+                },
+                {
+                    "field": "Microsoft.Web/HostingEnvironments/internalLoadBalancingMode",
+                    "notContains": "2"
+                },
+                {
+                    "field": "Microsoft.Web/HostingEnvironments/internalLoadBalancingMode",
+                    "notContains": "3"
+                },
+                {
+                    "field": "Microsoft.Web/HostingEnvironments/internalLoadBalancingMode",
+                    "notContains": "Web"
+                },
+                {
+                    "field": "Microsoft.Web/HostingEnvironments/internalLoadBalancingMode",
+                    "notContains": "Publishing"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

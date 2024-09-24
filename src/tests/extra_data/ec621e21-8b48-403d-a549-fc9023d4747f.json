@@ -1,0 +1,129 @@
+{
+    "description": "Windows Arc-enabled machines should be monitored and secured through the deployed Azure Monitor Agent. The Azure Monitor Agent collects telemetry data from the guest OS. Windows Arc-enabled machines in supported regions are monitored for Azure Monitor Agent deployment. Learn more: https://aka.ms/AMAOverview.",
+    "displayName": "Windows Arc-enabled machines should have Azure Monitor Agent installed",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ec621e21-8b48-403d-a549-fc9023d4747f",
+    "metadata": {
+        "category": "Monitoring",
+        "version": "1.2.0"
+    },
+    "mode": "Indexed",
+    "name": "ec621e21-8b48-403d-a549-fc9023d4747f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HybridCompute/machines",
+                    "field": "type"
+                },
+                {
+                    "equals": "Windows",
+                    "field": "Microsoft.HybridCompute/machines/osName"
+                },
+                {
+                    "field": "location",
+                    "in": [
+                        "australiacentral",
+                        "australiacentral2",
+                        "australiaeast",
+                        "australiasoutheast",
+                        "brazilsouth",
+                        "brazilsoutheast",
+                        "canadacentral",
+                        "canadaeast",
+                        "centralindia",
+                        "centralus",
+                        "centraluseuap",
+                        "eastasia",
+                        "eastus",
+                        "eastus2",
+                        "eastus2euap",
+                        "francecentral",
+                        "francesouth",
+                        "germanynorth",
+                        "germanywestcentral",
+                        "israelcentral",
+                        "italynorth",
+                        "japaneast",
+                        "japanwest",
+                        "jioindiacentral",
+                        "jioindiawest",
+                        "koreacentral",
+                        "koreasouth",
+                        "malaysiasouth",
+                        "mexicocentral",
+                        "northcentralus",
+                        "northeurope",
+                        "norwayeast",
+                        "norwaywest",
+                        "polandcentral",
+                        "qatarcentral",
+                        "southafricanorth",
+                        "southafricawest",
+                        "southcentralus",
+                        "southeastasia",
+                        "southindia",
+                        "spaincentral",
+                        "swedencentral",
+                        "swedensouth",
+                        "switzerlandnorth",
+                        "switzerlandwest",
+                        "taiwannorth",
+                        "taiwannorthwest",
+                        "uaecentral",
+                        "uaenorth",
+                        "uksouth",
+                        "ukwest",
+                        "westcentralus",
+                        "westeurope",
+                        "westindia",
+                        "westus",
+                        "westus2",
+                        "westus3"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "AzureMonitorWindowsAgent",
+                            "field": "Microsoft.HybridCompute/machines/extensions/type"
+                        },
+                        {
+                            "equals": "Microsoft.Azure.Monitor",
+                            "field": "Microsoft.HybridCompute/machines/extensions/publisher"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.HybridCompute/machines/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "type": "Microsoft.HybridCompute/machines/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

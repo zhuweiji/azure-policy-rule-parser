@@ -1,0 +1,67 @@
+{
+    "description": "Azure Private Link lets you connect your virtual network to Azure services without a public IP address at the source or destination. The Private Link platform handles the connectivity between the consumer and services over the Azure backbone network. By mapping private endpoints to Azure Recovery Services vaults, data leakage risks are reduced. Learn more about private links at: https://aka.ms/AB-PrivateEndpoints.",
+    "displayName": "[Preview]: Azure Recovery Services vaults should use private link for backup",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/deeddb44-9f94-4903-9fa0-081d524406e3",
+    "metadata": {
+        "category": "Backup",
+        "preview": true,
+        "version": "2.0.0-preview"
+    },
+    "mode": "Indexed",
+    "name": "deeddb44-9f94-4903-9fa0-081d524406e3",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.RecoveryServices/vaults",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.RecoveryServices/vaults/privateEndpointConnections[*]",
+                        "where": {
+                            "allOf": [
+                                {
+                                    "equals": "Approved",
+                                    "field": "Microsoft.RecoveryServices/vaults/privateEndpointConnections[*].privateLinkServiceConnectionState.status"
+                                },
+                                {
+                                    "equals": "Succeeded",
+                                    "field": "Microsoft.RecoveryServices/vaults/privateEndpointConnections[*].provisioningState"
+                                },
+                                {
+                                    "contains": ".backup",
+                                    "field": "Microsoft.RecoveryServices/vaults/privateEndpointConnections[*].id"
+                                }
+                            ]
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

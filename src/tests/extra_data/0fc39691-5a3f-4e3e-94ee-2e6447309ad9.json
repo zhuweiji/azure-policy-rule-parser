@@ -1,0 +1,54 @@
+{
+    "description": "As outlined in the unified vulnerability assessment solution strategy blog (https://aka.ms/MDCUnifiedVAblog), we have made a strategic decision to unify all vulnerability assessment solutions in Defender for Cloud to use Defender vulnerability management. As part of this change, the built-in Qualys offering is now retired. See https://aka.ms/TransitionToMDVM4Containers for more information and transition guidelines.",
+    "displayName": "[Deprecated]: Azure running container images should have vulnerabilities resolved (powered by Qualys)",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0fc39691-5a3f-4e3e-94ee-2e6447309ad9",
+    "metadata": {
+        "category": "Security Center",
+        "deprecated": true,
+        "version": "1.1.0-deprecated"
+    },
+    "mode": "Indexed",
+    "name": "0fc39691-5a3f-4e3e-94ee-2e6447309ad9",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "Disabled",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.ContainerService/managedClusters"
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "41503391-efa5-47ee-9282-4eff6131462c",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

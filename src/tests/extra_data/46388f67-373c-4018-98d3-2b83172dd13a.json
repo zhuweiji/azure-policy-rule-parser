@@ -1,0 +1,48 @@
+{
+    "description": "Use customer-managed keys to manage the encryption at rest of your Fluid Relay server. By default, customer data is encrypted with service-managed keys, but CMKs are commonly required to meet regulatory compliance standards. Customer-managed keys enable the data to be encrypted with an Azure Key Vault key created and owned by you, with full control and responsibility, including rotation and management. Learn more at https://docs.microsoft.com/azure/azure-fluid-relay/concepts/customer-managed-keys.",
+    "displayName": "Fluid Relay should use customer-managed keys to encrypt data at rest",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/46388f67-373c-4018-98d3-2b83172dd13a",
+    "metadata": {
+        "category": "Fluid Relay",
+        "version": "1.0.0"
+    },
+    "mode": "All",
+    "name": "46388f67-373c-4018-98d3-2b83172dd13a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.FluidRelay/fluidRelayServers",
+                    "field": "type"
+                },
+                {
+                    "exists": "false",
+                    "field": "Microsoft.FluidRelay/fluidRelayServers/encryption.customerManagedKeyEncryption"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,62 @@
+{
+    "description": "Disable public network access for your Cognitive Services resource so that it's not accessible over the public internet. This can reduce data leakage risks. Learn more at: https://go.microsoft.com/fwlink/?linkid=2129800.",
+    "displayName": "Configure Cognitive Services accounts to disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/47ba1dd7-28d9-4b07-a8d5-9813bed64e0c",
+    "metadata": {
+        "category": "Cognitive Services",
+        "version": "3.0.0"
+    },
+    "mode": "Indexed",
+    "name": "47ba1dd7-28d9-4b07-a8d5-9813bed64e0c",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Disabled",
+                "Modify"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.CognitiveServices/accounts",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.CognitiveServices/accounts/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2017-04-18')]",
+                        "field": "Microsoft.CognitiveServices/accounts/publicNetworkAccess",
+                        "operation": "addOrReplace",
+                        "value": "Disabled"
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

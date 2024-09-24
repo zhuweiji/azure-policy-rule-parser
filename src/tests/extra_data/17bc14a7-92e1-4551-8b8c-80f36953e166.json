@@ -1,0 +1,120 @@
+{
+    "description": "Microsoft Defender for Storage is an Azure-native layer of security intelligence that detects potential threats to your storage accounts.\nThis policy will enable the basic Defender for Storage capabilities (Activity Monitoring). To enable full protection, which also includes On-upload Malware Scanning and Sensitive Data Threat Detection use the full enablement policy: aka.ms/DefenderForStoragePolicy. To learn more about Defender for Storage capabilities and benefits, visit aka.ms/DefenderForStorage.",
+    "displayName": "Configure basic Microsoft Defender for Storage to be enabled (Activity Monitoring only)",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/17bc14a7-92e1-4551-8b8c-80f36953e166",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "17bc14a7-92e1-4551-8b8c-80f36953e166",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "subPlan": {
+            "allowedValues": [
+                "PerTransaction",
+                "PerStorageAccount",
+                "DefenderForStorageV2"
+            ],
+            "defaultValue": "DefenderForStorageV2",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Sets the sub plan for Storage bundle",
+                "displayName": "Storage bundle's sub plan",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "location": "westeurope",
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "subPlan": {
+                                "value": "[parameters('subPlan')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "outputs": {},
+                            "parameters": {
+                                "subPlan": {
+                                    "type": "String"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2023-01-01",
+                                    "name": "StorageAccounts",
+                                    "properties": {
+                                        "extensions": [
+                                            {
+                                                "isEnabled": "False",
+                                                "name": "OnUploadMalwareScanning"
+                                            },
+                                            {
+                                                "isEnabled": "False",
+                                                "name": "SensitiveDataDiscovery"
+                                            }
+                                        ],
+                                        "pricingTier": "Standard",
+                                        "subPlan": "[parameters('subPlan')]"
+                                    },
+                                    "type": "Microsoft.Security/pricings"
+                                }
+                            ],
+                            "variables": {}
+                        }
+                    }
+                },
+                "deploymentScope": "subscription",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "Standard",
+                            "field": "Microsoft.Security/pricings/pricingTier"
+                        },
+                        {
+                            "equals": "[parameters('subPlan')]",
+                            "field": "Microsoft.Security/pricings/subPlan"
+                        }
+                    ]
+                },
+                "existenceScope": "subscription",
+                "name": "StorageAccounts",
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+                ],
+                "type": "Microsoft.Security/pricings"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,63 @@
+{
+    "description": "Guest attestation is performed by sending a trusted log (TCGLog) to an attestation server. The server uses these logs to determine whether boot components are trustworthy. This assessment is intended to detect compromises of the boot chain which might be the result of a bootkit or rootkit infection. This assessment only applies to Trusted Launch enabled virtual machines that have Guest Attestation extension installed.",
+    "displayName": "[Preview]: Virtual machines guest attestation status should be healthy",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f6358610-e532-4236-b178-4c65865eb262",
+    "metadata": {
+        "category": "Security Center",
+        "preview": true,
+        "version": "1.0.0-preview"
+    },
+    "mode": "All",
+    "name": "f6358610-e532-4236-b178-4c65865eb262",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "AuditIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines/extensions",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Compute/virtualMachines/extensions/publisher",
+                    "in": [
+                        "Microsoft.Azure.Security.WindowsAttestation",
+                        "Microsoft.Azure.Security.LinuxAttestation"
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "existenceCondition": {
+                    "field": "Microsoft.Security/assessments/status.code",
+                    "in": [
+                        "NotApplicable",
+                        "Healthy"
+                    ]
+                },
+                "name": "b7604066-ed76-45f9-a5c1-c97e4812dc55",
+                "type": "Microsoft.Security/assessments"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

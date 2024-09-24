@@ -1,0 +1,52 @@
+{
+    "description": "Data can be tampered with during transmission. Protocols exist that provide encryption to address problems of misuse and tampering. To ensure your bots are communicating only over encrypted channels, set the endpoint to a valid HTTPS URI. This ensures the HTTPS protocol is used to encrypt your data in transit and is also often a requirement for compliance with regulatory or industry standards. Please visit: https://docs.microsoft.com/azure/bot-service/bot-builder-security-guidelines.",
+    "displayName": "Bot Service endpoint should be a valid HTTPS URI",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6164527b-e1ee-4882-8673-572f425f5e0a",
+    "metadata": {
+        "category": "Bot Service",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "6164527b-e1ee-4882-8673-572f425f5e0a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "audit",
+                "Audit",
+                "deny",
+                "Deny",
+                "disabled",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The desired effect of the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.BotService/botServices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.BotService/botServices/endpoint",
+                    "notLike": "https://*"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

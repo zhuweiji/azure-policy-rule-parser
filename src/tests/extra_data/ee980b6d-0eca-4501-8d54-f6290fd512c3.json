@@ -1,0 +1,49 @@
+{
+    "description": "Disabling public network access improves security by ensuring that your Azure Cognitive Search service is not exposed on the public internet. Creating private endpoints can limit exposure of your Search service. Learn more at: https://aka.ms/azure-cognitive-search/inbound-private-endpoints.",
+    "displayName": "Azure Cognitive Search services should disable public network access",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/ee980b6d-0eca-4501-8d54-f6290fd512c3",
+    "metadata": {
+        "category": "Search",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "ee980b6d-0eca-4501-8d54-f6290fd512c3",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Search/searchServices",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Search/searchServices/publicNetworkAccess",
+                    "notEquals": "Disabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

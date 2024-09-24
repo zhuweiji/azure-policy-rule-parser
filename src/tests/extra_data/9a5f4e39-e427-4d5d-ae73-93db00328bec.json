@@ -1,0 +1,240 @@
+{
+    "description": "Ensure that required annotations are attached on a given Kubernetes resource kind for improved resource management of your Kubernetes resources. This policy is generally available for Kubernetes Service (AKS), and preview for Azure Arc enabled Kubernetes. For more information, see https://aka.ms/kubepolicydoc.",
+    "displayName": "Kubernetes resources should have required annotations",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/9a5f4e39-e427-4d5d-ae73-93db00328bec",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "3.2.0"
+    },
+    "mode": "Microsoft.Kubernetes.Data",
+    "name": "9a5f4e39-e427-4d5d-ae73-93db00328bec",
+    "parameters": {
+        "annotations": {
+            "allowedValues": null,
+            "defaultValue": {
+                "annotations": []
+            },
+            "metadata": {
+                "assignPermissions": null,
+                "description": "Annotations to be forced on certain Kubernetes resource. The annotations requires key and value allowed regex. Note that annotation values only support string values",
+                "displayName": "Required Annotations",
+                "portalReview": true,
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "properties": {
+                    "annotations": {
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowedRegex": {
+                                    "description": "Provide the allowed annotation value as a regex match.",
+                                    "type": "string"
+                                },
+                                "key": {
+                                    "description": "Provide a required annotation key to enforce on a Kubernetes resource kind.",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "key",
+                                "allowedRegex"
+                            ],
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "annotations"
+                ],
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created or updated, but flags it as non-compliant. 'Deny' blocks the non-compliant resource creation or update. 'Disabled' turns off the policy.",
+                "displayName": "Effect",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "excludedNamespaces": {
+            "allowedValues": null,
+            "defaultValue": [
+                "kube-system",
+                "gatekeeper-system",
+                "azure-arc",
+                "azure-extensions-usage-system"
+            ],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to exclude from policy evaluation. System namespaces \"kube-system\", \"gatekeeper-system\" and \"azure-arc\" are always excluded by design. \"azure-extensions-usage-system\" is optional to remove.",
+                "displayName": "Namespace exclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "kind": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "assignPermissions": null,
+                "description": "Kubernetes resource kind to enforce annotations for. One assignment can only restrict single resource kind. It is case-sensitive, please start with upper case. For example \"Pod\"",
+                "displayName": "Resource Kind",
+                "portalReview": true,
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "labelSelector": {
+            "allowedValues": null,
+            "defaultValue": {},
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Label query to select Kubernetes resources for policy evaluation. An empty label selector matches all Kubernetes resources.",
+                "displayName": "Kubernetes label selector",
+                "strongType": null
+            },
+            "schema": {
+                "additionalProperties": false,
+                "description": "A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all resources.",
+                "properties": {
+                    "matchExpressions": {
+                        "description": "matchExpressions is a list of values, a key, and an operator.",
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "key": {
+                                    "description": "key is the label key that the selector applies to.",
+                                    "type": "string"
+                                },
+                                "operator": {
+                                    "description": "operator represents a key's relationship to a set of values.",
+                                    "enum": [
+                                        "In",
+                                        "NotIn",
+                                        "Exists",
+                                        "DoesNotExist"
+                                    ],
+                                    "type": "string"
+                                },
+                                "values": {
+                                    "description": "Values is an array of string values. If the operator is In or NotIn, the values array should not be empty. If the operator is Exists or DoesNotExist, the values array must be empty.",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "required": [
+                                "key",
+                                "operator"
+                            ],
+                            "type": "object"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "matchLabels": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "matchLabels is a map of {key,value} pairs.",
+                        "minProperties": 1,
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "Object"
+        },
+        "namespaces": {
+            "allowedValues": null,
+            "defaultValue": [],
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "List of Kubernetes namespaces to only include in policy evaluation. An empty list means the policy is applied to all resources in all namespaces.",
+                "displayName": "Namespace inclusions",
+                "strongType": null
+            },
+            "type": "Array"
+        },
+        "source": {
+            "allowedValues": [
+                "All",
+                "Generated",
+                "Original"
+            ],
+            "defaultValue": "Original",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The source k8s object for constraint evaluation. 'Original' means only evaluate against the specific GroupVersionKind specified in the policy definition. 'Generated' means only evaluate against k8s objects generated by Gatekeeper ExpansionTemplates. 'All' means evaluate against both the original object and any generated ones.",
+                "displayName": "Source",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "warn": {
+            "allowedValues": null,
+            "defaultValue": false,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Whether or not to return warnings back to the user in the kubectl cli",
+                "displayName": "Warn",
+                "strongType": null
+            },
+            "type": "Boolean"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "in": [
+                "Microsoft.Kubernetes/connectedClusters",
+                "Microsoft.ContainerService/managedClusters"
+            ]
+        },
+        "then": {
+            "details": {
+                "apiGroups": [
+                    ""
+                ],
+                "excludedNamespaces": "[parameters('excludedNamespaces')]",
+                "kinds": [
+                    "[parameters('kind')]"
+                ],
+                "labelSelector": "[parameters('labelSelector')]",
+                "namespaces": "[parameters('namespaces')]",
+                "source": "[parameters('source')]",
+                "templateInfo": {
+                    "sourceType": "PublicURL",
+                    "url": "https://store.policy.core.windows.net/kubernetes/enforce-required-annotation/v1/template.yaml"
+                },
+                "values": {
+                    "annotations": "[parameters('annotations').annotations]"
+                },
+                "warn": "[parameters('warn')]"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

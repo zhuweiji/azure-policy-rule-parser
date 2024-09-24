@@ -1,0 +1,116 @@
+{
+    "description": "Deploy Azure Policy's extension for Azure Arc to provide at-scale enforcements and safeguard your Arc enabled Kubernetes clusters in a centralized, consistent manner. Learn more at https://aka.ms/akspolicydoc.",
+    "displayName": "Configure Azure Arc enabled Kubernetes clusters to install the Azure Policy extension",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0adc5395-9169-4b9b-8687-af838d69410a",
+    "metadata": {
+        "category": "Kubernetes",
+        "version": "1.1.0"
+    },
+    "mode": "Indexed",
+    "name": "0adc5395-9169-4b9b-8687-af838d69410a",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Kubernetes/connectedClusters",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Kubernetes/connectedClusters/distribution",
+                    "notEquals": "aks"
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "clusterRegion": {
+                                "value": "[field('location')]"
+                            },
+                            "clusterResourceId": {
+                                "value": "[field('id')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "clusterRegion": {
+                                    "type": "string"
+                                },
+                                "clusterResourceId": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2021-09-01",
+                                    "identity": {
+                                        "type": "SystemAssigned"
+                                    },
+                                    "location": "[parameters('clusterRegion')]",
+                                    "name": "azurepolicy",
+                                    "properties": {
+                                        "autoUpgradeMinorVersion": true,
+                                        "configurationProtectedSettings": {},
+                                        "configurationSettings": {},
+                                        "extensionType": "microsoft.policyinsights",
+                                        "releaseTrain": "Stable",
+                                        "scope": {
+                                            "Cluster": {
+                                                "releaseNamespace": "kube-system"
+                                            }
+                                        }
+                                    },
+                                    "scope": "[concat('Microsoft.Kubernetes/connectedClusters/', split(parameters('clusterResourceId'),'/')[8])]",
+                                    "type": "Microsoft.KubernetesConfiguration/extensions"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "evaluationDelay": "AfterProvisioning",
+                "existenceCondition": {
+                    "allOf": [
+                        {
+                            "equals": "microsoft.policyinsights",
+                            "field": "Microsoft.KubernetesConfiguration/extensions/extensionType"
+                        },
+                        {
+                            "equals": "Succeeded",
+                            "field": "Microsoft.KubernetesConfiguration/extensions/provisioningState"
+                        }
+                    ]
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/85cb6faf-e071-4c9b-8136-154b5a04f717"
+                ],
+                "type": "Microsoft.KubernetesConfiguration/extensions"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

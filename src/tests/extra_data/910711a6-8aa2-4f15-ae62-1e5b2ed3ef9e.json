@@ -1,0 +1,62 @@
+{
+    "description": "Disable local authentication methods so that your Azure ServiceBus namespaces exclusively require Microsoft Entra ID identities for authentication. Learn more at: https://aka.ms/disablelocalauth-sb.",
+    "displayName": "Configure Azure Service Bus namespaces to disable local authentication",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/910711a6-8aa2-4f15-ae62-1e5b2ed3ef9e",
+    "metadata": {
+        "category": "Service Bus",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "910711a6-8aa2-4f15-ae62-1e5b2ed3ef9e",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Modify",
+                "Disabled"
+            ],
+            "defaultValue": "Modify",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ServiceBus/namespaces",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.ServiceBus/namespaces/disableLocalAuth",
+                    "notEquals": true
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "conflictEffect": "audit",
+                "operations": [
+                    {
+                        "condition": "[greaterOrEquals(requestContext().apiVersion, '2021-06-01-preview')]",
+                        "field": "Microsoft.ServiceBus/namespaces/disableLocalAuth",
+                        "operation": "addOrReplace",
+                        "value": true
+                    }
+                ],
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/090c5cfd-751d-490a-894a-3ce6f1109419"
+                ]
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,64 @@
+{
+    "description": "Microsoft Defender for SQL provides functionality for surfacing and mitigating potential database vulnerabilities, detecting anomalous activities that could indicate threats to SQL databases, discovering and classifying sensitive data. Once enabled, the protection status indicates that the resource is actively monitored. Even when Defender is enabled, multiple configuration settings should be validated on the agent, machine, workspace and SQL server to ensure active protection.",
+    "displayName": "Microsoft Defender for SQL status should be protected for Arc-enabled SQL Servers",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/938c4981-c2c9-4168-9cd6-972b8675f906",
+    "metadata": {
+        "category": "Security Center",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "938c4981-c2c9-4168-9cd6-972b8675f906",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.AzureArcData/sqlServerInstances",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "field": "Microsoft.AzureArcData/sqlServerInstances/azureDefenderStatus",
+                            "notEquals": "Protected"
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "Equals": "Protected",
+                                    "field": "Microsoft.AzureArcData/sqlServerInstances/azureDefenderStatus"
+                                },
+                                {
+                                    "less": "[addDays(utcNow(), -1)]",
+                                    "value": "[field('Microsoft.AzureArcData/sqlServerInstances/azureDefenderStatusLastUpdated')]"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

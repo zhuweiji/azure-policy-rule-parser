@@ -1,0 +1,60 @@
+{
+    "description": "Minimize reboots and install updates quickly with hotpatch. Learn more at https://docs.microsoft.com/azure/automanage/automanage-hotpatch",
+    "displayName": "Hotpatch should be enabled for Windows Server Azure Edition VMs",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/6d02d2f7-e38b-4bdc-96f3-adc0a8726abc",
+    "metadata": {
+        "category": "Automanage",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "6d02d2f7-e38b-4bdc-96f3-adc0a8726abc",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Compute/virtualMachines",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.Compute/virtualMachines/storageProfile.imageReference.sku",
+                    "in": [
+                        "2022-datacenter-azure-edition",
+                        "2022-datacenter-azure-edition-core",
+                        "2022-datacenter-azure-edition-core-smalldisk",
+                        "2022-datacenter-azure-edition-smalldisk"
+                    ]
+                },
+                {
+                    "not": {
+                        "equals": "true",
+                        "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration.patchSettings.enableHotpatching"
+                    }
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

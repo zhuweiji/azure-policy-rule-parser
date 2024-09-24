@@ -1,0 +1,207 @@
+{
+    "description": "Private endpoints connect your virtual networks to Azure services without a public IP address at the source or destination. By mapping private endpoints to Azure HDInsight clusters, you can reduce data leakage risks. Learn more about private links at: https://aka.ms/hdi.pl.",
+    "displayName": "Configure Azure HDInsight clusters with private endpoints",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/2676090a-4baf-46ac-9085-4ac02cc50e3e",
+    "metadata": {
+        "category": "HDInsight",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "2676090a-4baf-46ac-9085-4ac02cc50e3e",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "DeployIfNotExists",
+                "Disabled"
+            ],
+            "defaultValue": "DeployIfNotExists",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "groupId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Target group id (sub resource type) for the private endpoint.",
+                "displayName": "Group ID",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "privateEndpointSubnetId": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "A subnet with private endpoint network policies disabled.",
+                "displayName": "Private endpoint subnet ID",
+                "strongType": "Microsoft.Network/virtualNetworks/subnets"
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.HDInsight/clusters",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "equals": "Enabled",
+                            "field": "Microsoft.HDInsight/clusters/networkProperties.privateLink"
+                        },
+                        {
+                            "count": {
+                                "field": "Microsoft.HDInsight/clusters/privateLinkConfigurations[*]"
+                            },
+                            "greaterOrEquals": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "details": {
+                "deployment": {
+                    "properties": {
+                        "mode": "incremental",
+                        "parameters": {
+                            "groupId": {
+                                "value": "[parameters('groupId')]"
+                            },
+                            "name": {
+                                "value": "[field('name')]"
+                            },
+                            "privateEndpointSubnetId": {
+                                "value": "[parameters('privateEndpointSubnetId')]"
+                            },
+                            "serviceId": {
+                                "value": "[field('id')]"
+                            }
+                        },
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "groupId": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "privateEndpointSubnetId": {
+                                    "type": "string"
+                                },
+                                "serviceId": {
+                                    "type": "string"
+                                }
+                            },
+                            "resources": [
+                                {
+                                    "apiVersion": "2020-06-01",
+                                    "name": "[variables('privateEndpointName')]",
+                                    "properties": {
+                                        "expressionEvaluationOptions": {
+                                            "scope": "inner"
+                                        },
+                                        "mode": "Incremental",
+                                        "parameters": {
+                                            "groupId": {
+                                                "value": "[parameters('groupId')]"
+                                            },
+                                            "privateEndpointSubnetId": {
+                                                "value": "[parameters('privateEndpointSubnetId')]"
+                                            },
+                                            "serviceId": {
+                                                "value": "[parameters('serviceId')]"
+                                            },
+                                            "subnetLocation": {
+                                                "value": "[reference(first(take(split(parameters('privateEndpointSubnetId'),'/subnets'),1)),'2020-07-01','Full').location]"
+                                            }
+                                        },
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "groupId": {
+                                                    "type": "string"
+                                                },
+                                                "privateEndpointSubnetId": {
+                                                    "type": "string"
+                                                },
+                                                "serviceId": {
+                                                    "type": "string"
+                                                },
+                                                "subnetLocation": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "resources": [
+                                                {
+                                                    "apiVersion": "2020-07-01",
+                                                    "location": "[parameters('subnetLocation')]",
+                                                    "name": "[variables('privateEndpointName')]",
+                                                    "properties": {
+                                                        "manualPrivateLinkServiceConnections": [],
+                                                        "privateLinkServiceConnections": [
+                                                            {
+                                                                "name": "[variables('privateEndpointName')]",
+                                                                "properties": {
+                                                                    "groupIds": [
+                                                                        "[parameters('groupId')]"
+                                                                    ],
+                                                                    "privateLinkServiceId": "[parameters('serviceId')]",
+                                                                    "requestMessage": "Request to auto approve."
+                                                                }
+                                                            }
+                                                        ],
+                                                        "subnet": {
+                                                            "id": "[parameters('privateEndpointSubnetId')]"
+                                                        }
+                                                    },
+                                                    "tags": {},
+                                                    "type": "Microsoft.Network/privateEndpoints"
+                                                }
+                                            ],
+                                            "variables": {
+                                                "privateEndpointName": "[deployment().name]"
+                                            }
+                                        }
+                                    },
+                                    "type": "Microsoft.Resources/deployments"
+                                }
+                            ],
+                            "variables": {
+                                "privateEndpointName": "[concat('pe-',substring(parameters('name'),0,min(length(parameters('name')),50)),'-',uniquestring(deployment().name))]"
+                            }
+                        }
+                    }
+                },
+                "existenceCondition": {
+                    "equals": "Approved",
+                    "field": "Microsoft.HDInsight/clusters/privateEndpointConnections/privateLinkServiceConnectionState.status"
+                },
+                "roleDefinitionIds": [
+                    "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "type": "Microsoft.HDInsight/clusters/privateEndpointConnections"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

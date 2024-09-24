@@ -1,0 +1,59 @@
+{
+    "description": "Disabling local authentication methods improves security by ensuring that VPN Gateways use only Azure Active Directory identities for authentication. Learn more about Azure AD authentication at https://docs.microsoft.com/azure/vpn-gateway/openvpn-azure-ad-tenant",
+    "displayName": "VPN gateways should use only Azure Active Directory (Azure AD) authentication for point-to-site users",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/21a6bc25-125e-4d13-b82d-2e19b7208ab7",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "21a6bc25-125e-4d13-b82d-2e19b7208ab7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/virtualNetworkGateways",
+                    "field": "type"
+                },
+                {
+                    "exists": "true",
+                    "field": "Microsoft.Network/virtualNetworkGateways/vpnClientConfiguration.vpnClientAddressPool.addressPrefixes"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/virtualNetworkGateways/vpnClientConfiguration.vpnAuthenticationTypes[*]",
+                        "where": {
+                            "field": "Microsoft.Network/virtualNetworkGateways/vpnClientConfiguration.vpnAuthenticationTypes[*]",
+                            "notcontains": "AAD"
+                        }
+                    },
+                    "greaterOrEquals": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

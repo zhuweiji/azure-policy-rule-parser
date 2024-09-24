@@ -1,0 +1,61 @@
+{
+    "description": "Use customer owned storage to control the data stored at rest in Cognitive Services. To learn more about customer owned storage, visit https://aka.ms/cogsvc-cmk.",
+    "displayName": "Cognitive Services accounts should use customer owned storage",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/46aa9b05-0e60-4eae-a88b-1e9d374fa515",
+    "metadata": {
+        "category": "Cognitive Services",
+        "version": "2.0.0"
+    },
+    "mode": "Indexed",
+    "name": "46aa9b05-0e60-4eae-a88b-1e9d374fa515",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The effect determines what happens when the policy rule is evaluated to match",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.CognitiveServices/accounts",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.CognitiveServices/accounts/userOwnedStorage[*]"
+                    },
+                    "less": 1
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.CognitiveServices/accounts/capabilities[*]",
+                        "where": {
+                            "equals": "CustomerManagedStorage",
+                            "field": "Microsoft.CognitiveServices/accounts/capabilities[*].name"
+                        }
+                    },
+                    "greater": 0
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

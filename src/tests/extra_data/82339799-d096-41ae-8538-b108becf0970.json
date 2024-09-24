@@ -1,0 +1,48 @@
+{
+    "description": "Azure Database for MySQL allows you to choose the redundancy option for your database server. It can be set to a geo-redundant backup storage in which the data is not only stored within the region in which your server is hosted, but is also replicated to a paired region to provide recovery option in case of a region failure. Configuring geo-redundant storage for backup is only allowed during server create.",
+    "displayName": "Geo-redundant backup should be enabled for Azure Database for MySQL",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/82339799-d096-41ae-8538-b108becf0970",
+    "metadata": {
+        "category": "SQL",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "82339799-d096-41ae-8538-b108becf0970",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.DBforMySQL/servers",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.DBforMySQL/servers/storageProfile.geoRedundantBackup",
+                    "notEquals": "Enabled"
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

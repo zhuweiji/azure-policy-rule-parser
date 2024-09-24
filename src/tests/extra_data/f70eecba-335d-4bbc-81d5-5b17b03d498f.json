@@ -1,0 +1,49 @@
+{
+    "description": "Disabling local authentication methods improves security by ensuring that Azure SignalR Service exclusively require Azure Active Directory identities for authentication.",
+    "displayName": "Azure SignalR Service should have local authentication methods disabled",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/f70eecba-335d-4bbc-81d5-5b17b03d498f",
+    "metadata": {
+        "category": "SignalR",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "f70eecba-335d-4bbc-81d5-5b17b03d498f",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.SignalRService/SignalR",
+                    "field": "type"
+                },
+                {
+                    "field": "Microsoft.SignalRService/SignalR/disableLocalAuth",
+                    "notEquals": true
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,63 @@
+{
+    "description": "This policy ensures that bot protection is enabled in all Azure Front Door Web Application Firewall (WAF) policies",
+    "displayName": "Bot Protection should be enabled for Azure Front Door WAF",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/27f7fb01-5fdb-44ad-954c-d582f8659533",
+    "metadata": {
+        "category": "Network",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "27f7fb01-5fdb-44ad-954c-d582f8659533",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies",
+                    "field": "type"
+                },
+                {
+                    "count": {
+                        "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/managedRules.managedRuleSets[*]",
+                        "where": {
+                            "anyOf": [
+                                {
+                                    "equals": "Microsoft_BotManagerRuleSet",
+                                    "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/managedRules.managedRuleSets[*].ruleSetType"
+                                },
+                                {
+                                    "equals": "BotProtection",
+                                    "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/managedRules.managedRuleSets[*].ruleSetType"
+                                }
+                            ]
+                        }
+                    },
+                    "less": 1
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

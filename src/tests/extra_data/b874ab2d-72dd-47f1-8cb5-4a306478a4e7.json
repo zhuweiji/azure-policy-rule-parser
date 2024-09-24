@@ -1,0 +1,57 @@
+{
+    "description": "Enforcing managed identity ensures Container Apps can securely authenticate to any resource that supports Azure AD authentication",
+    "displayName": "Managed Identity should be enabled for Container Apps",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/b874ab2d-72dd-47f1-8cb5-4a306478a4e7",
+    "metadata": {
+        "category": "Container Apps",
+        "version": "1.0.1"
+    },
+    "mode": "Indexed",
+    "name": "b874ab2d-72dd-47f1-8cb5-4a306478a4e7",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.App/containerApps",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "identity.type"
+                        },
+                        {
+                            "equals": "none",
+                            "field": "identity.type"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

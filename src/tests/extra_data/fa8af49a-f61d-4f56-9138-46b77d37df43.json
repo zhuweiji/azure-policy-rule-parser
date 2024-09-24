@@ -1,0 +1,69 @@
+{
+    "description": "This is a test policy only for internal use by Policy team. Manage your organizational compliance requirements by specifying the maximum number of days after key creation until it must be rotated.",
+    "displayName": "[Deprecated]: Keys should have a rotation policy within the specified number of days after creation. Versioning Test BuiltIn.",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/fa8af49a-f61d-4f56-9138-46b77d37df43",
+    "metadata": {
+        "category": "BuiltInPolicyTest",
+        "deprecated": true,
+        "version": "2.1.0-deprecated"
+    },
+    "mode": "Microsoft.KeyVault.Data",
+    "name": "fa8af49a-f61d-4f56-9138-46b77d37df43",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "'Audit' allows a non-compliant resource to be created, but flags it as non-compliant.  'Disable' turns off the policy.",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        },
+        "maximumDaysToRotateV2": {
+            "allowedValues": null,
+            "defaultValue": null,
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "The maximum number of days after key creation until it must be rotated.",
+                "displayName": "The maximum days to rotate",
+                "strongType": null
+            },
+            "type": "Integer"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.KeyVault.Data/vaults/keys",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": "false",
+                            "field": "Microsoft.KeyVault.Data/vaults/keys/scheduledRotationDate"
+                        },
+                        {
+                            "field": "Microsoft.KeyVault.Data/vaults/keys/scheduledRotationDate",
+                            "greater": "[addDays(field('Microsoft.KeyVault.Data/vaults/keys/attributes.createdOn'), parameters('maximumDaysToRotateV2'))]"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}
