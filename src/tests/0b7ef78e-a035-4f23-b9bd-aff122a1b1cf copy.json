@@ -1,0 +1,57 @@
+{
+  "description": "This policy enables you to restrict the maximum throughput your organization can specify when creating Azure Cosmos DB databases and containers through the resource provider. It blocks the creation of autoscale resources.",
+  "displayName": "Azure Cosmos DB throughput should be limited",
+  "id": "/providers/Microsoft.Authorization/policyDefinitions/0b7ef78e-a035-4f23-b9bd-aff122a1b1cf",
+  "metadata": {
+    "category": "Cosmos DB",
+    "version": "1.1.0"
+  },
+  "mode": "All",
+  "name": "0b7ef78e-a035-4f23-b9bd-aff122a1b1cf",
+  "parameters": {
+    "effect": {
+      "allowedValues": [
+        "audit",
+        "Audit",
+        "deny",
+        "Deny",
+        "disabled",
+        "Disabled"
+      ],
+      "defaultValue": "Deny",
+      "metadata": {
+        "additionalProperties": null,
+        "assignPermissions": null,
+        "description": "The desired effect of the policy.",
+        "displayName": "Policy Effect",
+        "strongType": null
+      },
+      "type": "String"
+    },
+    "throughputMax": {
+      "allowedValues": null,
+      "defaultValue": null,
+      "metadata": {
+        "additionalProperties": null,
+        "assignPermissions": null,
+        "description": "The maximum throughput (RU/s) that can be assigned to a container via the Resource Provider during create or update.",
+        "displayName": "Max RUs",
+        "strongType": null
+      },
+      "type": "Integer"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "anyOf": [
+        
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]"
+    }
+  },
+  "policyType": "BuiltIn",
+  "systemData": null,
+  "type": "Microsoft.Authorization/policyDefinitions"
+}

@@ -1,0 +1,57 @@
+{
+    "description": "Secure your containers with greater flexibility using customer-managed keys. When you specify a customer-managed key, that key is used to protect and control access to the key that encrypts your data. Using customer-managed keys provides additional capabilities to control rotation of the key encryption key or cryptographically erase data.",
+    "displayName": "Azure Container Instance container group should use customer-managed key for encryption",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0aa61e00-0a01-4a3c-9945-e93cffedf0e6",
+    "metadata": {
+        "category": "Container Instance",
+        "version": "1.0.0"
+    },
+    "mode": "Indexed",
+    "name": "0aa61e00-0a01-4a3c-9945-e93cffedf0e6",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Audit",
+                "Disabled",
+                "Deny"
+            ],
+            "defaultValue": "Audit",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "equals": "Microsoft.ContainerInstance/containerGroups",
+                    "field": "type"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "exists": false,
+                            "field": "Microsoft.ContainerInstance/containerGroups/encryptionProperties.vaultBaseUrl"
+                        },
+                        {
+                            "exists": false,
+                            "field": "Microsoft.ContainerInstance/containerGroups/encryptionProperties.keyName"
+                        }
+                    ]
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}

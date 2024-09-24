@@ -1,0 +1,44 @@
+{
+    "description": "CMA_C1824 - Issue guidelines for ensuring data quality and integrity",
+    "displayName": "Issue guidelines for ensuring data quality and integrity",
+    "id": "/providers/Microsoft.Authorization/policyDefinitions/0a24f5dc-8c40-94a7-7aee-bb7cd4781d37",
+    "metadata": {
+        "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/CMA_C1824",
+        "category": "Regulatory Compliance",
+        "version": "1.1.0"
+    },
+    "mode": "All",
+    "name": "0a24f5dc-8c40-94a7-7aee-bb7cd4781d37",
+    "parameters": {
+        "effect": {
+            "allowedValues": [
+                "Manual",
+                "Disabled"
+            ],
+            "defaultValue": "Manual",
+            "metadata": {
+                "additionalProperties": null,
+                "assignPermissions": null,
+                "description": "Enable or disable the execution of the policy",
+                "displayName": "Effect",
+                "strongType": null
+            },
+            "type": "String"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "equals": "Microsoft.Resources/subscriptions",
+            "field": "type"
+        },
+        "then": {
+            "details": {
+                "defaultState": "Unknown"
+            },
+            "effect": "[parameters('effect')]"
+        }
+    },
+    "policyType": "BuiltIn",
+    "systemData": null,
+    "type": "Microsoft.Authorization/policyDefinitions"
+}
